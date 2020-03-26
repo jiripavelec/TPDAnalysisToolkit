@@ -1,5 +1,5 @@
 from tkinter import *
-
+from tkinter.ttk import *
 
 def main():
     window = Tk()
@@ -21,7 +21,13 @@ def main():
     btn = Button(window, text="I am a button", bg="orange", fg="blue", command=clicked)
     btn.grid(column=1,row=0)
     
+    txt.focus()
+
+    combo = Combobox(window)
+    combo.grid(row=2,column=1)
+
     window.mainloop()
+
 
 if __name__ == "__main__":
     main()

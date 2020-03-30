@@ -20,10 +20,29 @@ def main():
     def clicked():
         lbl.configure(text="You clicked me!?!?")
         label2.configure(text=txt.get())
-    btn = ttk.Button(window, text="I am a button", command=clicked)#, highlightbackground='#3E4149')
+    btn = ttk.Button(window, text="I am a button", command=clicked)
+    btn2 = tk.Button(window, text="I am Butohn", command= clicked, relief = 'groove',  padx='20', pady='20')#, highlightbackground='#3E4149')
     # btn2 = ttk.Button(window, text="Button2", highlightbackground="red")
     btn.grid(column=1,row=0)
-    
+    btn2.grid(column=2,row=0)
+
+    s = ttk.Style()
+    s.configure('TButton',
+        background='green',
+        foreground='blue',
+        highlightthickness='20',
+        relief = 'groove',
+        font=('Helvetica', 18, 'bold'))
+    s.map('TButton',
+        foreground=[('disabled', 'yellow'),
+                    ('pressed', 'red'),
+                    ('active', 'blue')],
+        background=[('disabled', 'magenta'),
+                    ('pressed', '!focus', 'cyan'),
+                    ('active', 'green')],
+        highlightcolor=[('focus', 'green'),
+                        ('!focus', 'red')])
+
     txt.focus()
 
     combo = ttk.Combobox(window)

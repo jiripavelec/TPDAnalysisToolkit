@@ -7,9 +7,18 @@ class PlotsFrame(tk.Frame):
         self.initUI(parent)
     
     def initUI(self, parent):
-        self.pack(side = tk.LEFT, fill = tk.BOTH)
-        lbl = ttk.Label(self, text="Left Frame")
-        lbl.pack(side=tk.LEFT, padx=5, pady=5)
+        self.pack(side = tk.RIGHT, fill = tk.BOTH, expand = True)
+        # lbl = ttk.Label(self, text="Plots Frame")
+        # lbl.pack(side=tk.LEFT, padx=5, pady=5)
+
+        #todo: use self.frames to create multiple tab-frames for different plot outputs
+        tab_control = ttk.Notebook(self)
+        tab1 = ttk.Frame(tab_control)
+        tab2 = ttk.Frame(tab_control)
+
+        tab_control.add(tab1,text="first")
+        tab_control.add(tab2,text="second")
+        tab_control.pack(expand=1,fill='both')
 
 
 class ControlsFrame(tk.Frame):
@@ -18,8 +27,8 @@ class ControlsFrame(tk.Frame):
         self.initUI(parent)
 
     def initUI(self, parent):
-        self.pack(side = tk.RIGHT, fill = tk.BOTH, expand = True)
-        lbl = ttk.Label(self, text="Right Frame")
+        self.pack(side = tk.LEFT, fill = tk.BOTH, expand = False)
+        lbl = ttk.Label(self, text="Controls Frame")
         lbl.pack(side=tk.LEFT, padx=5, pady=5)
 
 class MainFrame(tk.Frame):
@@ -31,21 +40,8 @@ class MainFrame(tk.Frame):
         self.master.title("TPD Toolkit")
         self.pack(fill=tk.BOTH, expand=True)
 
-        # leftFrame = tk.Frame(self,bg = "blue")
-        # leftFrame.pack(side = tk.LEFT, fill=tk.BOTH)
-
-        # leftlbl = ttk.Label(leftFrame, text="Left Frame")
-        # leftlbl.pack(side=tk.LEFT, padx=5, pady=5)
-
-        leftFrame = PlotsFrame(self, bg ='blue')
-
-        # rightFrame = tk.Frame(self,bg='red')
-        # rightFrame.pack(side = tk.RIGHT, fill=tk.BOTH, expand=True)
-
-        # rightlbl = ttk.Label(rightFrame, text="Right Frame")
-        # rightlbl.pack(side=tk.LEFT, padx=5, pady=5)
-
-        rightFrame = ControlsFrame(self, bg = 'red')
+        rightFrame = PlotsFrame(self, bg ='white')
+        leftFrame = ControlsFrame(self, bg = 'grey')
 
 
 def main():

@@ -4,14 +4,14 @@ import tkinter.ttk as ttk
 #Chord BEGIN
 class Chord(tk.Frame):
     def __init__(self, parent, title='', *args, **kwargs):
-        tk.Frame.__init__(self, parent, *args, **kwargs)
+        super().__init__(parent, *args, **kwargs)
         self.title = title
 #Chord END
 
 #Accordion BEGIN
 class Accordion(tk.Frame):
     def __init__(self, parent, accordion_style=None, *args, **kwargs):
-        tk.Frame.__init__(self, parent, *args, **kwargs)
+        super().__init__(parent, *args, **kwargs)
 
         # if no style dict, assign default style
         if accordion_style:
@@ -48,17 +48,22 @@ class Accordion(tk.Frame):
             row += 2
             
             label.bind('<Button-1>', lambda e,
-                       c=c: self._click_handler(c))
+                       target=c, others=chords: self._click_handler(target,others))
             label.bind('<Enter>', lambda e,
                        label=label, i=i: label.config(bg=self.style['highlight']))
             label.bind('<Leave>', lambda e,
                        label=label, i=i: label.config(bg=self.style['title_bg']))
+        
+        #chords[0].grid() # start with first chord open
                        
-    def _click_handler(self, chord):
-        if len(chord.grid_info()) == 0:
-            chord.grid()
+    def _click_handler(self, target, chords):
+        for chord in chords: #close other chords
+            if len(chord.grid_info()) != 0:
+                chord.grid_remove()
+        if len(target.grid_info()) == 0: # open target chord
+            target.grid()
         else:
-            chord.grid_remove()
+            target.grid_remove()
 #Accordion END
 
 #PlotsFrame BEGIN

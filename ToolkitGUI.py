@@ -1,6 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
-import datetime as dt
+from datetime import datetime
+# from dt import timedelta
 
 import matplotlib as mpl
 mpl.use('TkAgg') #mpl backend
@@ -19,8 +20,13 @@ class MPLContainer(tk.Frame):
         #TODO: make the resize function based on the duration since the last resize-event!
         # print("Width = " + str(self.winfo_width()))
         # print("Height = " + str(self.winfo_height()))
-        self.canvas.get_tk_widget().place_forget()
-        self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.INSIDE,height=self.winfo_height(),width=self.winfo_width())
+        now = datetime.now()
+        timeDeltaSinceLastResizeEvent = now - self.resizeDateTime
+        if(timeDeltaSinceLastResizeEvent.total_seconds()*1000 > 200): #if we are not currently resizing, resize
+            self.canvas.get_tk_widget().place_forget()
+            self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.INSIDE,height=self.winfo_height(),width=self.winfo_width())
+        #else do nothing
+            
 
     def initUI(self, parent):
         self.pack(side=tk.TOP, fill = tk.BOTH, expand=True)
@@ -42,7 +48,8 @@ class MPLContainer(tk.Frame):
         # self.grid_rowconfigure(index=0,weight=1,minsize=self.winfo_height())
         # self.grid_columnconfigure(index=0,weight=1,minsize=self.winfo_width())
         # self.pack_propagate(0)#should stop grid resizing
-        
+        self.resizeDateTime = datetime.now()
+
         self.resizeAnimation = anim.FuncAnimation(self.m_figure, func=self.resizePlot, interval=200)#interval in milliseconds
     
     
@@ -188,14 +195,14 @@ class MainFrame(tk.Frame):
 
         self.rightFrame = PlotsFrame(self, bg ='white')
         self.leftFrame = ControlsFrame(self, bg = 'grey')
-        self.resizeTimer = dt.datetime.now()
+        self.resizeTimer = datetime.now()
         self.rightFrame.resizeTest()
 
-    def resizePlots(self):
-        self.rightFrame.resizeTest()
+    # def resizePlots(self):
+    #     self.rightFrame.resizeTest()
 
-    def resetResizeTime(self):
-        self.resizeTimer = dt.datetime.now()
+    def resetResizeTime(self,*args,**kwargs):
+        self.rightFrame.tab1.resizeDateTime = datetime.now()
 #ControlsFrame END
 
 
@@ -204,10 +211,7 @@ def main():
     root = tk.Tk()
     root.geometry("1920x1080")
     main = MainFrame()
-    # def testCommand(event):
-    #     print("Resize event" + str(event.width) + str(event.height))
-    #     main.resizePlots()
-    # root.bind('<Configure>',testCommand)
+    root.bind('<Configure>',main.resetResizeTime)
     root.mainloop()
 
 if __name__ == '__main__':

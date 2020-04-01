@@ -1,6 +1,50 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 
+import matplotlib as mpl
+mpl.use("TkAgg") #mpl backend
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from matplotlib.figure import Figure
+#MPLContainer BEGIN
+class MPLContainer(tk.Frame):
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.initUI(parent)
+
+    def initUI(self, parent):
+        self.pack(side=tk.TOP, fill = tk.BOTH, expand=True)
+        f = Figure(figsize=(5,5), dpi=100)
+        a = f.add_subplot(111)#111 means only one chart as opposed to 121 meanign 2
+        a.plot([1,2,3,4,5,6,7,8],[5,6,1,3,8,9,3,5])
+        #normally plt.show() now, but different for tk
+        canvas = FigureCanvasTkAgg(f,self)
+        canvas.draw()
+        canvas.blit()
+        canvas.get_tk_widget().pack(side=tk.TOP,fill=tk.BOTH,expand=True)
+
+#MPLContainer END
+
+#PlotsFrame BEGIN
+class PlotsFrame(tk.Frame):
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.initUI(parent)
+    
+    def initUI(self, parent):
+        self.pack(side = tk.RIGHT, fill = tk.BOTH, expand = True)
+        # lbl = ttk.Label(self, text="Plots Frame")
+        # lbl.pack(side=tk.LEFT, padx=5, pady=5)
+
+        #todo: use self.frames to create multiple tab-frames for different plot outputs
+        tab_control = ttk.Notebook(self)
+        tab1 = MPLContainer(tab_control)
+        tab2 = ttk.Frame(tab_control)
+
+        tab_control.add(tab1,text="first")
+        tab_control.add(tab2,text="second")
+        tab_control.pack(expand=1,fill='both')
+#PlotsFrame END
+
 #Chord BEGIN
 class Chord(tk.Frame):
     def __init__(self, parent, title='', *args, **kwargs):
@@ -19,7 +63,7 @@ class Accordion(tk.Frame):
             self.style = accordion_style
         else:
             self.style = accordion_style = {
-                'title_bg': 'ghost white',
+                'title_bg': 'white',
                 'title_fg': 'black',
                 'highlight': 'white smoke'
                 }
@@ -69,27 +113,6 @@ class Accordion(tk.Frame):
         else:
             target.grid_remove()
 #Accordion END
-
-#PlotsFrame BEGIN
-class PlotsFrame(tk.Frame):
-    def __init__(self, parent, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
-        self.initUI(parent)
-    
-    def initUI(self, parent):
-        self.pack(side = tk.RIGHT, fill = tk.BOTH, expand = True)
-        # lbl = ttk.Label(self, text="Plots Frame")
-        # lbl.pack(side=tk.LEFT, padx=5, pady=5)
-
-        #todo: use self.frames to create multiple tab-frames for different plot outputs
-        tab_control = ttk.Notebook(self)
-        tab1 = ttk.Frame(tab_control)
-        tab2 = ttk.Frame(tab_control)
-
-        tab_control.add(tab1,text="first")
-        tab_control.add(tab2,text="second")
-        tab_control.pack(expand=1,fill='both')
-#PlotsFrame END
 
 #ControlsFrame BEGIN
 #Controls should effectively work like an accordion element

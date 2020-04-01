@@ -8,11 +8,18 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 import matplotlib.animation as anim
 
+
 #MPLContainer BEGIN
 class MPLContainer(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.initUI(parent)
+
+    def resizePlot(self, *args, **kwargs):
+        # print("Width = " + str(self.winfo_width()))
+        # print("Height = " + str(self.winfo_height()))
+        self.canvas.get_tk_widget().place_forget()
+        self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.INSIDE,height=self.winfo_height(),width=self.winfo_width())
 
     def initUI(self, parent):
         self.pack(side=tk.TOP, fill = tk.BOTH, expand=True)
@@ -34,15 +41,16 @@ class MPLContainer(tk.Frame):
         # self.grid_rowconfigure(index=0,weight=1,minsize=self.winfo_height())
         # self.grid_columnconfigure(index=0,weight=1,minsize=self.winfo_width())
         # self.pack_propagate(0)#should stop grid resizing
+        
+        self.resizeAnimation = anim.FuncAnimation(self.m_figure, func=self.resizePlot, interval=200)#interval in milliseconds
     
-    def resizePlot(self):
-        print("Width = " + str(self.winfo_width()))
-        print("Height = " + str(self.winfo_height()))
-        self.canvas.get_tk_widget().place_forget()
-        self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.INSIDE,height=self.winfo_height(),width=self.winfo_width())
+    
 
         # self.grid_rowconfigure(index=0,minsize=self.winfo_height())
         # self.grid_columnconfigure(index=0,minsize=self.winfo_width())
+
+    # def animate(self,plot):
+        
 #MPLContainer END
 
 #PlotsFrame BEGIN
@@ -195,10 +203,10 @@ def main():
     root = tk.Tk()
     root.geometry("1920x1080")
     main = MainFrame()
-    def testCommand(event):
-        print("Resize event" + str(event.width) + str(event.height))
-        main.resizePlots()
-    root.bind('<Configure>',testCommand)
+    # def testCommand(event):
+    #     print("Resize event" + str(event.width) + str(event.height))
+    #     main.resizePlots()
+    # root.bind('<Configure>',testCommand)
     root.mainloop()
 
 if __name__ == '__main__':

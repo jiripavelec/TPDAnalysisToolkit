@@ -16,6 +16,7 @@ class MPLContainer(tk.Frame):
         self.initUI(parent)
 
     def resizePlot(self, *args, **kwargs):
+        #TODO: make the resize function based on the duration since the last resize-event!
         # print("Width = " + str(self.winfo_width()))
         # print("Height = " + str(self.winfo_height()))
         self.canvas.get_tk_widget().place_forget()

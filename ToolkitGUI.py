@@ -1,10 +1,13 @@
 import tkinter as tk
 import tkinter.ttk as ttk
+import datetime as dt
 
 import matplotlib as mpl
-mpl.use("TkAgg") #mpl backend
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+mpl.use('TkAgg') #mpl backend
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
+import matplotlib.animation as anim
+
 #MPLContainer BEGIN
 class MPLContainer(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
@@ -13,15 +16,33 @@ class MPLContainer(tk.Frame):
 
     def initUI(self, parent):
         self.pack(side=tk.TOP, fill = tk.BOTH, expand=True)
-        f = Figure(figsize=(5,5), dpi=100)
-        a = f.add_subplot(111)#111 means only one chart as opposed to 121 meanign 2
-        a.plot([1,2,3,4,5,6,7,8],[5,6,1,3,8,9,3,5])
+        # self.place(anchor="nw",bordermode=tk.INSIDE,height=100,relwidth=100)
+        # bck = mpl.get_backend()
+        # print("Backendis" + bck)
+        self.m_figure = Figure(figsize=(5,5), dpi=96)
+        self.m_subplot = self.m_figure.add_subplot(111)
+        
+        # f = mpl.pyplot.Figure(figsize=(5,5), dpi=96)
+        # a = f.add_subplot(111)#111 means only one chart as opposed to 121 meanign 2
+        self.m_subplot.plot([1,2,3,4,5,6,7,8],[5,6,1,3,8,9,3,5])
         #normally plt.show() now, but different for tk
-        canvas = FigureCanvasTkAgg(f,self)
-        canvas.draw()
-        canvas.blit()
-        canvas.get_tk_widget().pack(side=tk.TOP,fill=tk.BOTH,expand=True)
+        self.canvas = FigureCanvasTkAgg(self.m_figure,self)
+        self.canvas.draw()
+        # canvas.get_tk_widget().pack(side=tk.TOP,fill=tk.BOTH,expand=True)
+        # canvas.get_tk_widget().grid(row=0,column=0,sticky="nsew")
+        self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.INSIDE,height=200,width=200)
+        # self.grid_rowconfigure(index=0,weight=1,minsize=self.winfo_height())
+        # self.grid_columnconfigure(index=0,weight=1,minsize=self.winfo_width())
+        # self.pack_propagate(0)#should stop grid resizing
+    
+    def resizePlot(self):
+        print("Width = " + str(self.winfo_width()))
+        print("Height = " + str(self.winfo_height()))
+        self.canvas.get_tk_widget().place_forget()
+        self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.INSIDE,height=self.winfo_height(),width=self.winfo_width())
 
+        # self.grid_rowconfigure(index=0,minsize=self.winfo_height())
+        # self.grid_columnconfigure(index=0,minsize=self.winfo_width())
 #MPLContainer END
 
 #PlotsFrame BEGIN
@@ -29,20 +50,23 @@ class PlotsFrame(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.initUI(parent)
-    
+
     def initUI(self, parent):
         self.pack(side = tk.RIGHT, fill = tk.BOTH, expand = True)
         # lbl = ttk.Label(self, text="Plots Frame")
         # lbl.pack(side=tk.LEFT, padx=5, pady=5)
 
         #todo: use self.frames to create multiple tab-frames for different plot outputs
-        tab_control = ttk.Notebook(self)
-        tab1 = MPLContainer(tab_control)
-        tab2 = ttk.Frame(tab_control)
+        self.tab_control = ttk.Notebook(self)
+        self.tab1 = MPLContainer(self.tab_control)
+        self.tab2 = ttk.Frame(self.tab_control)
 
-        tab_control.add(tab1,text="first")
-        tab_control.add(tab2,text="second")
-        tab_control.pack(expand=1,fill='both')
+        self.tab_control.add(self.tab1,text="first")
+        self.tab_control.add(self.tab2,text="second")
+        self.tab_control.pack(expand=1,fill='both')
+
+    def resizeTest(self):
+        self.tab1.resizePlot()
 #PlotsFrame END
 
 #Chord BEGIN
@@ -153,14 +177,28 @@ class MainFrame(tk.Frame):
         self.master.title("TPD Toolkit")
         self.pack(fill=tk.BOTH, expand=True)
 
-        rightFrame = PlotsFrame(self, bg ='white')
-        leftFrame = ControlsFrame(self, bg = 'grey')
+        self.rightFrame = PlotsFrame(self, bg ='white')
+        self.leftFrame = ControlsFrame(self, bg = 'grey')
+        self.resizeTimer = dt.datetime.now()
+        self.rightFrame.resizeTest()
+
+    def resizePlots(self):
+        self.rightFrame.resizeTest()
+
+    def resetResizeTime(self):
+        self.resizeTimer = dt.datetime.now()
 #ControlsFrame END
+
+
 
 def main():
     root = tk.Tk()
     root.geometry("1920x1080")
     main = MainFrame()
+    def testCommand(event):
+        print("Resize event" + str(event.width) + str(event.height))
+        main.resizePlots()
+    root.bind('<Configure>',testCommand)
     root.mainloop()
 
 if __name__ == '__main__':

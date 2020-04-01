@@ -17,14 +17,17 @@ class MPLContainer(tk.Frame):
         self.initUI(parent)
 
     def resizePlot(self, *args, **kwargs):
-        #TODO: make the resize function based on the duration since the last resize-event!
         # print("Width = " + str(self.winfo_width()))
         # print("Height = " + str(self.winfo_height()))
         now = datetime.now()
-        timeDeltaSinceLastResizeEvent = now - self.resizeDateTime
-        if(timeDeltaSinceLastResizeEvent.total_seconds()*1000 > 200): #if we are not currently resizing, resize
+        if(not self.plotHidden): #hide the plot if we just started resizing
             self.canvas.get_tk_widget().place_forget()
+            self.plotHidden = True
+        timeDelta = now - self.resizeDateTime #get timedelta since last resize event
+        if(timeDelta.total_seconds()*1000 > 200): #if we stopped resizing, unhide plot
+            # self.canvas.get_tk_widget().place_forget()
             self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.INSIDE,height=self.winfo_height(),width=self.winfo_width())
+            self.plotHidden = False
         #else do nothing
             
 
@@ -49,6 +52,7 @@ class MPLContainer(tk.Frame):
         # self.grid_columnconfigure(index=0,weight=1,minsize=self.winfo_width())
         # self.pack_propagate(0)#should stop grid resizing
         self.resizeDateTime = datetime.now()
+        self.plotHidden = False
 
         self.resizeAnimation = anim.FuncAnimation(self.m_figure, func=self.resizePlot, interval=200)#interval in milliseconds
     

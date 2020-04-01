@@ -9,6 +9,7 @@ class Chord(tk.Frame):
 #Chord END
 
 #Accordion BEGIN
+#adapted from http://code.activestate.com/recipes/578911-accordion-widget-tkinter/
 class Accordion(tk.Frame):
     def __init__(self, parent, accordion_style=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
@@ -30,12 +31,13 @@ class Accordion(tk.Frame):
 
         self.update_idletasks()
         row = 0
-        width = max([c.winfo_reqwidth() for c in chords])
-        
+        # width = max([c.winfo_reqwidth() for c in chords])
+        width = 100
+
         for c in chords:
-            i = tk.PhotoImage() # blank image to force Label to use pixel size
+            # i = tk.PhotoImage() # blank image to force Label to use pixel size
             label = tk.Label(self, text=c.title,
-                          image=i,
+                        #   image=i,
                           compound='center',
                           width=width,
                           bg=self.style['title_bg'],
@@ -50,9 +52,11 @@ class Accordion(tk.Frame):
             label.bind('<Button-1>', lambda e,
                        target=c, others=chords: self._click_handler(target,others))
             label.bind('<Enter>', lambda e,
-                       label=label, i=i: label.config(bg=self.style['highlight']))
+                    #    label=label, i=i: label.config(bg=self.style['highlight']))
+                       label=label: label.config(bg=self.style['highlight']))
             label.bind('<Leave>', lambda e,
-                       label=label, i=i: label.config(bg=self.style['title_bg']))
+                    #    label=label, i=i: label.config(bg=self.style['title_bg']))
+                       label=label: label.config(bg=self.style['title_bg']))
         
         #chords[0].grid() # start with first chord open
                        

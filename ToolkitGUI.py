@@ -200,13 +200,18 @@ class MainFrame(tk.Frame):
         self.rightFrame = PlotsFrame(self, bg ='white')
         self.leftFrame = ControlsFrame(self, bg = 'grey')
         self.resizeTimer = datetime.now()
-        self.rightFrame.resizeTest()
-
+        # self.rightFrame.resizeTest()
+        self.lastWidth = self.winfo_width()
+        self.lastHeight = self.winfo_height()
     # def resizePlots(self):
     #     self.rightFrame.resizeTest()
 
     def resetResizeTime(self,*args,**kwargs):
-        self.rightFrame.tab1.resizeDateTime = datetime.now()
+        if( (not (self.lastWidth == self.winfo_width)) or (not (self.lastHeight == self.winfo_height))):
+            self.rightFrame.tab1.resizeDateTime = datetime.now()
+            self.lastWidth = self.winfo_width
+            self.lastHeight = self.winfo_height
+        #else we didnt resize as the dimensions have not changed
 #ControlsFrame END
 
 

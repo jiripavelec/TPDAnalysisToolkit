@@ -1,3 +1,6 @@
+import tkinter as tk
+import tkinter.ttk as ttk
+
 from datetime import datetime
 import matplotlib as mpl
 mpl.use('TkAgg') #mpl backend

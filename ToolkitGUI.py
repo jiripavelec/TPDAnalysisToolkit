@@ -54,7 +54,7 @@ class MPLContainer(tk.Frame):
         self.resizeDateTime = datetime.now()
         self.plotHidden = False
 
-        self.resizeAnimation = anim.FuncAnimation(self.m_figure, func=self.resizePlot, interval=200)#interval in milliseconds
+        self.resizeAnimation = anim.FuncAnimation(self.m_figure, func=self.resizePlot, interval=400)#interval in milliseconds
     
     
 
@@ -78,7 +78,7 @@ class PlotsFrame(tk.Frame):
 
         #todo: use self.frames to create multiple tab-frames for different plot outputs
         self.tab_control = ttk.Notebook(self)
-        self.tab1 = MPLContainer(self.tab_control)
+        self.tab1 = MPLContainer(self.tab_control, bg="white")
         self.tab2 = ttk.Frame(self.tab_control)
 
         self.tab_control.add(self.tab1,text="first")
@@ -94,6 +94,10 @@ class Chord(tk.Frame):
     def __init__(self, parent, title='', *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.title = title
+        self.m_row = 0
+    
+    def setRowIdx(self, rowIndex):
+        self.m_row = rowIndex
 #Chord END
 
 #Accordion BEGIN
@@ -133,8 +137,12 @@ class Accordion(tk.Frame):
                           bd=2, relief='groove')
             
             label.grid(row=row, column=0)
+            # label.pack(side=tk.TOP, fill=tk.X, expand=False)
             c.grid(row=row+1, column=0, sticky='nsew')
+            c.setRowIdx(row+1)
+            # c.pack(side=tk.TOP, fill=tk.X, expand=True)
             c.grid_remove()
+            # c.pack_forget()
             row += 2
             
             label.bind('<Button-1>', lambda e,
@@ -146,16 +154,24 @@ class Accordion(tk.Frame):
                     #    label=label, i=i: label.config(bg=self.style['title_bg']))
                        label=label: label.config(bg=self.style['title_bg']))
         
-        #chords[0].grid() # start with first chord open
+        chords[0].grid() # start with first chord open
+        self.grid_rowconfigure(1, weight=1)
+
+        # chords[0].pack()
                        
     def _click_handler(self, target, chords):
         for chord in chords: #close other chords
             if len(chord.grid_info()) != 0:
                 chord.grid_remove()
+                self.grid_rowconfigure(chord.m_row,weight=0)
+                # chord.pack_forget()
         if len(target.grid_info()) == 0: # open target chord
             target.grid()
-        else:
-            target.grid_remove()
+            self.grid_rowconfigure(target.m_row,weight=1)
+            # target.pack()
+        # else:
+            # target.grid_remove()
+            # target.pack_forget()
 #Accordion END
 
 #ControlsFrame BEGIN
@@ -167,8 +183,6 @@ class ControlsFrame(tk.Frame):
 
     def initUI(self, parent):
         self.pack(side = tk.LEFT, fill = tk.BOTH, expand = False)
-        lbl = ttk.Label(self, text="Controls Frame")
-        lbl.pack(side=tk.TOP, padx=5, pady=5)
         acc = Accordion(self)
         # first chord
         first_chord = Chord(acc, title='First Chord', bg='white')
@@ -185,7 +199,7 @@ class ControlsFrame(tk.Frame):
 
         # append list of chords to Accordion instance
         acc.append_chords([first_chord, second_chord, third_chord])
-        acc.pack(fill='both', expand=1)
+        acc.pack(fill=tk.BOTH, expand=1)
 
 
 class MainFrame(tk.Frame):

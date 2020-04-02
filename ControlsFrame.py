@@ -85,3 +85,30 @@ class Accordion(tk.Frame):
             # target.grid_remove()
             # target.pack_forget()
 #Accordion END
+
+#ControlsFrame BEGIN
+class ControlsFrame(tk.Frame):
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.initUI(parent)
+
+    def initUI(self, parent):
+        self.pack(side = tk.LEFT, fill = tk.BOTH, expand = False)
+        acc = Accordion(self)
+        # first chord
+        first_chord = Chord(acc, title='First Chord', bg='white')
+        tk.Label(first_chord, text='hello world', bg='white').pack()
+
+        # second chord
+        second_chord = Chord(acc, title='Second Chord', bg='white')
+        tk.Entry(second_chord).pack()
+        tk.Button(second_chord, text='Button').pack()
+
+        # third chord
+        third_chord = Chord(acc, title='Third Chord', bg='white')
+        tk.Text(third_chord).pack()
+
+        # append list of chords to Accordion instance
+        acc.append_chords([first_chord, second_chord, third_chord])
+        acc.pack(fill=tk.BOTH, expand=1)
+#ControlsFrame END

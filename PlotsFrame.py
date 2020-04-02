@@ -11,8 +11,9 @@ import matplotlib.animation as anim
 
 #MPLContainer BEGIN
 class MPLContainer(tk.Frame):
-    def __init__(self, parent, *args, **kwargs):
+    def __init__(self, parent, title, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
+        self.m_title = title
         self.initUI(parent)
 
     def resizePlot(self, *args, **kwargs):
@@ -66,13 +67,15 @@ class MPLContainer(tk.Frame):
 
 #PlotsFrame BEGIN
 class PlotsFrame(tk.Frame):
-    notebooks = {}
+    # notebooks = {}
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.initUI(parent)
 
     def initUI(self, parent):
         self.pack(side = tk.RIGHT, fill = tk.BOTH, expand = True)
+        self.grid_rowconfigure(0,weight=1)
+        self.grid_columnconfigure(0,weight=1)
         # lbl = ttk.Label(self, text="Plots Frame")
         # lbl.pack(side=tk.LEFT, padx=5, pady=5)
 

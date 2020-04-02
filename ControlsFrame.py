@@ -73,6 +73,7 @@ class Accordion(tk.Frame):
                        label=label: label.config(bg=self.style['title_bg']))
         
         chords[0].grid() # start with first chord open
+        chords[0].onClickedEvent()
         self.grid_rowconfigure(1, weight=1)
 
         # chords[0].pack()
@@ -85,6 +86,7 @@ class Accordion(tk.Frame):
                 # chord.pack_forget()
         if len(target.grid_info()) == 0: # open target chord
             target.grid()
+            target.onClickedEvent()
             self.grid_rowconfigure(target.m_row,weight=1)
             # target.pack()
         # else:
@@ -92,61 +94,16 @@ class Accordion(tk.Frame):
             # target.pack_forget()
 #Accordion END
 
-class ProcessingStepControls:
-    def __init__(self, title):
-        self.m_title = title
-        self.m_chordInitDone = False
-        self.m_notebookInitDone = False
-
-    def initChordUI(self):
-        raise NotImplementedError()
-
-
-    def getControlChord(self,parent, plotsFrame):
-        if(not self.m_chordInitDone):
-            self.m_chord = Chord(parent, self.getNotebook(plotsFrame), title=self.m_title)
-            self.initChordUI()
-
-        return self.m_chord
-
-    def initNotebook(self):
-        raise NotImplementedError()
-
-    def getNotebook(self,parent):
-        if(not self.m_notebookInitDone):
-            self.m_notebook = ttk.Notebook(parent)
-            self.initNotebook()
-
-        return self.m_notebook
-
-    def chordWasClicked(self, chord):
-        self.m_notebook.tkraise()
-
-class ProcessTPDData(ProcessingStepControls):
-    def __init__(self):
-        super().__init__("ProcessTPDData")
-
-    def initChordUI(self):
-        tk.Label(self.m_chord, text='hello world', bg='white').pack()
-
-    def initNotebook(self):
-        self.tab1 = MPLContainer(self.m_notebook, bg="white")
-        self.tab2 = ttk.Frame(self.m_notebook)
-
-        self.m_notebook.add(self.tab1,text="first")
-        self.m_notebook.add(self.tab2,text="second")
-        self.m_notebook.pack(expand=1,fill='both')
-
 
 
 #ControlsFrame BEGIN
 class ControlsFrame(tk.Frame):
-    def __init__(self, parent, plotsFrame, *args, **kwargs):
+    def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
-        self.initUI(parent, plotsFrame)
+        self.initUI(parent)
         self.Controls = []
 
-    def initUI(self, parent, plotsFrame):
+    def initUI(self, parent):
         # self.Controls = {
         #     "test1" : ProcessTPDData(),
         #     "test2" : ProcessTPDData(),
@@ -154,7 +111,7 @@ class ControlsFrame(tk.Frame):
         # }
 
         self.pack(side = tk.LEFT, fill = tk.BOTH, expand = False)
-        acc = Accordion(self)
+        self.accordion = Accordion(self)
 
         # # first chord
         # first_chord = Chord(acc, title='First Chord', bg='white')
@@ -171,12 +128,16 @@ class ControlsFrame(tk.Frame):
 
         # append list of chords to Accordion instance
         # acc.append_chords([c.getControlChord(acc, plotsFrame) for c in self.Controls.values()])
-        acc.append_chords([c.getControlChord(acc, plotsFrame) for c in self.Controls])
-        acc.pack(fill=tk.BOTH, expand=1)
+        # acc.append_chords([c.m_chord for c in self.Controls])
+        # acc.pack(fill=tk.BOTH, expand=1)
 
-    def registerControl(self, control):
-        # self.Controls[control.m_title] = control
-        self.Controls.append(control)
+    def initChords(self,chords):
+        self.accordion.append_chords(chords)
+        self.accordion.pack(fill=tk.BOTH, expand=1)
+
+    # def registerControl(self, control):
+    #     # self.Controls[control.m_title] = control
+    #     self.Controls.append(control)
 
     # def resetResizeTime(self):
     #     for v in self.Controls.values():

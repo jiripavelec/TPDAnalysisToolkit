@@ -1,15 +1,21 @@
 import tkinter as tk
 import tkinter.ttk as ttk
+from PlotsFrame import * 
 
 #Chord BEGIN
 class Chord(tk.Frame):
-    def __init__(self, parent, title='', *args, **kwargs):
+    def __init__(self, parent, controlRef, title='', *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.title = title
         self.m_row = 0
+        self.controlRef = controlRef
     
     def setRowIdx(self, rowIndex):
         self.m_row = rowIndex
+
+    def onClickedEvent(self):
+        self.controlRef.tkraise()
+    
 #Chord END
 
 #Accordion BEGIN
@@ -86,29 +92,93 @@ class Accordion(tk.Frame):
             # target.pack_forget()
 #Accordion END
 
+class ProcessingStepControls:
+    def __init__(self, title):
+        self.m_title = title
+        self.m_chordInitDone = False
+        self.m_notebookInitDone = False
+
+    def initChordUI(self):
+        raise NotImplementedError()
+
+
+    def getControlChord(self,parent, plotsFrame):
+        if(not self.m_chordInitDone):
+            self.m_chord = Chord(parent, self.getNotebook(plotsFrame), title=self.m_title)
+            self.initChordUI()
+
+        return self.m_chord
+
+    def initNotebook(self):
+        raise NotImplementedError()
+
+    def getNotebook(self,parent):
+        if(not self.m_notebookInitDone):
+            self.m_notebook = ttk.Notebook(parent)
+            self.initNotebook()
+
+        return self.m_notebook
+
+    def chordWasClicked(self, chord):
+        self.m_notebook.tkraise()
+
+class ProcessTPDData(ProcessingStepControls):
+    def __init__(self):
+        super().__init__("ProcessTPDData")
+
+    def initChordUI(self):
+        tk.Label(self.m_chord, text='hello world', bg='white').pack()
+
+    def initNotebook(self):
+        self.tab1 = MPLContainer(self.m_notebook, bg="white")
+        self.tab2 = ttk.Frame(self.m_notebook)
+
+        self.m_notebook.add(self.tab1,text="first")
+        self.m_notebook.add(self.tab2,text="second")
+        self.m_notebook.pack(expand=1,fill='both')
+
+
+
 #ControlsFrame BEGIN
 class ControlsFrame(tk.Frame):
-    def __init__(self, parent, *args, **kwargs):
+    def __init__(self, parent, plotsFrame, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
-        self.initUI(parent)
+        self.initUI(parent, plotsFrame)
+        self.Controls = []
 
-    def initUI(self, parent):
+    def initUI(self, parent, plotsFrame):
+        # self.Controls = {
+        #     "test1" : ProcessTPDData(),
+        #     "test2" : ProcessTPDData(),
+        #     "test3" : ProcessTPDData()
+        # }
+
         self.pack(side = tk.LEFT, fill = tk.BOTH, expand = False)
         acc = Accordion(self)
-        # first chord
-        first_chord = Chord(acc, title='First Chord', bg='white')
-        tk.Label(first_chord, text='hello world', bg='white').pack()
 
-        # second chord
-        second_chord = Chord(acc, title='Second Chord', bg='white')
-        tk.Entry(second_chord).pack()
-        tk.Button(second_chord, text='Button').pack()
+        # # first chord
+        # first_chord = Chord(acc, title='First Chord', bg='white')
+        # tk.Label(first_chord, text='hello world', bg='white').pack()
 
-        # third chord
-        third_chord = Chord(acc, title='Third Chord', bg='white')
-        tk.Text(third_chord).pack()
+        # # second chord
+        # second_chord = Chord(acc, title='Second Chord', bg='white')
+        # tk.Entry(second_chord).pack()
+        # tk.Button(second_chord, text='Button').pack()
+
+        # # third chord
+        # third_chord = Chord(acc, title='Third Chord', bg='white')
+        # tk.Text(third_chord).pack()
 
         # append list of chords to Accordion instance
-        acc.append_chords([first_chord, second_chord, third_chord])
+        # acc.append_chords([c.getControlChord(acc, plotsFrame) for c in self.Controls.values()])
+        acc.append_chords([c.getControlChord(acc, plotsFrame) for c in self.Controls])
         acc.pack(fill=tk.BOTH, expand=1)
+
+    def registerControl(self, control):
+        # self.Controls[control.m_title] = control
+        self.Controls.append(control)
+
+    # def resetResizeTime(self):
+    #     for v in self.Controls.values():
+    #         v.
 #ControlsFrame END

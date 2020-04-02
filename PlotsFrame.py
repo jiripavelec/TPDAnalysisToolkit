@@ -77,14 +77,14 @@ class PlotsFrame(tk.Frame):
         # lbl.pack(side=tk.LEFT, padx=5, pady=5)
 
         #todo: use self.frames to create multiple tab-frames for different plot outputs
-        self.tab_control = ttk.Notebook(self)
-        self.tab1 = MPLContainer(self.tab_control, bg="white")
-        self.tab2 = ttk.Frame(self.tab_control)
+        # self.tab_control = ttk.Notebook(self)
+        # self.tab1 = MPLContainer(self.tab_control, bg="white")
+        # self.tab2 = ttk.Frame(self.tab_control)
 
-        self.tab_control.add(self.tab1,text="first")
-        self.tab_control.add(self.tab2,text="second")
-        self.tab_control.pack(expand=1,fill='both')
+        # self.tab_control.add(self.tab1,text="first")
+        # self.tab_control.add(self.tab2,text="second")
+        # self.tab_control.pack(expand=1,fill='both')
 
-    def resizeTest(self):
-        self.tab1.resizePlot()
+    # def resizeTest(self):
+    #     self.tab1.resizePlot()
 #PlotsFrame END

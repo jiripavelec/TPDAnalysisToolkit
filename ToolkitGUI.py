@@ -119,12 +119,12 @@ class MainFrame(tk.Frame):
     #     self.rightFrame.resizeTest()
 
     def resetResizeTime(self,*args,**kwargs):
-        if( (not (self.lastWidth == self.winfo_width)) or (not (self.lastHeight == self.winfo_height))):
-            for c in self.ControlArray:
-                c.setResizeTime()
-            # self.leftFrame.Controls.m_notebook.resizeDateTime = datetime.now()
-            self.lastWidth = self.winfo_width
-            self.lastHeight = self.winfo_height
+        # if( (not (self.lastWidth == self.winfo_width)) or (not (self.lastHeight == self.winfo_height))):
+        for c in self.ControlArray:
+            c.setResizeTime()
+        # self.leftFrame.Controls.m_notebook.resizeDateTime = datetime.now()
+        self.lastWidth = self.winfo_width
+        self.lastHeight = self.winfo_height
         #else we didnt resize as the dimensions have not changed
 
 

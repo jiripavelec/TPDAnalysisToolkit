@@ -9,6 +9,8 @@ class Chord(tk.Frame):
         self.title = title
         self.m_row = 0
         self.controlRef = controlRef
+        self.m_label = ""
+
     
     def setRowIdx(self, rowIndex):
         self.m_row = rowIndex
@@ -46,15 +48,15 @@ class Accordion(tk.Frame):
 
         for c in chords:
             # i = tk.PhotoImage() # blank image to force Label to use pixel size
-            label = tk.Label(self, text=c.title,
+            c.m_label = tk.Label(self, text=c.title,
                         #   image=i,
                           compound='center',
-                          width=width,
+                        #   width=width,
                           bg=self.style['title_bg'],
                           fg=self.style['title_fg'],
                           bd=2, relief='groove')
             
-            label.grid(row=row, column=0)
+            c.m_label.grid(row=row, column=0, sticky='ew')
             # label.pack(side=tk.TOP, fill=tk.X, expand=False)
             c.grid(row=row+1, column=0, sticky='nsew')
             c.setRowIdx(row+1)
@@ -63,18 +65,19 @@ class Accordion(tk.Frame):
             # c.pack_forget()
             row += 2
             
-            label.bind('<Button-1>', lambda e,
+            c.m_label.bind('<Button-1>', lambda e,
                        target=c, others=chords: self._click_handler(target,others))
-            label.bind('<Enter>', lambda e,
+            c.m_label.bind('<Enter>', lambda e,
                     #    label=label, i=i: label.config(bg=self.style['highlight']))
-                       label=label: label.config(bg=self.style['highlight']))
-            label.bind('<Leave>', lambda e,
+                       label=c.m_label: label.config(bg=self.style['highlight']))
+            c.m_label.bind('<Leave>', lambda e,
                     #    label=label, i=i: label.config(bg=self.style['title_bg']))
-                       label=label: label.config(bg=self.style['title_bg']))
+                       label=c.m_label: label.config(bg=self.style['title_bg']))
         
-        chords[0].grid() # start with first chord open
-        chords[0].onClickedEvent()
-        self.grid_rowconfigure(1, weight=1)
+        self._click_handler(chords[0],chords)
+        # chords[0].grid() # start with first chord open
+        # chords[0].onClickedEvent()
+        # self.grid_rowconfigure(1, weight=1)
 
         # chords[0].pack()
                        
@@ -83,11 +86,16 @@ class Accordion(tk.Frame):
             if len(chord.grid_info()) != 0:
                 chord.grid_remove()
                 self.grid_rowconfigure(chord.m_row,weight=0)
+                # chord.m_label.config(bg=self.style['title_bg'], fg =self.style['title_fg'])
+                # chord.m_label.config(bd=2)
                 # chord.pack_forget()
         if len(target.grid_info()) == 0: # open target chord
             target.grid()
             target.onClickedEvent()
             self.grid_rowconfigure(target.m_row,weight=1)
+            # target.m_label.config(bg="white")
+            # target.m_label.config(bd=0)
+
             # target.pack()
         # else:
             # target.grid_remove()
@@ -127,13 +135,27 @@ class ScrolledListBox(tk.Frame):
 
     def curselection(self):
         return self.m_listBox.curselection()
-
 #ScrolledListBox END
+
+#EnhancedCheckButton BEGIN
+class EnhancedCheckButton(ttk.Checkbutton):
+    def __init__(self, parent, *args, **kwargs):
+        self.m_var = tk.IntVar()
+        self.m_var.set(0)
+        super().__init__(parent, var = self.m_var, *args, **kwargs)
+        # self.var = self.m_var
+
+    def get(self):
+        return self.m_var.get()
+
+    def set(self, value):
+        self.m_var.set(value)
+#EnhancedCheckButton END
 
 #ControlsFrame BEGIN
 class ControlsFrame(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
+        super().__init__(parent,*args, **kwargs)
         self.initUI(parent)
         self.Controls = []
 
@@ -142,7 +164,7 @@ class ControlsFrame(tk.Frame):
 
     def initChords(self,chords):
         self.accordion.append_chords(chords)
-        self.accordion.pack(fill=tk.BOTH, expand=1)
+        self.accordion.pack(fill=tk.BOTH, expand = True)
 
     # def registerControl(self, control):
     #     # self.Controls[control.m_title] = control

@@ -35,6 +35,12 @@ class ProcessingStepControls:
     def selectFiles(self):
         raise NotImplementedError()
 
+    def deselectFiles(self):
+        raise NotImplementedError()
+
+    def processInput(self):
+        raise NotImplementedError()
+
 
 class ProcessTPDData(ProcessingStepControls):
     def __init__(self):
@@ -56,8 +62,8 @@ class ProcessTPDData(ProcessingStepControls):
         self.m_subtractSelection["values"] = self.m_fileList
 
 
-        for i in range(len(self.m_filePaths)):
-            print(self.m_filesListBox.get(i) + " " + self.m_filePaths[i])
+        # for i in range(len(self.m_filePaths)):
+        #     print(self.m_filesListBox.get(i) + " " + self.m_filePaths[i])
         # for (a,b) in zip(self.m_filesListBox.get(0, self.m_filesListBox.size() - 1), self.m_filePaths):
 
     def deselectFiles(self):
@@ -69,8 +75,14 @@ class ProcessTPDData(ProcessingStepControls):
             self.m_fileList.pop(i)
         self.m_subtractSelection["values"] = self.m_fileList
 
-        for i in range(len(self.m_filePaths)):
-            print(self.m_filePaths[i] + " " + self.m_filesListBox.get(i))
+        # for i in range(len(self.m_filePaths)):
+        #     print(self.m_filePaths[i] + " " + self.m_filesListBox.get(i))
+
+    def toggleSubtractCB(self):
+        if(self.m_subtractCB.get() == 0):
+            self.m_subtractSelection.configure(state = tk.DISABLED)
+        else:
+            self.m_subtractSelection.configure(state = tk.NORMAL)
 
 
     def initNotebook(self, parent):
@@ -133,11 +145,14 @@ class ProcessTPDData(ProcessingStepControls):
         self.m_normalizeCB = EnhancedCheckButton(self.m_chord, text = "Normalize")
         self.m_normalizeCB.grid(row = 7, column = 1, sticky = "nsw")
 
-        self.m_subtractCB = EnhancedCheckButton(self.m_chord, text = "Subtract Spectrum")
+        self.m_subtractCB = EnhancedCheckButton(self.m_chord, text = "Subtract Spectrum", command=self.toggleSubtractCB)
         self.m_subtractCB.grid(row = 7, column = 2, sticky = "nsw")
 
-        self.m_subtractSelection = ttk.Combobox(self.m_chord)
+        self.m_subtractSelection = ttk.Combobox(self.m_chord, state = tk.DISABLED)
         self.m_subtractSelection.grid(row=8, column=1, columnspan=2, sticky= "nsew")
+
+        self.m_processButton = ttk.Button(self.m_chord, text = "Process input", command = self.processInput)
+        self.m_processButton.grid(row=9, column = 2, columnspan=2, sticky = "nsew")
 
         for child in self.m_chord.winfo_children():
             child.grid_configure(padx=3, pady=3)

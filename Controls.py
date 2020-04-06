@@ -3,7 +3,7 @@ import tkinter.ttk as ttk
 # from PlotsFrame import * 
 
 #Chord BEGIN
-class Chord(tk.Frame):
+class Chord(ttk.Frame):
     def __init__(self, parent, controlRef, title='', *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.title = title
@@ -103,7 +103,7 @@ class Accordion(tk.Frame):
 #Accordion END
 
 #ScrolledListBox BEGIN
-class ScrolledListBox(tk.Frame):
+class ScrolledListBox(ttk.Frame):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.m_scrollbarV = tk.Scrollbar(self, orient=tk.VERTICAL)

@@ -43,7 +43,7 @@ class ProcessingStepControls:
 
 
 class ProcessTPDData(ProcessingStepControls):
-    def __init__(self):
+    def __init__(self, bg):
         super().__init__("Process TPD Data")
         # self.m_filesDirectory = ""
 
@@ -99,7 +99,7 @@ class ProcessTPDData(ProcessingStepControls):
     def initChordUI(self, parent):
         self.m_chord = Chord(parent, self.m_notebook, title=self.m_title)
 
-        self.m_filesListBoxLabel = tk.Label(self.m_chord, text='Input files:')
+        self.m_filesListBoxLabel = ttk.Label(self.m_chord, text='Input files:')
         self.m_filesListBoxLabel.grid(row = 0, column = 0, columnspan = 2, sticky="nsw")
 
         self.m_filesListBox = ScrolledListBox(self.m_chord)
@@ -109,7 +109,7 @@ class ProcessTPDData(ProcessingStepControls):
         # self.m_directoryLabel = tk.Entry(self.m_chord, textvariable = self.m_filesDirectory, state = tk.DISABLED)
         # self.m_directoryLabel.grid(row = 2, column = 0, columnspan = 2, sticky="nsw", padx = 3, pady = 3)
 
-        self.m_fileButtonFrame = tk.Frame(self.m_chord)
+        self.m_fileButtonFrame = ttk.Frame(self.m_chord)
         self.m_fileButtonFrame.grid(row=2, column = 0, columnspan = 4, sticky = "nsew")
 
         self.m_selectButton = ttk.Button(self.m_fileButtonFrame,text="Select files",command = self.selectFiles)
@@ -119,21 +119,21 @@ class ProcessTPDData(ProcessingStepControls):
         # self.m_deselectButton.grid(row=2, column = 1, sticky = "nsew", padx = 3, pady = 3)
         self.m_deselectButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
 
-        self.m_optionsLabel = tk.Label(self.m_chord, text="Processing options:")#, compound = tk.CENTER)
+        self.m_optionsLabel = ttk.Label(self.m_chord, text="Processing options:")#, compound = tk.CENTER)
         self.m_optionsLabel.grid(row=3, column = 0, columnspan = 2, sticky = "nsw")
         
-        self.m_tStartLabel = tk.Label(self.m_chord, text="Starting temp.:")
+        self.m_tStartLabel = ttk.Label(self.m_chord, text="Starting temp.:")
         self.m_tStartLabel.grid(row=4, column = 1, sticky = "nse")
 
         self.m_tStart = ""
-        self.m_tStartEntry = tk.Entry(self.m_chord, textvariable = self.m_tStart)
+        self.m_tStartEntry = ttk.Entry(self.m_chord, textvariable = self.m_tStart)
         self.m_tStartEntry.grid(row=4, column = 2, sticky = "nsw")
 
-        self.m_tEndLabel = tk.Label(self.m_chord, text="Final temp.:")
+        self.m_tEndLabel = ttk.Label(self.m_chord, text="Final temp.:")
         self.m_tEndLabel.grid(row=5, column = 1, sticky = "nse")
 
         self.m_tEnd = ""
-        self.m_tEndEntry = tk.Entry(self.m_chord, textvariable = self.m_tEnd)
+        self.m_tEndEntry = ttk.Entry(self.m_chord, textvariable = self.m_tEnd)
         self.m_tEndEntry.grid(row=5, column = 2, sticky = "nsw")
 
         self.m_smoothCB = EnhancedCheckButton(self.m_chord, text="Smooth")
@@ -197,7 +197,7 @@ class MainFrame(tk.Frame):
         self.master.title("TPD Toolkit")
         self.pack(fill=tk.BOTH, expand=True)
 
-        self.ControlArray.append(ProcessTPDData())
+        self.ControlArray.append(ProcessTPDData(bg = "white"))
         self.ControlArray.append(InvertTPDData())
 
         self.plotsFrame = PlotsFrame(self, bg ='white')

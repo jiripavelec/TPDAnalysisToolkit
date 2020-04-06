@@ -73,7 +73,7 @@ class PlotsFrame(tk.Frame):
         self.initUI(parent)
 
     def initUI(self, parent):
-        self.pack(side = tk.RIGHT, fill = tk.BOTH, expand = True)
+        # self.pack(side = tk.RIGHT, fill = tk.BOTH, expand = True)
         self.grid_rowconfigure(0,weight=1)
         self.grid_columnconfigure(0,weight=1)
         # lbl = ttk.Label(self, text="Plots Frame")

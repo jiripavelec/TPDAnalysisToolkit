@@ -1,6 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
-from PlotsFrame import * 
+# from PlotsFrame import * 
 
 #Chord BEGIN
 class Chord(tk.Frame):
@@ -94,7 +94,41 @@ class Accordion(tk.Frame):
             # target.pack_forget()
 #Accordion END
 
+#ScrolledListBox BEGIN
+class ScrolledListBox(tk.Frame):
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.m_scrollbarV = tk.Scrollbar(self, orient=tk.VERTICAL)
+        # self.m_scrollbarH = tk.Scrollbar(self, orient=tk.HORIZONTAL)
 
+        # self.m_listBox = tk.Listbox(self, selectmode = tk.EXTENDED, yscrollcommand=self.m_scrollbarV.set, xscrollcommand=self.m_scrollbarH.set)
+        self.m_listBox = tk.Listbox(self, selectmode = tk.EXTENDED, yscrollcommand=self.m_scrollbarV.set)
+        self.m_scrollbarV.config(command=self.m_listBox.yview)
+        # self.m_scrollbarH.config(command=self.m_listBox.xview)
+
+        self.m_scrollbarV.pack(side=tk.RIGHT, fill=tk.Y)
+        self.m_listBox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        # self.m_scrollbarH.pack(side=tk.BOTTOM, fill=tk.X)
+
+    def insert(self, index, *elements):
+        self.m_listBox.insert(index, *elements)
+
+    def clear(self):
+        self.m_listBox.delete(0,self.m_listBox.size()-1)
+
+    def delete(self, first, last = None):
+        self.m_listBox.delete(first, last)
+
+    def get(self, first, last = None):
+        return self.m_listBox.get(first, last)
+    
+    def size(self):
+        return self.m_listBox.size()
+
+    def curselection(self):
+        return self.m_listBox.curselection()
+
+#ScrolledListBox END
 
 #ControlsFrame BEGIN
 class ControlsFrame(tk.Frame):
@@ -104,32 +138,7 @@ class ControlsFrame(tk.Frame):
         self.Controls = []
 
     def initUI(self, parent):
-        # self.Controls = {
-        #     "test1" : ProcessTPDData(),
-        #     "test2" : ProcessTPDData(),
-        #     "test3" : ProcessTPDData()
-        # }
-
-        self.pack(side = tk.LEFT, fill = tk.BOTH, expand = False)
         self.accordion = Accordion(self)
-
-        # # first chord
-        # first_chord = Chord(acc, title='First Chord', bg='white')
-        # tk.Label(first_chord, text='hello world', bg='white').pack()
-
-        # # second chord
-        # second_chord = Chord(acc, title='Second Chord', bg='white')
-        # tk.Entry(second_chord).pack()
-        # tk.Button(second_chord, text='Button').pack()
-
-        # # third chord
-        # third_chord = Chord(acc, title='Third Chord', bg='white')
-        # tk.Text(third_chord).pack()
-
-        # append list of chords to Accordion instance
-        # acc.append_chords([c.getControlChord(acc, plotsFrame) for c in self.Controls.values()])
-        # acc.append_chords([c.m_chord for c in self.Controls])
-        # acc.pack(fill=tk.BOTH, expand=1)
 
     def initChords(self,chords):
         self.accordion.append_chords(chords)

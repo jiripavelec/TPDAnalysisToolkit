@@ -45,14 +45,14 @@ class Accordion(tk.Frame):
         self.update_idletasks()
         row = 0
         # width = max([c.winfo_reqwidth() for c in chords])
-        width = 100
+        width = 50
 
         for c in chords:
             # i = tk.PhotoImage() # blank image to force Label to use pixel size
             c.m_label = tk.Label(self, text=c.title,
                         #   image=i,
                           compound='center',
-                        #   width=width,
+                          width=width,
                           bg=self.style['title_bg'],
                           fg=self.style['title_fg'],
                           bd=2, relief='groove')
@@ -153,6 +153,87 @@ class EnhancedCheckButton(ttk.Checkbutton):
         self.m_var.set(value)
 #EnhancedCheckButton END
 
+#DisplayOptionsFrame BEGIN
+class DisplayOptionsFrame(ttk.Frame):
+    def __init__(self, parent, onUpdateEventCommand, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.m_displayedMassList = []
+        self.initUI()
+        self.m_onUpdate = onUpdateEventCommand
+
+    def initUI(self):
+
+        self.m_availableMassesLabel = ttk.Label(self, text='Available Masses:')
+        self.m_availableMassesLabel.grid(row = 0, column = 0, sticky="nsw")
+
+        self.m_availableMassesListBox = ScrolledListBox(self)
+        self.m_availableMassesListBox.grid(row = 1, column = 0, sticky = "nsew")
+
+        self.m_displayButton = ttk.Button(self,text="Diplay Selected >>", state = tk.DISABLED, command=self.showSelectedMasses)
+        self.m_displayButton.grid(row = 2, column = 0, sticky = "nsew")
+
+        self.m_displayedMassesLabel = ttk.Label(self, text='Displayed Masses:')
+        self.m_displayedMassesLabel.grid(row = 0, column = 1, sticky="nsw")
+
+        self.m_displayedMassesListBox = ScrolledListBox(self)
+        self.m_displayedMassesListBox.grid(row = 1, column = 1, sticky = "nsew")
+
+        self.m_hideButton = ttk.Button(self,text="<< Hide Selected", state = tk.DISABLED, command=self.hideSelectedMasses)
+        self.m_hideButton.grid(row = 2, column = 1, sticky = "nsew")
+
+        self.grid_columnconfigure(index=0, weight=1)
+        self.grid_columnconfigure(index=1, weight=1)
+
+    def debugPrintDisplayedMassesListBox(self):
+        [print(e) for e in self.m_displayedMassesListBox.get(0,self.m_displayedMassesListBox.size()-1)]
+
+    def updateButtonStates(self):
+        if self.m_availableMassesListBox.size() == 0:
+            self.m_displayButton.configure(state = tk.DISABLED)
+        else:
+            self.m_displayButton.configure(state = tk.NORMAL)
+        if self.m_displayedMassesListBox.size() == 0:
+            self.m_hideButton.configure(state = tk.DISABLED)
+        else:
+            self.m_hideButton.configure(state = tk.NORMAL)
+
+    def resetMasses(self, rawDataWrappers):
+        self.m_availableMassesListBox.clear()
+        self.m_displayedMassList = []
+        self.m_displayedMassesListBox.clear()
+        for w in rawDataWrappers:
+            if (len(self.m_displayedMassList) == 0 and rawDataWrappers.index(w) == 0): #set masses 
+                self.m_displayedMassList = w.getMassList()
+            else: #get intersection of masses
+                self.m_displayedMassList = list(set(w.getMassList()) & set(self.m_displayedMassList))
+
+        for m in self.m_displayedMassList:
+            self.m_displayedMassesListBox.insert(0,m)
+        self.updateButtonStates()
+
+    def hideSelectedMasses(self):
+        selected = list(self.m_displayedMassesListBox.curselection())
+        selected.reverse()
+        for s in selected:
+            self.m_availableMassesListBox.insert(0,self.m_displayedMassesListBox.get(s))
+            self.m_displayedMassesListBox.delete(s)
+        self.updateButtonStates()
+        self.m_onUpdate()
+
+    def showSelectedMasses(self):
+        selected = list(self.m_availableMassesListBox.curselection())
+        selected.reverse()
+        for s in selected:
+            self.m_displayedMassesListBox.insert(0,self.m_availableMassesListBox.get(s))
+            self.m_availableMassesListBox.delete(s)
+        self.updateButtonStates()
+        self.m_onUpdate()
+
+    def getMassesToDisplay(self):
+        return [e for e in self.m_displayedMassesListBox.get(0,self.m_displayedMassesListBox.size()-1)]
+
+#DisplayOptionsFrame END
+
 #ProcessingStepControlBase BEGIN
 class ProcessingStepControlBase:
     def __init__(self, title):
@@ -185,6 +266,10 @@ class ProcessingStepControlBase:
 
     def processInput(self):
         raise NotImplementedError()
+
+    def plotSelectedMasses(self):
+        raise NotImplementedError()
+
 #ProcessingStepControlBase END
 
 

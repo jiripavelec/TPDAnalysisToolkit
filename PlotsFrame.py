@@ -4,7 +4,7 @@ import tkinter.ttk as ttk
 from datetime import datetime
 import matplotlib as mpl
 mpl.use('TkAgg') #mpl backend
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg#, NavigationToolbar2Tk 
 from matplotlib.figure import Figure
 import matplotlib.animation as anim
 
@@ -24,7 +24,7 @@ class MPLContainer(tk.Frame):
             self.canvas.get_tk_widget().place_forget()
             self.plotHidden = True
         timeDelta = now - self.resizeDateTime #get timedelta since last resize event
-        if(timeDelta.total_seconds()*1000 > 200): #if we stopped resizing, unhide plot
+        if(timeDelta.total_seconds()*1000 > 500): #if we stopped resizing, unhide plot
             # self.canvas.get_tk_widget().place_forget()
             self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.INSIDE,height=self.winfo_height(),width=self.winfo_width())
             self.plotHidden = False
@@ -53,23 +53,23 @@ class MPLContainer(tk.Frame):
         # self.pack_propagate(0)#should stop grid resizing
         self.resizeDateTime = datetime.now()
         self.plotHidden = False
-
-        self.resizeAnimation = anim.FuncAnimation(self.m_figure, func=self.resizePlot, interval=400)#interval in milliseconds
+        # self.m_toolbar = NavigationToolbar2Tk(self.canvas, self)
+        # self.m_toolbar.update()
+        self.resizeAnimation = anim.FuncAnimation(self.m_figure, func=self.resizePlot, interval=1000)#interval in milliseconds
     
-    def plotData(self, ndarrayData):
-        #clear plots
+    def clearPlots(self):
         for i in range(len(self.m_subplot.lines)-1,-1,-1):
             line = self.m_subplot.lines.pop(i)
             del line
 
-        for i in range(ndarrayData.shape[0]):
-            self.m_subplot.plot(ndarrayData[i,:])
+    def addLinePlots(self, ndarrayData):
+        #draw new lines
+        if ndarrayData.ndim >= 2:
+            for i in range(1,ndarrayData.shape[0]):
+                self.m_subplot.plot(ndarrayData[0,:],ndarrayData[i,:])
 
+        #resize axes
         self.m_subplot.relim()
-            
-
-        # self.grid_rowconfigure(index=0,minsize=self.winfo_height())
-        # self.grid_columnconfigure(index=0,minsize=self.winfo_width())
 
     # def animate(self,plot):
         

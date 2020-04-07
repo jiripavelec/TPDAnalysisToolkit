@@ -35,7 +35,7 @@ class MainFrame(tk.Frame):
         self.controlsFrame = ControlsFrame(self, bg = 'white', relief='groove')
         # self.controlsFrame.pack(side = tk.LEFT, fill = tk.BOTH, expand = False)
         self.controlsFrame.grid(row = 0 , column = 0, sticky = "nsew")
-        
+
         self.grid_columnconfigure(index = 0, weight = 1)
         self.grid_columnconfigure(index = 1, weight = 5)
         self.grid_rowconfigure(index = 0, weight = 1)
@@ -46,20 +46,20 @@ class MainFrame(tk.Frame):
 
         self.controlsFrame.initChords([c.m_chord for c in self.ControlArray])
 
-        self.resizeTimer = datetime.now()
+        # self.resizeTimer = datetime.now()
         # self.rightFrame.resizeTest()
         self.lastWidth = self.winfo_width()
         self.lastHeight = self.winfo_height()
     # def resizePlots(self):
     #     self.rightFrame.resizeTest()
 
-    def resetResizeTime(self,*args,**kwargs):
-        # if( (not (self.lastWidth == self.winfo_width)) or (not (self.lastHeight == self.winfo_height))):
-        for c in self.ControlArray:
-            c.setResizeTime()
-        # self.leftFrame.Controls.m_notebook.resizeDateTime = datetime.now()
-        self.lastWidth = self.winfo_width
-        self.lastHeight = self.winfo_height
+    def resetResizeTime(self, event):
+        if( (not (self.lastWidth == self.winfo_width)) or (not (self.lastHeight == self.winfo_height))):
+            for c in self.ControlArray:
+                c.setResizeTime()
+            # self.leftFrame.Controls.m_notebook.resizeDateTime = datetime.now()
+            self.lastWidth = self.winfo_width
+            self.lastHeight = self.winfo_height
         #else we didnt resize as the dimensions have not changed
 
 

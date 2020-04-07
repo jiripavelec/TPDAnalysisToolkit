@@ -3,6 +3,7 @@ import tkinter.ttk as ttk
 from PlotsFrame import MPLContainer
 from Controls import Chord, ScrolledListBox, EnhancedCheckButton, ProcessingStepControlBase #ui element
 from tkinter.filedialog import askdirectory, askopenfilenames
+from ProcessRawDataFunction import RawDataWrapper
 
 
 class ProcessRawDataControl(ProcessingStepControlBase):
@@ -47,12 +48,18 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         else:
             self.m_subtractSelection.configure(state = tk.NORMAL)
 
+    def processInput(self):
+        for f in self.m_filePaths:
+            wrapper = RawDataWrapper(f,150,450,100,600,0.1,[28,29])
+            wrapper.parseRawDataFile()
+            self.mplContainers[0].plotData(wrapper.getRawData())
+
 
     def initNotebook(self, parent):
         self.m_notebook = ttk.Notebook(parent)
 
         self.mplContainers.append(MPLContainer(self.m_notebook, "Raw Data", bg="white"))
-        self.mplContainers.append(MPLContainer(self.m_notebook, "Processed Data", bg="white"))
+        # self.mplContainers.append(MPLContainer(self.m_notebook, "Processed Data", bg="white"))
 
         for c in self.mplContainers:
             self.m_notebook.add(c, text = c.m_title)
@@ -61,6 +68,8 @@ class ProcessRawDataControl(ProcessingStepControlBase):
 
     def initChordUI(self, parent):
         self.m_chord = Chord(parent, self.m_notebook, title=self.m_title)
+
+        # File selection
 
         self.m_filesListBoxLabel = ttk.Label(self.m_chord, text='Input files:')
         self.m_filesListBoxLabel.grid(row = 0, column = 0, columnspan = 2, sticky="nsw")
@@ -76,46 +85,67 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         self.m_fileButtonFrame.grid(row=2, column = 0, columnspan = 4, sticky = "nsew")
 
         self.m_selectButton = ttk.Button(self.m_fileButtonFrame,text="Select files",command = self.selectFiles)
-        # self.m_selectButton.grid(row=2, column = 2, sticky = "nsew", padx = 3, pady = 3)
         self.m_selectButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
+
         self.m_deselectButton = ttk.Button(self.m_fileButtonFrame,text="Remove selected",command = self.deselectFiles)
-        # self.m_deselectButton.grid(row=2, column = 1, sticky = "nsew", padx = 3, pady = 3)
         self.m_deselectButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
+
+        # Options from here onwards
 
         self.m_optionsLabel = ttk.Label(self.m_chord, text="Processing options:")#, compound = tk.CENTER)
         self.m_optionsLabel.grid(row=3, column = 0, columnspan = 2, sticky = "nsw")
         
-        self.m_tStartLabel = ttk.Label(self.m_chord, text="Starting temp.:")
-        self.m_tStartLabel.grid(row=4, column = 1, sticky = "nse")
+        self.m_tCutStartLabel = ttk.Label(self.m_chord, text="Cut Data Starting Temp.:")
+        self.m_tCutStartLabel.grid(row=4, column = 1, sticky = "nse")
 
-        self.m_tStart = ""
-        self.m_tStartEntry = ttk.Entry(self.m_chord, textvariable = self.m_tStart)
-        self.m_tStartEntry.grid(row=4, column = 2, sticky = "nsw")
+        self.m_tCutStart = ""
+        self.m_tCutStartEntry = ttk.Entry(self.m_chord, textvariable = self.m_tCutStart)
+        self.m_tCutStartEntry.grid(row=4, column = 2, sticky = "nsw")
 
-        self.m_tEndLabel = ttk.Label(self.m_chord, text="Final temp.:")
-        self.m_tEndLabel.grid(row=5, column = 1, sticky = "nse")
+        self.m_tCutEndLabel = ttk.Label(self.m_chord, text="Cut Data End Temp.:")
+        self.m_tCutEndLabel.grid(row=5, column = 1, sticky = "nse")
 
-        self.m_tEnd = ""
-        self.m_tEndEntry = ttk.Entry(self.m_chord, textvariable = self.m_tEnd)
-        self.m_tEndEntry.grid(row=5, column = 2, sticky = "nsw")
+        self.m_tCutEnd = ""
+        self.m_tCutEndEntry = ttk.Entry(self.m_chord, textvariable = self.m_tCutEnd)
+        self.m_tCutEndEntry.grid(row=5, column = 2, sticky = "nsw")
+
+        self.m_tRampStartLabel = ttk.Label(self.m_chord, text="Ramp Starting Temp.:")
+        self.m_tRampStartLabel.grid(row=6, column = 1, sticky = "nse")
+
+        self.m_tRampStart = ""
+        self.m_tRampStartEntry = ttk.Entry(self.m_chord, textvariable = self.m_tRampStart)
+        self.m_tRampStartEntry.grid(row=6, column = 2, sticky = "nsw")
+
+        self.m_tRampEndLabel = ttk.Label(self.m_chord, text="Ramp End Temp.:")
+        self.m_tRampEndLabel.grid(row=7, column = 1, sticky = "nse")
+
+        self.m_tRampEnd = ""
+        self.m_tRampEndEntry = ttk.Entry(self.m_chord, textvariable = self.m_tRampEnd)
+        self.m_tRampEndEntry.grid(row=7, column = 2, sticky = "nsw")
+
+        # Checkbuttons
 
         self.m_smoothCB = EnhancedCheckButton(self.m_chord, text="Smooth")
-        self.m_smoothCB.grid(row = 6, column = 1, sticky = "nsw")
+        self.m_smoothCB.grid(row = 8, column = 1, sticky = "nsw")
 
         self.m_removeBackgroundCB = EnhancedCheckButton(self.m_chord, text="Remove Background")
-        self.m_removeBackgroundCB.grid(row = 6, column = 2, sticky = "nsw")
+        self.m_removeBackgroundCB.grid(row = 8, column = 2, sticky = "nsw")
 
         self.m_normalizeCB = EnhancedCheckButton(self.m_chord, text = "Normalize")
-        self.m_normalizeCB.grid(row = 7, column = 1, sticky = "nsw")
+        self.m_normalizeCB.grid(row = 9, column = 1, sticky = "nsw")
 
         self.m_subtractCB = EnhancedCheckButton(self.m_chord, text = "Subtract Spectrum", command=self.toggleSubtractCB)
-        self.m_subtractCB.grid(row = 7, column = 2, sticky = "nsw")
+        self.m_subtractCB.grid(row = 9, column = 2, sticky = "nsw")
+
+        # Combobox
 
         self.m_subtractSelection = ttk.Combobox(self.m_chord, state = tk.DISABLED)
-        self.m_subtractSelection.grid(row=8, column=1, columnspan=2, sticky= "nsew")
+        self.m_subtractSelection.grid(row=10, column=1, columnspan=2, sticky= "nsew")
+
+        #Process Button
 
         self.m_processButton = ttk.Button(self.m_chord, text = "Process input", command = self.processInput)
-        self.m_processButton.grid(row=9, column = 2, columnspan=2, sticky = "nsew")
+        self.m_processButton.grid(row=11, column = 2, columnspan=2, sticky = "nsew")
 
         for child in self.m_chord.winfo_children():
             child.grid_configure(padx=3, pady=3)

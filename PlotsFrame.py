@@ -56,7 +56,17 @@ class MPLContainer(tk.Frame):
 
         self.resizeAnimation = anim.FuncAnimation(self.m_figure, func=self.resizePlot, interval=400)#interval in milliseconds
     
-    
+    def plotData(self, ndarrayData):
+        #clear plots
+        for i in range(len(self.m_subplot.lines)-1,-1,-1):
+            line = self.m_subplot.lines.pop(i)
+            del line
+
+        for i in range(ndarrayData.shape[0]):
+            self.m_subplot.plot(ndarrayData[i,:])
+
+        self.m_subplot.relim()
+            
 
         # self.grid_rowconfigure(index=0,minsize=self.winfo_height())
         # self.grid_columnconfigure(index=0,minsize=self.winfo_width())

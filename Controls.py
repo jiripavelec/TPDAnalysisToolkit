@@ -1,5 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
+from datetime import datetime
 # from PlotsFrame import * 
 
 #Chord BEGIN
@@ -151,6 +152,41 @@ class EnhancedCheckButton(ttk.Checkbutton):
     def set(self, value):
         self.m_var.set(value)
 #EnhancedCheckButton END
+
+#ProcessingStepControlBase BEGIN
+class ProcessingStepControlBase:
+    def __init__(self, title):
+        self.m_title = title
+        self.m_chordInitDone = False
+        self.m_notebookInitDone = False
+        self.mplContainers = []
+        self.m_filesDirectory = ""
+
+    #This is for the controls on the left side of the UI
+    def initChordUI(self, parent):
+        raise NotImplementedError()
+
+    #This is for the tabs with plots on the right side of the UI
+    def initNotebook(self, parent):
+        raise NotImplementedError()
+
+    #This is to reduce the update frequency of plot resizing to
+    #a frequency lower than that of resize events from the main
+    #window
+    def setResizeTime(self):
+        for c in self.mplContainers:
+            c.resizeDateTime = datetime.now()
+
+    def selectFiles(self):
+        raise NotImplementedError()
+
+    def deselectFiles(self):
+        raise NotImplementedError()
+
+    def processInput(self):
+        raise NotImplementedError()
+#ProcessingStepControlBase END
+
 
 #ControlsFrame BEGIN
 class ControlsFrame(tk.Frame):

@@ -153,6 +153,16 @@ class EnhancedCheckButton(ttk.Checkbutton):
         self.m_var.set(value)
 #EnhancedCheckButton END
 
+#EnhancedEntry BEGIN
+class EnhancedEntry(ttk.Entry):
+    def __init__(self, parent, *args, **kwargs):
+        self.m_backingVariable = tk.StringVar()
+        super().__init__(parent, textvariable = self.m_backingVariable, *args, **kwargs)
+
+    def get(self):
+        return int(self.m_backingVariable.get())
+#EnhancedEntry END
+
 #DisplayOptionsFrame BEGIN
 class DisplayOptionsFrame(ttk.Frame):
     def __init__(self, parent, onUpdateEventCommand, *args, **kwargs):

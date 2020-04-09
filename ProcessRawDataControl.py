@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from PlotsFrame import MPLContainer
-from Controls import Chord, ScrolledListBox, EnhancedCheckButton, ProcessingStepControlBase, DisplayOptionsFrame #ui element
+from Controls import Chord, ScrolledListBox, EnhancedCheckButton, ProcessingStepControlBase, DisplayOptionsFrame, EnhancedEntry #ui element
 from tkinter.filedialog import askdirectory, askopenfilenames
 from ProcessRawDataFunction import RawDataWrapper
 
@@ -13,17 +13,19 @@ class ProcessRawDataControl(ProcessingStepControlBase):
 
     def selectFiles(self):
         # self.m_filesDirectory = askdirectory()
-        self.m_filePaths = list(askopenfilenames())
-        self.m_fileList = list()
-        self.m_filesListBox.clear()
-        for p in self.m_filePaths:
-            substrings = p.split('/')
-            fName = substrings[len(substrings) - 1]
-            self.m_fileList.insert(0,fName)
-        
-        [self.m_filesListBox.insert(0, f) for f in self.m_fileList]
-        self.m_fileList.reverse()
-        self.m_subtractSelection["values"] = self.m_fileList
+        buffer = list(askopenfilenames())
+        if not (len(buffer) == 0):
+            self.m_filePaths = buffer.copy() #we don't want to use the same instance => .copy()
+            self.m_fileList = list()
+            self.m_filesListBox.clear()
+            for p in self.m_filePaths:
+                substrings = p.split('/')
+                fName = substrings[len(substrings) - 1]
+                self.m_fileList.insert(0,fName)
+            
+            [self.m_filesListBox.insert(0, f) for f in self.m_fileList]
+            self.m_fileList.reverse()
+            self.m_subtractSelection["values"] = self.m_fileList
 
 
         # for i in range(len(self.m_filePaths)):
@@ -58,10 +60,15 @@ class ProcessRawDataControl(ProcessingStepControlBase):
 
     def processInput(self):
         self.m_parsedData = []
+        #TODO: check input, maybe highlight missing entries!
         for f in self.m_filePaths:
-            wrapper = RawDataWrapper(f,150,450,100,600,0.1,[28,29])
+            wrapper = RawDataWrapper(f)
             wrapper.parseRawDataFile()
             self.m_parsedData.append(wrapper)
+            wrapper.processParsedData(int(self.m_tRampStartEntry.get()),
+                                        int(self.m_tRampEndEntry.get()),
+                                        int(self.m_tCutStartEntry.get()),
+                                        int(self.m_tCutEndEntry.get()))
 
         self.m_massDisplayOptions.resetMasses(self.m_parsedData)
         self.plotSelectedMasses()
@@ -108,29 +115,25 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         self.m_tCutStartLabel = ttk.Label(self.m_chord, text="Cut Data Starting Temp.:")
         self.m_tCutStartLabel.grid(row=4, column = 1, sticky = "nse")
 
-        self.m_tCutStart = ""
-        self.m_tCutStartEntry = ttk.Entry(self.m_chord, textvariable = self.m_tCutStart)
+        self.m_tCutStartEntry = EnhancedEntry(self.m_chord)
         self.m_tCutStartEntry.grid(row=4, column = 2, sticky = "nsw")
 
         self.m_tCutEndLabel = ttk.Label(self.m_chord, text="Cut Data End Temp.:")
         self.m_tCutEndLabel.grid(row=5, column = 1, sticky = "nse")
 
-        self.m_tCutEnd = ""
-        self.m_tCutEndEntry = ttk.Entry(self.m_chord, textvariable = self.m_tCutEnd)
+        self.m_tCutEndEntry = EnhancedEntry(self.m_chord)
         self.m_tCutEndEntry.grid(row=5, column = 2, sticky = "nsw")
 
         self.m_tRampStartLabel = ttk.Label(self.m_chord, text="Ramp Starting Temp.:")
         self.m_tRampStartLabel.grid(row=6, column = 1, sticky = "nse")
 
-        self.m_tRampStart = ""
-        self.m_tRampStartEntry = ttk.Entry(self.m_chord, textvariable = self.m_tRampStart)
+        self.m_tRampStartEntry = EnhancedEntry(self.m_chord)
         self.m_tRampStartEntry.grid(row=6, column = 2, sticky = "nsw")
 
         self.m_tRampEndLabel = ttk.Label(self.m_chord, text="Ramp End Temp.:")
         self.m_tRampEndLabel.grid(row=7, column = 1, sticky = "nse")
 
-        self.m_tRampEnd = ""
-        self.m_tRampEndEntry = ttk.Entry(self.m_chord, textvariable = self.m_tRampEnd)
+        self.m_tRampEndEntry = EnhancedEntry(self.m_chord)
         self.m_tRampEndEntry.grid(row=7, column = 2, sticky = "nsw")
 
         # Checkbuttons

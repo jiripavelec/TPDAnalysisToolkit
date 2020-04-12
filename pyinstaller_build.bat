@@ -1,0 +1,1 @@
+pyinstaller --paths "C:\GitRepos\TPD Toolkit\TPDAnalysisToolkit\venv\Lib\site-packages" ToolkitGUI.py --hidden-import pkg_resources.py2_warn

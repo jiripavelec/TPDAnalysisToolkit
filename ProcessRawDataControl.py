@@ -45,7 +45,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         #     print(self.m_filePaths[i] + " " + self.m_filesListBox.get(i))
 
     def toggleSubtractCB(self):
-        if(self.m_subtractCB.get() == 0):
+        if(self.m_subtractCB.instate(['!selected'])):
             self.m_subtractSelection.configure(state = tk.DISABLED)
         else:
             self.m_subtractSelection.configure(state = tk.NORMAL)
@@ -68,7 +68,9 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             wrapper.processParsedData(int(self.m_tRampStartEntry.get()),
                                         int(self.m_tRampEndEntry.get()),
                                         int(self.m_tCutStartEntry.get()),
-                                        int(self.m_tCutEndEntry.get()))
+                                        int(self.m_tCutEndEntry.get()),
+                                        self.m_removeBackgroundCB.instate(['selected']),
+                                        self.m_smoothCB.instate(['selected']))
 
         self.m_massDisplayOptions.resetMasses(self.m_parsedData)
         self.plotSelectedMasses()
@@ -112,7 +114,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         self.m_optionsLabel = ttk.Label(self.m_chord, text="Processing Options:")#, compound = tk.CENTER)
         self.m_optionsLabel.grid(row=3, column = 0, columnspan = 2, sticky = "nsw")
         
-        self.m_tCutStartLabel = ttk.Label(self.m_chord, text="Cut Data Starting Temp.:")
+        self.m_tCutStartLabel = ttk.Label(self.m_chord, text="Cut Data Start Temp.:")
         self.m_tCutStartLabel.grid(row=4, column = 1, sticky = "nse")
 
         self.m_tCutStartEntry = EnhancedEntry(self.m_chord)
@@ -124,7 +126,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         self.m_tCutEndEntry = EnhancedEntry(self.m_chord)
         self.m_tCutEndEntry.grid(row=5, column = 2, sticky = "nsw")
 
-        self.m_tRampStartLabel = ttk.Label(self.m_chord, text="Ramp Starting Temp.:")
+        self.m_tRampStartLabel = ttk.Label(self.m_chord, text="Ramp Start Temp.:")
         self.m_tRampStartLabel.grid(row=6, column = 1, sticky = "nse")
 
         self.m_tRampStartEntry = EnhancedEntry(self.m_chord)
@@ -144,10 +146,10 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         self.m_removeBackgroundCB = EnhancedCheckButton(self.m_chord, text="Remove Background")
         self.m_removeBackgroundCB.grid(row = 8, column = 2, sticky = "nsw")
 
-        self.m_normalizeCB = EnhancedCheckButton(self.m_chord, text = "Normalize")
+        self.m_normalizeCB = EnhancedCheckButton(self.m_chord, text = "Normalize", state = tk.DISABLED)
         self.m_normalizeCB.grid(row = 9, column = 1, sticky = "nsw")
 
-        self.m_subtractCB = EnhancedCheckButton(self.m_chord, text = "Subtract Spectrum", command=self.toggleSubtractCB)
+        self.m_subtractCB = EnhancedCheckButton(self.m_chord, text = "Subtract Spectrum", command=self.toggleSubtractCB, state = tk.DISABLED)
         self.m_subtractCB.grid(row = 9, column = 2, sticky = "nsw")
 
         # Combobox

@@ -48,7 +48,7 @@ class RawDataWrapper():
     def massListToIndices(self, massList):
         return [self.m_listOfColumns.index(m) for m in massList]
 
-    def processParsedData(self, tRampStart, tRampEnd, tCutStart, tCutEnd, smooth = True, smoothpoints = 5, tStep = 0.1):
+    def processParsedData(self, tRampStart, tRampEnd, tCutStart, tCutEnd, removeBackground, smooth, smoothpoints = 5, tStep = 0.1):
         # self.m_correctedTemp = np.zeros(self.m_parsedRawData.shape[1])
         # correct temperature (taken from Honza's scripts)
         self.m_correctedTemp = np.array(self.m_parsedRawData[(self.m_listOfColumns.index('temperature')),:])

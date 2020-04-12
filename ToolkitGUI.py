@@ -30,15 +30,17 @@ class MainFrame(tk.Frame):
 
         self.plotsFrame = PlotsFrame(self, bg ='white')
         # self.plotsFrame.pack(side = tk.RIGHT, fill = tk.BOTH, expand = True)
-        self.plotsFrame.grid(row = 0, column = 1, sticky = "nsew")
+        # self.plotsFrame.grid(row = 0, column = 1, sticky = "nsew")
+        self.plotsFrame.place(relx = 0.25, rely = 0.0, relwidth = 0.75, relheight = 1.0, anchor = "nw", bordermode = tk.INSIDE)
 
         self.controlsFrame = ControlsFrame(self, bg = 'white', relief='groove')
         # self.controlsFrame.pack(side = tk.LEFT, fill = tk.BOTH, expand = False)
-        self.controlsFrame.grid(row = 0 , column = 0, sticky = "nsew")
+        # self.controlsFrame.grid(row = 0 , column = 0, sticky = "nsew")
+        self.controlsFrame.place(relx = 0.0, rely = 0.0, relwidth = 0.25, relheight = 1.0, anchor = "nw", bordermode = tk.INSIDE)
 
-        self.grid_columnconfigure(index = 0, weight = 1)
-        self.grid_columnconfigure(index = 1, weight = 5)
-        self.grid_rowconfigure(index = 0, weight = 1)
+        # self.grid_columnconfigure(index = 0, weight = 1)
+        # self.grid_columnconfigure(index = 1, weight = 3)
+        # self.grid_rowconfigure(index = 0, weight = 1)
 
         for c in self.ControlArray:
             c.initNotebook(self.plotsFrame)

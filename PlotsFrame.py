@@ -4,7 +4,7 @@ import tkinter.ttk as ttk
 from datetime import datetime
 import matplotlib as mpl
 mpl.use('TkAgg') #mpl backend
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg#, NavigationToolbar2Tk 
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk 
 from matplotlib.figure import Figure
 import matplotlib.animation as anim
 
@@ -22,11 +22,15 @@ class MPLContainer(tk.Frame):
         now = datetime.now()
         if(not self.plotHidden): #hide the plot if we just started resizing
             self.canvas.get_tk_widget().place_forget()
+            # self.canvas.get_tk_widget().pack_forget()
+            # self.canvas.get_tk_widget().grid_forget()
             self.plotHidden = True
         timeDelta = now - self.resizeDateTime #get timedelta since last resize event
         if(timeDelta.total_seconds()*1000 > 500): #if we stopped resizing, unhide plot
             # self.canvas.get_tk_widget().place_forget()
-            self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.INSIDE,height=self.winfo_height(),width=self.winfo_width())
+            self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.OUTSIDE,height=self.winfo_height(),width=self.winfo_width())
+            # self.canvas.get_tk_widget().pack(side=tk.TOP, fill = tk.BOTH, expand = True)
+            # self.canvas.get_tk_widget().grid(sticky = "nsew", row = 0, column = 0)
             self.plotHidden = False
         #else do nothing
             
@@ -36,7 +40,7 @@ class MPLContainer(tk.Frame):
         # self.place(anchor="nw",bordermode=tk.INSIDE,height=100,relwidth=100)
         # bck = mpl.get_backend()
         # print("Backendis" + bck)
-        self.m_figure = Figure(figsize=(5,5), dpi=96)
+        self.m_figure = Figure( dpi=96)
         self.m_subplot = self.m_figure.add_subplot(111)
         
         # f = mpl.pyplot.Figure(figsize=(5,5), dpi=96)
@@ -45,16 +49,20 @@ class MPLContainer(tk.Frame):
         #normally plt.show() now, but different for tk
         self.canvas = FigureCanvasTkAgg(self.m_figure,self)
         self.canvas.draw()
-        # canvas.get_tk_widget().pack(side=tk.TOP,fill=tk.BOTH,expand=True)
+        # self.canvas.get_tk_widget().pack(side=tk.TOP,fill=tk.BOTH,expand=True)
         # canvas.get_tk_widget().grid(row=0,column=0,sticky="nsew")
-        self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.INSIDE,height=200,width=200)
         # self.grid_rowconfigure(index=0,weight=1,minsize=self.winfo_height())
         # self.grid_columnconfigure(index=0,weight=1,minsize=self.winfo_width())
+        # self.canvas.get_tk_widget().grid(sticky = "nsew", row = 0, column = 0)
         # self.pack_propagate(0)#should stop grid resizing
         self.resizeDateTime = datetime.now()
         self.plotHidden = False
-        # self.m_toolbar = NavigationToolbar2Tk(self.canvas, self)
-        # self.m_toolbar.update()
+        self.m_toolbar = NavigationToolbar2Tk(self.canvas, self)
+        self.m_toolbar.update()
+        self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.INSIDE,relheight = 1.0, relwidth = 1.0)
+        
+
+
         self.resizeAnimation = anim.FuncAnimation(self.m_figure, func=self.resizePlot, interval=1000)#interval in milliseconds
     
     def clearPlots(self):

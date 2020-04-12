@@ -22,4 +22,4 @@ class InvertDataControl(ProcessingStepControlBase):
 
     def initChordUI(self, parent):
         self.m_chord = Chord(parent, self.m_notebook, title=self.m_title)
-        tk.Label(self.m_chord, text='hello world, I am different!', bg='white').pack()
+        tk.Label(self.m_chord, text='Work In Progress', bg='white').pack()

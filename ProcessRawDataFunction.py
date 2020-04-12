@@ -83,9 +83,11 @@ class RawDataWrapper():
         for m in self.getMassList():
             temp = np.interp(self.m_desiredTempValues, self.m_correctedTemp[tRampStartIndex:tRampEndIndex],
                 self.m_parsedRawData[self.m_listOfColumns.index(m),tRampStartIndex:tRampEndIndex])
-            self.m_interpolatedData[m] = temp
             if smooth:
-                self.smooth(self.m_interpolatedData[m], smoothpoints)
+                temp = self.smooth(temp, smoothpoints)
+            if removeBackground:
+                temp -= np.amin(temp)
+            self.m_interpolatedData[m] = temp
         self.m_dataProcessed = True
 
 

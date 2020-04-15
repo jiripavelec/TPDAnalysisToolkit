@@ -1,9 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from datetime import datetime
-from Controls import ControlsFrame, Chord, ScrolledListBox, EnhancedCheckButton, ProcessingStepControlBase #ui element
-from ProcessRawDataControl import ProcessRawDataControl
-from InvertDataControl import InvertDataControl
+from ControlsFrame import ControlsFrame#, Chord, ScrolledListBox, EnhancedCheckButton, ProcessingStepControlBase #ui element
 from PlotsFrame import PlotsFrame, MPLContainer
 from os import listdir
 from os.path import isfile, join
@@ -18,15 +16,15 @@ from os.path import isfile, join
 class MainFrame(tk.Frame):
     def __init__(self):#, parent, controller):
         super().__init__()
-        self.ControlArray = []
+        # self.ControlArray = []
         self.initUI()
 
     def initUI(self):
         self.master.title("TPD Toolkit")
         self.pack(fill=tk.BOTH, expand=True)
 
-        self.ControlArray.append(ProcessRawDataControl(bg = "white"))
-        self.ControlArray.append(InvertDataControl())
+        # self.ControlArray.append(ProcessRawDataControl(bg = "white"))
+        # self.ControlArray.append(InvertDataControl())
 
         #TODO: consider using tkinter PanedWindow for draggable divider
         #see
@@ -48,11 +46,13 @@ class MainFrame(tk.Frame):
         # self.grid_columnconfigure(index = 1, weight = 3)
         # self.grid_rowconfigure(index = 0, weight = 1)
 
-        for c in self.ControlArray:
-            c.initNotebook(self.plotsFrame)
-            c.initChordUI(self.controlsFrame.accordion)
+        # for c in self.ControlArray:
+        # for c in self.controlsFrame.Controls:
+        #     c.initNotebook(self.plotsFrame)
+        #     c.initChordUI(self.controlsFrame.accordion)
+        self.controlsFrame.initChords(self.plotsFrame)
 
-        self.controlsFrame.initChords([c.m_chord for c in self.ControlArray])
+        # self.controlsFrame.initChords([c.m_chord for c in self.ControlArray])
 
         # self.resizeTimer = datetime.now()
         # self.rightFrame.resizeTest()
@@ -63,13 +63,11 @@ class MainFrame(tk.Frame):
 
     def resetResizeTime(self, event):
         if( (not (self.lastWidth == self.winfo_width)) or (not (self.lastHeight == self.winfo_height))):
-            for c in self.ControlArray:
-                c.setResizeTime()
+            self.controlsFrame.resetResizeTime()
             # self.leftFrame.Controls.m_notebook.resizeDateTime = datetime.now()
             self.lastWidth = self.winfo_width
             self.lastHeight = self.winfo_height
         #else we didnt resize as the dimensions have not changed
-
 
 def main():
     root = tk.Tk()

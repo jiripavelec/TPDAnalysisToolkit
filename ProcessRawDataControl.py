@@ -7,7 +7,7 @@ from RawDataWrapper import RawDataWrapper
 
 
 class ProcessRawDataControl(ProcessingStepControlBase):
-    def __init__(self, bg):
+    def __init__(self):
         super().__init__("Process TPD Data")
         # self.m_filesDirectory = ""
 
@@ -118,10 +118,6 @@ class ProcessRawDataControl(ProcessingStepControlBase):
 
         self.m_filesListBox = ScrolledListBox(self.m_chord)
         self.m_filesListBox.grid(row = 1, column = 0, columnspan = 4, sticky = "nsew")
-
-        # self.m_directoryLabel = tk.Label(self.m_chord, text='No directory selected')
-        # self.m_directoryLabel = tk.Entry(self.m_chord, textvariable = self.m_filesDirectory, state = tk.DISABLED)
-        # self.m_directoryLabel.grid(row = 2, column = 0, columnspan = 2, sticky="nsw", padx = 3, pady = 3)
 
         self.m_fileButtonFrame = ttk.Frame(self.m_chord)
         self.m_fileButtonFrame.grid(row=2, column = 0, columnspan = 3, sticky = "nsew")

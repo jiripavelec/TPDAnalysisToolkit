@@ -3,6 +3,7 @@ import tkinter.ttk as ttk
 from datetime import datetime
 # from PlotsFrame import * 
 
+
 #Chord BEGIN
 class Chord(ttk.Frame):
     def __init__(self, parent, controlRef, title='', *args, **kwargs):
@@ -283,25 +284,3 @@ class ProcessingStepControlBase:
 #ProcessingStepControlBase END
 
 
-#ControlsFrame BEGIN
-class ControlsFrame(tk.Frame):
-    def __init__(self, parent, *args, **kwargs):
-        super().__init__(parent,*args, **kwargs)
-        self.initUI(parent)
-        self.Controls = []
-
-    def initUI(self, parent):
-        self.accordion = Accordion(self)
-
-    def initChords(self,chords):
-        self.accordion.append_chords(chords)
-        self.accordion.pack(fill=tk.BOTH, expand = True)
-
-    # def registerControl(self, control):
-    #     # self.Controls[control.m_title] = control
-    #     self.Controls.append(control)
-
-    # def resetResizeTime(self):
-    #     for v in self.Controls.values():
-    #         v.
-#ControlsFrame END

@@ -3,7 +3,7 @@ import tkinter.ttk as ttk
 from PlotsFrame import MPLContainer
 from Controls import Chord, ScrolledListBox, EnhancedCheckButton, ProcessingStepControlBase, DisplayOptionsFrame, EnhancedEntry #ui element
 from tkinter.filedialog import askdirectory, askopenfilenames
-from ProcessRawDataFunction import RawDataWrapper
+from RawDataWrapper import RawDataWrapper
 
 
 class ProcessRawDataControl(ProcessingStepControlBase):
@@ -26,7 +26,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             [self.m_filesListBox.insert(0, f) for f in self.m_fileList]
             self.m_fileList.reverse()
             self.m_subtractSelection["values"] = self.m_fileList
-
+            self.m_normSelection["values"] = self.m_fileList
 
         # for i in range(len(self.m_filePaths)):
         #     print(self.m_filesListBox.get(i) + " " + self.m_filePaths[i])
@@ -40,6 +40,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             self.m_filePaths.pop(i)
             self.m_fileList.pop(i)
         self.m_subtractSelection["values"] = self.m_fileList
+        self.m_normSelection["values"] = self.m_fileList
 
         # for i in range(len(self.m_filePaths)):
         #     print(self.m_filePaths[i] + " " + self.m_filesListBox.get(i))
@@ -49,6 +50,12 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             self.m_subtractSelection.configure(state = tk.DISABLED)
         else:
             self.m_subtractSelection.configure(state = tk.NORMAL)
+
+    def toggleNormalizeCB(self):
+        if(self.m_normalizeCB.instate(['!selected'])):
+            self.m_normSelection.configure(state = tk.DISABLED)
+        else:
+            self.m_normSelection.configure(state = tk.NORMAL)
 
     def plotSelectedMasses(self):
         for c in self.mplContainers:
@@ -72,8 +79,24 @@ class ProcessRawDataControl(ProcessingStepControlBase):
                                         self.m_removeBackgroundCB.instate(['selected']),
                                         self.m_smoothCB.instate(['selected']))
 
+        if (self.m_normalizeCB.instate(['selected'])): #if we want to normalize data to a specific coverage
+            monolayerData = None
+            #find the coverage by fileName
+            for w in self.m_parsedData:
+                if (w.m_fileName == self.m_normSelection.get()):
+                    monolayerData = w
+                    break
+            #normalize everything except the reference
+            for w in [d for d in self.m_parsedData if not d == monolayerData]:
+                w.normalizeDataTo(monolayerData)
+            #normalize reference data last
+            monolayerData.normalizeDataTo(monolayerData)
+
         self.m_massDisplayOptions.resetMasses(self.m_parsedData)
         self.plotSelectedMasses()
+
+    def getProcessedData(self):
+        return self.m_parsedData
 
     def initNotebook(self, parent):
         self.m_notebook = ttk.Notebook(parent)
@@ -138,7 +161,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         self.m_tRampEndEntry = EnhancedEntry(self.m_chord)
         self.m_tRampEndEntry.grid(row=7, column = 2, sticky = "nsw")
 
-        # Checkbuttons
+        # Checkbuttons + Comboboxes for options:
 
         self.m_smoothCB = EnhancedCheckButton(self.m_chord, text="Smooth")
         self.m_smoothCB.grid(row = 8, column = 1, sticky = "nsw")
@@ -146,29 +169,30 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         self.m_removeBackgroundCB = EnhancedCheckButton(self.m_chord, text="Remove Background")
         self.m_removeBackgroundCB.grid(row = 8, column = 2, sticky = "nsw")
 
-        self.m_normalizeCB = EnhancedCheckButton(self.m_chord, text = "Normalize", state = tk.DISABLED)
+        self.m_normalizeCB = EnhancedCheckButton(self.m_chord, text = "Normalize", command=self.toggleNormalizeCB)
         self.m_normalizeCB.grid(row = 9, column = 1, sticky = "nsw")
 
-        self.m_subtractCB = EnhancedCheckButton(self.m_chord, text = "Subtract Spectrum", command=self.toggleSubtractCB, state = tk.DISABLED)
-        self.m_subtractCB.grid(row = 9, column = 2, sticky = "nsw")
+        self.m_normSelection = ttk.Combobox(self.m_chord, state = tk.DISABLED)
+        self.m_normSelection.grid(row=10, column=1, columnspan=2, sticky= "nsew")
 
-        # Combobox
+        self.m_subtractCB = EnhancedCheckButton(self.m_chord, text = "Subtract Spectrum", command=self.toggleSubtractCB, state = tk.DISABLED)
+        self.m_subtractCB.grid(row = 11, column = 1, sticky = "nsw")
 
         self.m_subtractSelection = ttk.Combobox(self.m_chord, state = tk.DISABLED)
-        self.m_subtractSelection.grid(row=10, column=1, columnspan=2, sticky= "nsew")
+        self.m_subtractSelection.grid(row=12, column=1, columnspan=2, sticky= "nsew")
 
         #Process Button
 
         self.m_processButton = ttk.Button(self.m_chord, text = "Process Input", command = self.processInput)
-        self.m_processButton.grid(row=11, column = 1, columnspan=2, sticky = "nse")
+        self.m_processButton.grid(row=13, column = 1, columnspan=2, sticky = "nse")
 
         #Display options
 
         self.m_displayOptionsLabel = ttk.Label(self.m_chord, text='Display Options')
-        self.m_displayOptionsLabel.grid(row = 12, column = 0, columnspan = 2, sticky="nsw")
+        self.m_displayOptionsLabel.grid(row = 14, column = 0, columnspan = 2, sticky="nsw")
 
         self.m_massDisplayOptions = DisplayOptionsFrame(self.m_chord, self.plotSelectedMasses)
-        self.m_massDisplayOptions.grid(row = 13, column = 1, columnspan = 2, sticky = "nsw")
+        self.m_massDisplayOptions.grid(row = 15, column = 1, columnspan = 2, sticky = "nsw")
 
         self.m_massDisplayOptions.m_availableMassesListBox
 

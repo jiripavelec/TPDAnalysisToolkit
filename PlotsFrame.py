@@ -58,7 +58,7 @@ class MPLContainer(tk.Frame):
         
         # f = mpl.pyplot.Figure(figsize=(5,5), dpi=96)
         # a = f.add_subplot(111)#111 means only one chart as opposed to 121 meanign 2
-        self.m_subplot.plot([1,2,3,4,5,6,7,8],[5,6,1,3,8,9,3,5])
+        # self.m_subplot.plot([1,2,3,4,5,6,7,8],[5,6,1,3,8,9,3,5])
         #normally plt.show() now, but different for tk
         self.canvas = FigureCanvasTkAgg(self.m_figure,self)
         self.canvas.draw()

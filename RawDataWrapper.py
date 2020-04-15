@@ -3,6 +3,8 @@ import numpy as np
 class RawDataWrapper():
     def __init__(self, filePath):
         self.m_filePath = filePath
+        substrings = filePath.split('/')
+        self.m_fileName = substrings[len(substrings) - 1]
         # self.m_tRampStart = tRampStart
         # self.m_tRampEnd = tRampEnd
         # self.m_tCutStart = tCutStart
@@ -10,8 +12,9 @@ class RawDataWrapper():
         # self.m_tStep = tStep
         self.m_dataProcessed = False
         self.m_interpolatedData = {}
+        self.m_coverages = {}
 
-    def smooth(self, x, N): #running average
+    def smooth_running_average(self, x, N): #running average
         cumsum = np.cumsum(np.insert(x, 0, 0)) 
         smoothResult = (cumsum[N:] - cumsum[:-N]) / float(N)
         smoothResult = np.insert(smoothResult,0,x[:N-1])
@@ -49,6 +52,9 @@ class RawDataWrapper():
         return [self.m_listOfColumns.index(m) for m in massList]
 
     def processParsedData(self, tRampStart, tRampEnd, tCutStart, tCutEnd, removeBackground, smooth, smoothpoints = 5, tStep = 0.1):
+        if (self.m_dataProcessed == True):
+            return
+        # self.m_tStep = tStep
         # self.m_correctedTemp = np.zeros(self.m_parsedRawData.shape[1])
         # correct temperature (taken from Honza's scripts)
         self.m_correctedTemp = np.array(self.m_parsedRawData[(self.m_listOfColumns.index('temperature')),:])
@@ -57,7 +63,7 @@ class RawDataWrapper():
         print(self.m_correctedTemp.shape) #for debugging
 
         #get running average from temperature data
-        self.m_correctedTemp = self.smooth(self.m_correctedTemp, 20)
+        self.m_correctedTemp = self.smooth_running_average(self.m_correctedTemp, 20)
         print(self.m_correctedTemp.shape) #for debugging
 
         print(self.m_correctedTemp.item(0), self.m_parsedRawData.item((self.m_listOfColumns.index('temperature'),0))) #debugging
@@ -84,12 +90,24 @@ class RawDataWrapper():
             temp = np.interp(self.m_desiredTempValues, self.m_correctedTemp[tRampStartIndex:tRampEndIndex],
                 self.m_parsedRawData[self.m_listOfColumns.index(m),tRampStartIndex:tRampEndIndex])
             if smooth:
-                temp = self.smooth(temp, smoothpoints)
+                temp = self.smooth_running_average(temp, smoothpoints)
             if removeBackground:
                 temp -= np.amin(temp)
+            # if normalize: #first step to normalizing -> find coverages
+            self.m_coverages[m] = np.trapz(temp, dx= tStep) #write absolute coverage into dictionary
             self.m_interpolatedData[m] = temp
         self.m_dataProcessed = True
 
+    def normalizeDataTo(self, referenceRawDataWrapper):
+        if (not self.m_dataProcessed or not referenceRawDataWrapper.m_dataProcessed):
+            return
+        #only try to normalize masses which we actually have access to
+        availableMasses =  list(set(self.getMassList()) & set(referenceRawDataWrapper.getMassList()))
+        for m in availableMasses:
+            referenceCoverage = referenceRawDataWrapper.m_coverages[m]
+            # self.m_coverages[m] = np.trapz(self.m_interpolatedData[m], dx= self.m_tStep)
+            self.m_coverages[m] /= referenceCoverage
+            self.m_interpolatedData[m] /= referenceCoverage
 
     def getProcessedData(self, desiredMasses):
         result = self.m_desiredTempValues

@@ -28,6 +28,12 @@ class MainFrame(tk.Frame):
         self.ControlArray.append(ProcessRawDataControl(bg = "white"))
         self.ControlArray.append(InvertDataControl())
 
+        #TODO: consider using tkinter PanedWindow for draggable divider
+        #see
+        #https://stackoverflow.com/questions/27102077/make-stretchable-split-screen-in-tkinter
+        #and
+        #http://effbot.org/tkinterbook/panedwindow.htm
+
         self.plotsFrame = PlotsFrame(self, bg ='white')
         # self.plotsFrame.pack(side = tk.RIGHT, fill = tk.BOTH, expand = True)
         # self.plotsFrame.grid(row = 0, column = 1, sticky = "nsew")

@@ -7,8 +7,8 @@ from RawDataWrapper import RawDataWrapper
 
 
 class ProcessRawDataControl(ProcessingStepControlBase):
-    def __init__(self):
-        super().__init__("Process TPD Data")
+    def __init__(self, controller):
+        super().__init__("Process TPD Data", controller)
         # self.m_filesDirectory = ""
 
     def selectFiles(self):
@@ -86,6 +86,9 @@ class ProcessRawDataControl(ProcessingStepControlBase):
                 if (w.m_fileName == self.m_normSelection.get()):
                     monolayerData = w
                     break
+            if( monolayerData == None):
+                print("No reference coverage file selected")
+                raise ValueError
             #normalize everything except the reference
             for w in [d for d in self.m_parsedData if not d == monolayerData]:
                 w.normalizeDataTo(monolayerData)
@@ -95,13 +98,19 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         self.m_massDisplayOptions.resetMasses(self.m_parsedData)
         self.plotSelectedMasses()
 
+        #TODO: autosave result
+
+    def saveData(self):
+        for w in self.m_parsedData:
+            w.saveProcessedData(self.m_massDisplayOptions.getMassesToDisplay())
+
     def getProcessedData(self):
         return self.m_parsedData
 
     def initNotebook(self, parent):
         self.m_notebook = ttk.Notebook(parent)
-        self.mplContainers.append(MPLContainer(self.m_notebook, "Raw Data", bg="white"))
-        self.mplContainers.append(MPLContainer(self.m_notebook, "Processed Data", bg="white"))
+        self.mplContainers.append(MPLContainer(self.m_notebook, "Raw Data", "Desorption Rate", "Temperature (K)"))
+        self.mplContainers.append(MPLContainer(self.m_notebook, "Processed Data", "Desorption Rate", "Temperature (K)"))
 
         for c in self.mplContainers:
             self.m_notebook.add(c, text = c.m_title)
@@ -128,7 +137,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         self.m_deselectButton = ttk.Button(self.m_fileButtonFrame,text="Remove Selected",command = self.deselectFiles)
         self.m_deselectButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
 
-        # Options from here onwards
+        # Options
 
         self.m_optionsLabel = ttk.Label(self.m_chord, text="Processing Options:")#, compound = tk.CENTER)
         self.m_optionsLabel.grid(row=3, column = 0, columnspan = 2, sticky = "nsw")
@@ -191,6 +200,9 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         self.m_massDisplayOptions.grid(row = 15, column = 1, columnspan = 2, sticky = "nsw")
 
         self.m_massDisplayOptions.m_availableMassesListBox
+
+        self.m_saveDataButton = ttk.Button(self.m_chord, text = "Save Processed Data for Selected Masses", command = self.saveData)
+        self.m_saveDataButton.grid(row=16, column = 0, columnspan=3, sticky = "nsew")
 
         for child in self.m_chord.winfo_children():
             child.grid_configure(padx=3, pady=3)

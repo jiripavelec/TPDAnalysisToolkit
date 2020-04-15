@@ -24,9 +24,11 @@ import matplotlib.animation as anim
 
 #MPLContainer BEGIN
 class MPLContainer(tk.Frame):
-    def __init__(self, parent, title, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
+    def __init__(self, parent, title, yAxisName, xAxisName, *args, **kwargs):
+        super().__init__(parent, bg="white", *args, **kwargs)
         self.m_title = title
+        self.m_xAxisName = xAxisName
+        self.m_yAxisName = yAxisName
         self.initUI(parent)
 
     def resizePlot(self, *args, **kwargs):
@@ -55,7 +57,10 @@ class MPLContainer(tk.Frame):
         # print("Backendis" + bck)
         self.m_figure = Figure( dpi=96)
         self.m_subplot = self.m_figure.add_subplot(111)
-        
+
+        self.m_subplot.set_title(self.m_title)
+        self.m_subplot.set_xlabel(self.m_xAxisName)
+        self.m_subplot.set_ylabel(self.m_yAxisName)
         # f = mpl.pyplot.Figure(figsize=(5,5), dpi=96)
         # a = f.add_subplot(111)#111 means only one chart as opposed to 121 meanign 2
         # self.m_subplot.plot([1,2,3,4,5,6,7,8],[5,6,1,3,8,9,3,5])

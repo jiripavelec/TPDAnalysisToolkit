@@ -247,8 +247,9 @@ class DisplayOptionsFrame(ttk.Frame):
 
 #ProcessingStepControlBase BEGIN
 class ProcessingStepControlBase:
-    def __init__(self, title):
+    def __init__(self, title, controller):
         self.m_title = title
+        self.m_controller = controller
         self.m_chordInitDone = False
         self.m_notebookInitDone = False
         self.mplContainers = []

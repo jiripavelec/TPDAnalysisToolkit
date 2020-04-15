@@ -15,11 +15,11 @@ class ControlsFrame(tk.Frame):
         self.accordion = Accordion(self)
         
         #For raw data processing
-        self.m_rawDataControl = ProcessRawDataControl()
+        self.m_rawDataControl = ProcessRawDataControl(self)
         self.Controls.append(self.m_rawDataControl)
 
         #For inversion of processed data
-        self.m_invertDataControl = InvertDataControl()
+        self.m_invertDataControl = InvertDataControl(self)
         self.Controls.append(self.m_invertDataControl)
 
     def initChords(self,plotsFrame):

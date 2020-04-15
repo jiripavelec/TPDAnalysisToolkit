@@ -10,18 +10,14 @@ class RawDataWrapper():
         # self.m_tCutStart = tCutStart
         # self.m_tCutEnd = tCutEnd
         # self.m_tStep = tStep
+        self.m_dataParsed = False
         self.m_dataProcessed = False
         self.m_interpolatedData = {}
         self.m_coverages = {}
 
-    def smooth_running_average(self, x, N): #running average
-        cumsum = np.cumsum(np.insert(x, 0, 0)) 
-        smoothResult = (cumsum[N:] - cumsum[:-N]) / float(N)
-        smoothResult = np.insert(smoothResult,0,x[:N-1])
-        smoothResult = np.append(smoothResult,x[N:-1:-1])
-        return smoothResult
-
     def parseRawDataFile(self):
+        if(self.m_dataParsed):
+            return
         self.m_headerData = np.loadtxt(self.m_filePath,dtype=str, skiprows=1,max_rows=1, delimiter=',')
          #second item is the number of lines remaining in the header after the second line
         headerLength = int(self.m_headerData.item(1))
@@ -36,8 +32,8 @@ class RawDataWrapper():
 
         #now columns can be traversed contiguously in memory
         self.m_parsedRawData = temp.transpose().copy()
-        print(self.m_parsedRawData.shape) #for debugging
-        del temp #free memory, or at least suggest it to the garbage collector
+        self.m_dataParsed = True
+        # del temp #free memory, or at least suggest it to the garbage collector
 
     def getRawData(self, desiredMasses):
         temp = np.array(self.m_parsedRawData[(self.m_listOfColumns.index('temperature')),:])
@@ -51,6 +47,13 @@ class RawDataWrapper():
     def massListToIndices(self, massList):
         return [self.m_listOfColumns.index(m) for m in massList]
 
+    def smooth_running_average(self, x, N): #running average
+        cumsum = np.cumsum(np.insert(x, 0, 0)) 
+        smoothResult = (cumsum[N:] - cumsum[:-N]) / float(N)
+        smoothResult = np.insert(smoothResult,0,x[:N-1])
+        smoothResult = np.append(smoothResult,x[N:-1:-1])
+        return smoothResult
+
     def processParsedData(self, tRampStart, tRampEnd, tCutStart, tCutEnd, removeBackground, smooth, smoothpoints = 5, tStep = 0.1):
         if (self.m_dataProcessed == True):
             return
@@ -60,13 +63,9 @@ class RawDataWrapper():
         self.m_correctedTemp = np.array(self.m_parsedRawData[(self.m_listOfColumns.index('temperature')),:])
         self.m_correctedTemp *= 0.985
         self.m_correctedTemp += 0.836
-        print(self.m_correctedTemp.shape) #for debugging
 
         #get running average from temperature data
         self.m_correctedTemp = self.smooth_running_average(self.m_correctedTemp, 20)
-        print(self.m_correctedTemp.shape) #for debugging
-
-        print(self.m_correctedTemp.item(0), self.m_parsedRawData.item((self.m_listOfColumns.index('temperature'),0))) #debugging
 
         tempSearchInput = np.abs(self.m_correctedTemp - tRampStart)
         tRampStartIndex = np.argwhere(tempSearchInput == np.amin(tempSearchInput))[-1][0]
@@ -85,9 +84,9 @@ class RawDataWrapper():
             if(tRampEndIndex == self.m_correctedTemp.size - 1): break
 
         #TODO: cut data by finding correct temperature, taking its index => then the time
-        self.m_desiredTempValues = np.arange(tCutStart, tCutEnd, tStep)
+        self.m_interpolatedTemp = np.arange(tCutStart, tCutEnd, tStep)
         for m in self.getMassList():
-            temp = np.interp(self.m_desiredTempValues, self.m_correctedTemp[tRampStartIndex:tRampEndIndex],
+            temp = np.interp(self.m_interpolatedTemp, self.m_correctedTemp[tRampStartIndex:tRampEndIndex],
                 self.m_parsedRawData[self.m_listOfColumns.index(m),tRampStartIndex:tRampEndIndex])
             if smooth:
                 temp = self.smooth_running_average(temp, smoothpoints)
@@ -110,13 +109,42 @@ class RawDataWrapper():
             self.m_interpolatedData[m] /= referenceCoverage
 
     def getProcessedData(self, desiredMasses):
-        result = self.m_desiredTempValues
+        result = self.m_interpolatedTemp
         # for i in self.massListToIndices(desiredMasses):
         for m in desiredMasses:
             result = np.vstack((result, self.m_interpolatedData[m]))
         # return np.concatenate((self.m_correctedTemp,self.m_parsedRawData[self.m_listOfColumns.index('temperature')+1:,:]))
         return result
 
+    def saveProcessedData(self, massList = None, filename = None):
+        if not self.m_dataProcessed:
+            return
+        if(filename == None):
+            filename = self.m_fileName + '_processed.csv'
+        substrings = self.m_filePath.split('/')
+        outputFilePath = ""
+        for s in substrings[:-1]:
+            outputFilePath = outputFilePath + s + '/'
+        outputFilePath = outputFilePath + filename
 
+        headerString = "Temperature"
+        if (massList == None):
+            massList = self.getMassList()
+        for m in massList:
+            headerString = headerString + " " + m
+        headerString += "\n 0"
+        for m in massList:
+            headerString = headerString + " " + str(self.m_coverages[m])
+
+        output = self.m_interpolatedTemp
+        for m in massList:
+            output = np.vstack((output, self.m_interpolatedData[m]))
+
+        np.savetxt(outputFilePath, output.transpose(), delimiter=',', header=headerString)
+
+        
+        
+        
+        
 
 

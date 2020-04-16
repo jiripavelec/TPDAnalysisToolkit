@@ -33,11 +33,11 @@ class InvertDataControl(ProcessingStepControlBase):
 
     def useProcessedFiles(self):
         #grab processed data from processRawDataControl
-        self.m_parsedData = [ProcessedDataWrapper(rd) for rd in self.m_controller.requestProcessedData()]
-        self.m_fileList = [f.m_fileName for f in self.m_parsedData]
-        self.m_filePaths = [f.m_filePath for f in self.m_parsedData]
-        self.m_filesListBox.clear()
-        [self.m_filesListBox.insert(0, f) for f in self.m_fileList]
+        # self.m_parsedData = [ProcessedDataWrapper(rd) for rd in self.m_controller.requestProcessedData()]
+        # self.m_fileList = [f.m_fileName for f in self.m_parsedData]
+        # self.m_filePaths = [f.m_filePath for f in self.m_parsedData]
+        # self.m_filesListBox.clear()
+        # [self.m_filesListBox.insert(0, f) for f in self.m_fileList]
 
     def processInput(self):
         self.m_invertedData = []
@@ -95,8 +95,8 @@ class InvertDataControl(ProcessingStepControlBase):
         self.m_deselectButton = ttk.Button(self.m_fileButtonFrame,text="Remove Selected",command = self.deselectFiles)
         self.m_deselectButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
 
-        self.m_useProcessedButton = ttk.Button(self.m_fileButtonFrame,text="Use Data from Previous Step",command = self.useProcessedFiles)
-        self.m_useProcessedButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
+        # self.m_useProcessedButton = ttk.Button(self.m_fileButtonFrame,text="Use Data from Previous Step",command = self.useProcessedFiles)
+        # self.m_useProcessedButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
 
         #Options
 

@@ -1,9 +1,11 @@
 import tkinter as tk
 import tkinter.ttk as ttk
+from datetime import datetime
 from PlotsFrame import MPLContainer
 from Controls import Chord, ScrolledListBox, EnhancedCheckButton, ProcessingStepControlBase, DisplayOptionsFrame, EnhancedEntry #ui element
-from tkinter.filedialog import askdirectory, askopenfilenames
+from tkinter.filedialog import askdirectory, askopenfilenames, asksaveasfilename
 from RawDataWrapper import RawDataWrapper
+import numpy as np
 
 
 class ProcessRawDataControl(ProcessingStepControlBase):
@@ -101,11 +103,48 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         #TODO: autosave result
 
     def saveData(self):
-        for w in self.m_parsedData:
-            w.saveProcessedData(self.m_massDisplayOptions.getMassesToDisplay())
+        if (len(self.m_parsedData) == 0):
+            return
+        outputFilePath = asksaveasfilename()
+        substrings = outputFilePath.split('/')
+        #consider using s = '/' result = s.join(substrings[x:y])
+        outputFilePath = substrings[0]
+        for s in substrings[1:-1]:
+            outputFilePath = outputFilePath + '/' + s
+        substrings = substrings[-1].split('.')
+        fileName = substrings[0]
+        if(len(substrings) > 1):
+            for s in substrings[1:-1]:
+                fileName = fileName + '.' + s
+        dateTimeString = str(datetime.now()).replace('-','').replace(' ', '_').replace(':','')
+        fileName = fileName + '.' + dateTimeString
 
-    def getProcessedData(self):
-        return self.m_parsedData
+        for m in self.m_massDisplayOptions.getAllMasses():
+            headerString = "Processed TPD data for mass " + m + "\nThe following files are included in this data set:\n"
+            #outputData starts out column-major
+            outputData = self.m_parsedData[0].m_interpolatedTemp.copy() # start with temperature column
+            labels = ["Temperature"]
+            coverages = [str(0.0)]
+            for w in self.m_parsedData:
+                headerString = headerString + w.m_fileName + "\n" #write filename to header for quick overview
+                outputData = np.vstack((outputData, w.m_interpolatedData[m])) #append data column for mass m in outputdata
+                labels.append(w.m_fileName.split(" ")[0]) # this should append file number
+                coverages.append(str(w.m_coverages[m]))
+            
+            #make one file per mass
+            namedOutputFilePath = outputFilePath + '/' + fileName + ".Mass_" + str(m) + ".pdat" #pdat for processed data
+            stringData = np.vstack((np.array(labels,dtype=str),np.array(coverages,dtype=str)))
+
+            with open(namedOutputFilePath, mode='a') as fileHandle:
+                #write header and stringData first
+                np.savetxt(fileHandle, stringData, fmt="%s", delimiter=' ', header=headerString)
+                #then write float data (after transposing it)
+                np.savetxt(fileHandle, outputData.transpose(), delimiter=' ')
+
+
+
+    # def getProcessedData(self):
+    #     return self.m_parsedData
 
     def initNotebook(self, parent):
         self.m_notebook = ttk.Notebook(parent)

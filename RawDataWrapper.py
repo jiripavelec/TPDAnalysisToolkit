@@ -25,7 +25,7 @@ class RawDataWrapper():
         m_parsedDataTitles = np.loadtxt(self.m_filePath,dtype=str, skiprows=headerLength + 1,max_rows=1, delimiter=',')
         self.m_listOfColumns = [t for t in [e.strip("\'\"") for e in m_parsedDataTitles.tolist()] if not t == '']
         self.m_listOfColumns.remove('Time') #we are ignornign the first column
-        print(self.m_listOfColumns) #for debugging
+        # print(self.m_listOfColumns) #for debugging
 
         #parsed data is in row major format i.e. time(ms),temp, m1, m2, m3...
         temp = np.loadtxt(self.m_filePath, dtype = float, skiprows=36, delimiter=',', usecols=range(1,len(self.m_listOfColumns)+1))
@@ -117,6 +117,7 @@ class RawDataWrapper():
         return result
 
     def saveProcessedData(self, massList = None, filename = None):
+        #use tkFileDialog.asksaveasfile
         if not self.m_dataProcessed:
             return
         if(filename == None):

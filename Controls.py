@@ -168,7 +168,7 @@ class EnhancedEntry(ttk.Entry):
 class DisplayOptionsFrame(ttk.Frame):
     def __init__(self, parent, onUpdateEventCommand, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
-        self.m_displayedMassList = []
+        self.m_availableMassList = []
         self.initUI()
         self.m_onUpdate = onUpdateEventCommand
 
@@ -210,15 +210,15 @@ class DisplayOptionsFrame(ttk.Frame):
 
     def resetMasses(self, rawDataWrappers):
         self.m_availableMassesListBox.clear()
-        self.m_displayedMassList = []
+        self.m_availableMassList = []
         self.m_displayedMassesListBox.clear()
         for w in rawDataWrappers:
-            if (len(self.m_displayedMassList) == 0 and rawDataWrappers.index(w) == 0): #set masses 
-                self.m_displayedMassList = w.getMassList()
+            if (len(self.m_availableMassList) == 0 and rawDataWrappers.index(w) == 0): #set masses 
+                self.m_availableMassList = w.getMassList()
             else: #get intersection of masses
-                self.m_displayedMassList = list(set(w.getMassList()) & set(self.m_displayedMassList))
+                self.m_availableMassList = list(set(w.getMassList()) & set(self.m_availableMassList))
 
-        for m in self.m_displayedMassList:
+        for m in self.m_availableMassList:
             self.m_displayedMassesListBox.insert(0,m)
         self.updateButtonStates()
 
@@ -242,6 +242,9 @@ class DisplayOptionsFrame(ttk.Frame):
 
     def getMassesToDisplay(self):
         return [e for e in self.m_displayedMassesListBox.get(0,self.m_displayedMassesListBox.size()-1)]
+
+    def getAllMasses(self):
+        return self.m_availableMassList
 
 #DisplayOptionsFrame END
 

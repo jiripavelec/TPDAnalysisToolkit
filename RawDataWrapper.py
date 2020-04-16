@@ -5,11 +5,6 @@ class RawDataWrapper():
         self.m_filePath = filePath
         substrings = filePath.split('/')
         self.m_fileName = substrings[len(substrings) - 1]
-        # self.m_tRampStart = tRampStart
-        # self.m_tRampEnd = tRampEnd
-        # self.m_tCutStart = tCutStart
-        # self.m_tCutEnd = tCutEnd
-        # self.m_tStep = tStep
         self.m_dataParsed = False
         self.m_dataProcessed = False
         self.m_interpolatedData = {}
@@ -116,32 +111,32 @@ class RawDataWrapper():
         # return np.concatenate((self.m_correctedTemp,self.m_parsedRawData[self.m_listOfColumns.index('temperature')+1:,:]))
         return result
 
-    def saveProcessedData(self, massList = None, filename = None):
-        #use tkFileDialog.asksaveasfile
-        if not self.m_dataProcessed:
-            return
-        if(filename == None):
-            filename = self.m_fileName + '_processed.csv'
-        substrings = self.m_filePath.split('/')
-        outputFilePath = ""
-        for s in substrings[:-1]:
-            outputFilePath = outputFilePath + s + '/'
-        outputFilePath = outputFilePath + filename
+    # def saveProcessedData(self, massList = None, filename = None):
+    #     #use tkFileDialog.asksaveasfile
+    #     if not self.m_dataProcessed:
+    #         return
+    #     if(filename == None):
+    #         filename = self.m_fileName + '_processed.csv'
+    #     substrings = self.m_filePath.split('/')
+    #     outputFilePath = ""
+    #     for s in substrings[:-1]:
+    #         outputFilePath = outputFilePath + s + '/'
+    #     outputFilePath = outputFilePath + filename
 
-        headerString = "Temperature"
-        if (massList == None):
-            massList = self.getMassList()
-        for m in massList:
-            headerString = headerString + " " + m
-        headerString += "\n 0"
-        for m in massList:
-            headerString = headerString + " " + str(self.m_coverages[m])
+    #     headerString = "Temperature"
+    #     if (massList == None):
+    #         massList = self.getMassList()
+    #     for m in massList:
+    #         headerString = headerString + " " + m
+    #     headerString += "\n 0"
+    #     for m in massList:
+    #         headerString = headerString + " " + str(self.m_coverages[m])
 
-        output = self.m_interpolatedTemp
-        for m in massList:
-            output = np.vstack((output, self.m_interpolatedData[m]))
+    #     output = self.m_interpolatedTemp
+    #     for m in massList:
+    #         output = np.vstack((output, self.m_interpolatedData[m]))
 
-        np.savetxt(outputFilePath, output.transpose(), delimiter=',', header=headerString)
+    #     np.savetxt(outputFilePath, output.transpose(), delimiter=',', header=headerString)
 
         
         

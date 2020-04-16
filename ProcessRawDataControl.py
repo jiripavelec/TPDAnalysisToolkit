@@ -118,21 +118,27 @@ class ProcessRawDataControl(ProcessingStepControlBase):
                 fileName = fileName + '.' + s
         dateTimeString = str(datetime.now()).replace('-','').replace(' ', '_').replace(':','')
         fileName = fileName + '.' + dateTimeString
+        outputFilePath = outputFilePath + '/' + fileName
 
-        for m in self.m_massDisplayOptions.getAllMasses():
+        self.SaveProcessedDataToFile(outputFilePath,self.m_massDisplayOptions.getAllMasses(), self.m_parsedData)
+
+    def SaveProcessedDataToFile(self, outputFilePath,massList,rawDataWrappers):
+        if(massList == None or rawDataWrappers == None):
+            raise ValueError
+        for m in massList:
             headerString = "Processed TPD data for mass " + m + "\nThe following files are included in this data set:\n"
             #outputData starts out column-major
-            outputData = self.m_parsedData[0].m_interpolatedTemp.copy() # start with temperature column
+            outputData = rawDataWrappers[0].m_interpolatedTemp.copy() # start with temperature column
             labels = ["Temperature"]
             coverages = [str(0.0)]
-            for w in self.m_parsedData:
+            for w in rawDataWrappers:
                 headerString = headerString + w.m_fileName + "\n" #write filename to header for quick overview
                 outputData = np.vstack((outputData, w.m_interpolatedData[m])) #append data column for mass m in outputdata
                 labels.append(w.m_fileName.split(" ")[0]) # this should append file number
                 coverages.append(str(w.m_coverages[m]))
-            
+
             #make one file per mass
-            namedOutputFilePath = outputFilePath + '/' + fileName + ".Mass_" + str(m) + ".pdat" #pdat for processed data
+            namedOutputFilePath = outputFilePath + ".Mass_" + str(m) + ".pdat" #pdat for processed data
             stringData = np.vstack((np.array(labels,dtype=str),np.array(coverages,dtype=str)))
 
             with open(namedOutputFilePath, mode='a') as fileHandle:

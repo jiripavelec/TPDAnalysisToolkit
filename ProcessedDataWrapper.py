@@ -1,26 +1,23 @@
 import numpy as np
 
 class ProcessedDataWrapper():
-    def __init__(self, filePath = None, rawDataWrapper = None):
-        if(not rawDataWrapper == None):
-            self.m_dataParsed = True
-            self.m_fileName = rawDataWrapper.m_fileName
-            self.m_filePath = rawDataWrapper.m_filePath
-            self.m_listOfColumns = rawDataWrapper.m_listOfColumns
-            self.m_coverages = rawDataWrapper.m_coverages
-            self.m_inputData = rawDataWrapper.m_interpoaltedData
-            self.m_temperatureData = rawDataWrapper.m_interpolatedTemp
-        elif (not filePath == None):
-            self.m_dataParsed = False
-        else:#crappy input
-            raise ValueError
+    def __init__(self, filePath):
+        self.m_filePath = filePath
+        substrings = filePath.split('/')
+        self.m_fileName = substrings[len(substrings) - 1]
+        self.m_dataParsed = False
+        self.m_dataInverted = False
+        self.m_listOfColumns = []
+        self.m_inputData = {}
+        self.m_coverages = {}
+        self.m_temperatureData = []
 
     def parseProcessedDataFile(self):
         if(self.m_dataParsed):
             return
         raise NotImplementedError
 
-    def getProcessedData(self):
+    def getInputData(self):
         raise NotImplementedError
 
     def getMassList(self):

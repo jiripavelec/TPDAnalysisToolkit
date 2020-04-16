@@ -8,6 +8,7 @@ from ProcessedDataWrapper import ProcessedDataWrapper
 class InvertDataControl(ProcessingStepControlBase):
     def __init__(self, controller):
         super().__init__("Invert TPD Data (Inversion Analysis Step #1)", controller)
+        self.m_parsedData = []
 
     def selectFiles(self):
         buffer = list(askopenfilenames())
@@ -33,6 +34,7 @@ class InvertDataControl(ProcessingStepControlBase):
 
     def useProcessedFiles(self):
         #grab processed data from processRawDataControl
+        raise NotImplementedError
         # self.m_parsedData = [ProcessedDataWrapper(rd) for rd in self.m_controller.requestProcessedData()]
         # self.m_fileList = [f.m_fileName for f in self.m_parsedData]
         # self.m_filePaths = [f.m_filePath for f in self.m_parsedData]

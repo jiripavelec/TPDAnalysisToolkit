@@ -23,7 +23,7 @@ class RawDataWrapper():
         # print(self.m_listOfColumns) #for debugging
 
         #parsed data is in row major format i.e. time(ms),temp, m1, m2, m3...
-        temp = np.loadtxt(self.m_filePath, dtype = float, skiprows=36, delimiter=',', usecols=range(1,len(self.m_listOfColumns)+1))
+        temp = np.loadtxt(self.m_filePath, dtype = float, skiprows=headerLength + 2, delimiter=',', usecols=range(1,len(self.m_listOfColumns)+1))
 
         #now columns can be traversed contiguously in memory
         self.m_parsedRawData = temp.transpose().copy()

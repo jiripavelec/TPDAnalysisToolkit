@@ -15,7 +15,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
 
     def selectFiles(self):
         # self.m_filesDirectory = askdirectory()
-        buffer = list(askopenfilenames())
+        buffer = list(askopenfilenames(defaultextension=".csv"))
         if not (len(buffer) == 0):
             self.m_filePaths = buffer.copy() #we don't want to use the same instance => .copy()
             self.m_fileList = list()
@@ -126,7 +126,9 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         if(massList == None or rawDataWrappers == None):
             raise ValueError
         for m in massList:
-            headerString = "Processed TPD data for mass " + m + "\nThe following files are included in this data set:\n"
+            headerString = "Processed TPD data for mass " + m + \
+                "\nHeader length is " + str(len(rawDataWrappers + 4)) + \
+                "\nThe following files are included in this data set:\n"
             #outputData starts out column-major
             outputData = rawDataWrappers[0].m_interpolatedTemp.copy() # start with temperature column
             labels = ["Temperature"]
@@ -234,7 +236,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         #Process Button
 
         self.m_processButton = ttk.Button(self.m_chord, text = "Process Input", command = self.processInput)
-        self.m_processButton.grid(row=13, column = 1, columnspan=2, sticky = "nse")
+        self.m_processButton.grid(row=13, column = 1, columnspan=2, sticky = "nsew")
 
         #Display options
 
@@ -246,8 +248,8 @@ class ProcessRawDataControl(ProcessingStepControlBase):
 
         self.m_massDisplayOptions.m_availableMassesListBox
 
-        self.m_saveDataButton = ttk.Button(self.m_chord, text = "Save Processed Data for Selected Masses", command = self.saveData)
-        self.m_saveDataButton.grid(row=16, column = 0, columnspan=3, sticky = "nsew")
+        self.m_saveDataButton = ttk.Button(self.m_chord, text = "Save Processed Data", command = self.saveData)
+        self.m_saveDataButton.grid(row=16, column = 1, columnspan=3, sticky = "nsew")
 
         for child in self.m_chord.winfo_children():
             child.grid_configure(padx=3, pady=3)

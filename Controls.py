@@ -161,7 +161,7 @@ class EnhancedEntry(ttk.Entry):
         super().__init__(parent, textvariable = self.m_backingVariable, *args, **kwargs)
 
     def get(self):
-        return int(self.m_backingVariable.get())
+        return self.m_backingVariable.get()
 #EnhancedEntry END
 
 #DisplayOptionsFrame BEGIN

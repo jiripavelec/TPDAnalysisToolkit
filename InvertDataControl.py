@@ -2,51 +2,35 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from PlotsFrame import MPLContainer
 from Controls import Chord, ScrolledListBox, EnhancedCheckButton, ProcessingStepControlBase, EnhancedEntry, DisplayOptionsFrame #ui element
-from tkinter.filedialog import askdirectory, askopenfilenames
+from tkinter.filedialog import askopenfilename
 from ProcessedDataWrapper import ProcessedDataWrapper
 
 class InvertDataControl(ProcessingStepControlBase):
     def __init__(self, controller):
         super().__init__("Invert TPD Data (Inversion Analysis Step #1)", controller)
-        self.m_parsedData = []
+        self.m_parsedData = None
 
-    def selectFiles(self):
-        buffer = list(askopenfilenames())
-        if not (len(buffer) == 0):
-            self.m_filePaths = buffer.copy() #we don't want to use the same instance => .copy()
-            self.m_fileList = list()
-            self.m_filesListBox.clear()
-            for p in self.m_filePaths:
-                substrings = p.split('/')
-                fName = substrings[len(substrings) - 1]
-                self.m_fileList.insert(0,fName)
-            
-            [self.m_filesListBox.insert(0, f) for f in self.m_fileList]
-            self.m_fileList.reverse()
-
-    def deselectFiles(self):
-        indices = list(self.m_filesListBox.curselection())
-        indices.reverse()
-        for i in indices:
-            self.m_filesListBox.delete(i)
-            self.m_filePaths.pop(i)
-            self.m_fileList.pop(i)
-
-    def useProcessedFiles(self):
-        #grab processed data from processRawDataControl
-        raise NotImplementedError
-        # self.m_parsedData = [ProcessedDataWrapper(rd) for rd in self.m_controller.requestProcessedData()]
-        # self.m_fileList = [f.m_fileName for f in self.m_parsedData]
-        # self.m_filePaths = [f.m_filePath for f in self.m_parsedData]
-        # self.m_filesListBox.clear()
-        # [self.m_filesListBox.insert(0, f) for f in self.m_fileList]
+    def selectFile(self):
+        buffer = askopenfilename(defaultextension=".pdat")
+        if (not buffer == None): #we only want a new filepath if it is a valid path
+            self.m_inputFilePath = buffer
+            substrings = self.m_inputFilePath.split('/')
+            self.m_inputFileName = substrings[len(substrings) - 1]
+            self.m_fileNameLabel.configure(text = self.m_inputFileName)
 
     def processInput(self):
-        self.m_invertedData = []
-        for f in self.m_parsedData:
-            if (not f.m_dataParsed):
-                raise NotImplementedError #parse data only if necessary
-            raise NotImplementedError #always invert data
+        self.m_invertedData = None
+        if (not self.m_inputFilePath == None):
+            self.m_parsedData = ProcessedDataWrapper(self.m_inputFilePath)
+            self.m_parsedData.parseProcessedDataFile()
+            self.m_parsedData.invertProcessedData(float(self.m_tPrefactorEntry.get()))
+            for c in self.mplContainers:
+                c.clearPlots()
+
+            self.mplContainers[0].addLinePlots(self.m_parsedData.getInputData())
+            self.mplContainers[1].addLinePlots(self.m_parsedData.getCoverageVSTemp())
+            for e in self.m_parsedData.getDesEnergyVSCoverageList():
+                self.mplContainers[2].addLinePlots(e)
 
     def changeRB(self):
         self.m_tPrefactorEntry.configure(state = 'disabled')
@@ -82,23 +66,14 @@ class InvertDataControl(ProcessingStepControlBase):
 
         # File selection
 
-        self.m_filesListBoxLabel = ttk.Label(self.m_chord, text='Input files:')
-        self.m_filesListBoxLabel.grid(row = 0, column = 0, columnspan = 2, sticky="nsw")
+        self.m_inputLabel = ttk.Label(self.m_chord, text='Input file:')
+        self.m_inputLabel.grid(row = 0, column = 0, columnspan = 2, sticky="nsw")
 
-        self.m_filesListBox = ScrolledListBox(self.m_chord)
-        self.m_filesListBox.grid(row = 1, column = 0, columnspan = 4, sticky = "nsew")
+        self.m_fileNameLabel = ttk.Label(self.m_chord, text='No file selected')
+        self.m_fileNameLabel.grid(row = 1, column = 1, columnspan = 3, sticky="nsew")
 
-        self.m_fileButtonFrame = ttk.Frame(self.m_chord)
-        self.m_fileButtonFrame.grid(row=2, column = 0, columnspan = 3, sticky = "nsew")
-
-        self.m_selectButton = ttk.Button(self.m_fileButtonFrame,text="Select Files",command = self.selectFiles)
-        self.m_selectButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
-
-        self.m_deselectButton = ttk.Button(self.m_fileButtonFrame,text="Remove Selected",command = self.deselectFiles)
-        self.m_deselectButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
-
-        # self.m_useProcessedButton = ttk.Button(self.m_fileButtonFrame,text="Use Data from Previous Step",command = self.useProcessedFiles)
-        # self.m_useProcessedButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
+        self.m_selectButton = ttk.Button(self.m_chord,text="Select File",command = self.selectFile)
+        self.m_selectButton.grid(row=2, column = 3, columnspan=1, sticky = "nsew")
 
         #Options
 
@@ -167,9 +142,6 @@ class InvertDataControl(ProcessingStepControlBase):
 
         for child in self.m_chord.winfo_children():
             child.grid_configure(padx=3, pady=3)
-
-        for child in self.m_fileButtonFrame.winfo_children():
-            child.pack_configure(padx=3, pady=3)
 
         self.m_chord.grid_columnconfigure(index=0, weight=1)
         self.m_chord.grid_columnconfigure(index=1, weight=1)

@@ -243,6 +243,14 @@ class DisplayOptionsFrame(ttk.Frame):
 
 #DisplayOptionsFrame END
 
+#EnhancedComboBox BEGIN
+class EnhancedComboBox(ttk.Combobox):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args,**kwargs)
+
+    
+#EnhancedComboBox END
+
 #ProcessingStepControlBase BEGIN
 class ProcessingStepControlBase:
     def __init__(self, title, controller):

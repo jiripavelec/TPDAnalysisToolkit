@@ -29,25 +29,25 @@ class InvertDataControl(ProcessingStepControlBase):
             for c in self.mplContainers:
                 c.clearPlots()
             if(self.m_RBVariable.get() == 0): #single prefactor
-                self.m_prefactors = [float(self.m_tPrefactorEntry.get())]
+                self.m_prefactors = ["{:e}".format(float(self.m_tPrefactorEntry.get()))]
             elif(self.m_RBVariable.get() == 1): #linear range
                 self.m_prefactors = []
                 currentEntry = float(self.m_tPrefactorStartEntry.get())
                 lastEntry = float(self.m_tPrefactorEndEntry.get())
                 incrementEntry = float(self.m_tPrefactorIncrementEntry.get())
                 while(currentEntry <= lastEntry):
-                    self.m_prefactors.append(float(currentEntry))
+                    self.m_prefactors.append("{:e}".format(currentEntry))
                     currentEntry += incrementEntry #increase by order of magnitude
             else: #multiplicative range
                 self.m_prefactors = []
                 currentEntry = float(self.m_tPrefactorStartEntry.get())
                 lastEntry = float(self.m_tPrefactorEndEntry.get())
                 while(currentEntry <= lastEntry):
-                    self.m_prefactors.append(float(currentEntry))
+                    self.m_prefactors.append("{:e}".format(currentEntry))
                     currentEntry *= 10.0 #increase by order of magnitude
 
             for p in self.m_prefactors:
-                self.m_parsedData.invertProcessedData(p) #do the calculations
+                self.m_parsedData.invertProcessedData(float(p)) #do the calculations
             self.m_prefactorCB["values"] = self.m_prefactors
             self.plotDataForSelectedPrefactor()
             
@@ -59,9 +59,11 @@ class InvertDataControl(ProcessingStepControlBase):
             if(selectedPrefactor == None):
                 self.m_prefactorCB.current(0) #set to first entry
                 selectedPrefactor = self.m_prefactorCB.get()
+            for c in self.mplContainers:
+                c.clearPlots()
             self.mplContainers[0].addLinePlots(self.m_parsedData.getInputData())
-            self.mplContainers[1].addLinePlots(self.m_parsedData.getCoverageVSTemp(selectedPrefactor))
-            for e in self.m_parsedData.getDesEnergyVSCoverageList(selectedPrefactor):
+            self.mplContainers[1].addLinePlots(self.m_parsedData.getCoverageVSTemp(float(selectedPrefactor)))
+            for e in self.m_parsedData.getDesEnergyVSCoverageList(float(selectedPrefactor)):
                 self.mplContainers[2].addLinePlots(e)
 
     def changeRB(self):

@@ -29,8 +29,8 @@ class ControlsFrame(tk.Frame):
         self.accordion.append_chords([c.m_chord for c in self.Controls])
         self.accordion.pack(fill=tk.BOTH, expand = True)
 
-    def requestProcessedData(self):
-        return self.m_rawDataControl.getProcessedData()
+    # def requestProcessedData(self):
+    #     return self.m_rawDataControl.getProcessedData()
 
     # def registerControl(self, control):
     #     # self.Controls[control.m_title] = control

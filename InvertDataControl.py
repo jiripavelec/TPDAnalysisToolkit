@@ -28,7 +28,9 @@ class InvertDataControl(ProcessingStepControlBase):
         if (not self.m_inputFilePath == None):
             self.m_parsedData = ProcessedDataWrapper(self.m_inputFilePath)
             self.m_parsedData.parseProcessedDataFile()
-            self.m_parsedData.clearInvertedData() #incase we are reusing the wrapper
+            if(not self.m_parsedData.m_normalized):
+                return #need a normalized monolayer coverage for inversion + simulation to make sense
+            # self.m_parsedData.clearInvertedData() #incase we are reusing the wrapper
             for c in self.mplContainers:
                 c.clearPlots()
             if(self.m_RBVariable.get() == 0): #single prefactor
@@ -55,6 +57,13 @@ class InvertDataControl(ProcessingStepControlBase):
 
             for p in self.m_prefactors:
                 self.m_parsedData.invertProcessedData(float(p)) #do the calculations
+            
+            self.m_parsedData.simulateCoveragesFromInvertedData()
+            self.m_parsedData.evaluateData()
+
+            self.mplContainers[4].clearPlots()
+            self.mplContainers[4].addLinePlots(self.m_parsedData.getChiSquaredVSPrefactor())
+
             self.m_prefactorCB["values"] = self.m_prefactors
             self.plotDataForSelectedPrefactor()
             
@@ -66,12 +75,17 @@ class InvertDataControl(ProcessingStepControlBase):
             if(selectedPrefactor == ''):
                 self.m_prefactorCB.current(0) #set to first entry
                 selectedPrefactor = self.m_prefactorCB.get()
-            for c in self.mplContainers:
-                c.clearPlots()
+            self.mplContainers[0].clearPlots()
             self.mplContainers[0].addLinePlots(self.m_parsedData.getInputData())
-            self.mplContainers[1].addLinePlots(self.m_parsedData.getCoverageVSTemp(float(selectedPrefactor)))
+            self.mplContainers[1].clearPlots()
+            self.mplContainers[1].addLinePlots(self.m_parsedData.getExpCoverageVSTemp(float(selectedPrefactor)))
+            self.mplContainers[2].clearPlots()
             for e in self.m_parsedData.getDesEnergyVSCoverageList(float(selectedPrefactor)):
                 self.mplContainers[2].addLinePlots(e)
+            self.mplContainers[3].clearPlots()
+            self.mplContainers[3].addLinePlots(self.m_parsedData.getExpDesorptionRateVSTemp)
+            self.mplContainers[3].addLinePlots(self.m_parsedData.getSimDesRateVSTemp(float(selectedPrefactor)))
+            
 
     def changeRB(self):
         self.m_tPrefactorEntry.configure(state = 'disabled')
@@ -112,9 +126,11 @@ class InvertDataControl(ProcessingStepControlBase):
     def initNotebook(self, parent):
         self.m_notebook = ttk.Notebook(parent)
 
-        self.mplContainers.append(MPLContainer(self.m_notebook, "Input Data", "Desorption Rate", "Temperature (K)"))
+        self.mplContainers.append(MPLContainer(self.m_notebook, "Input Data", "Desorption Rate (arb. U.)", "Temperature (K)"))
         self.mplContainers.append(MPLContainer(self.m_notebook, "Coverage vs. Temperature", "Coverage", "Temperature (K)"))
         self.mplContainers.append(MPLContainer(self.m_notebook, "Energy vs. Coverage", "Energy (eV)", "Coverage"))
+        self.mplContainers.append(MPLContainer(self.m_notebook, "Simulated Desorption Rate vs Coverage", "Desorption Rate (ML/K)", "Coverage"))
+        self.mplContainers.append(MPLContainer(self.m_notebook, "Chi Squared vs Prefactor", "Chi Squared Value", "Prefactor"))
 
         for c in self.mplContainers:
             self.m_notebook.add(c, text = c.m_title)

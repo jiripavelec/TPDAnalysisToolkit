@@ -127,8 +127,8 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             raise ValueError
         for m in massList:
             headerString = "Processed TPD data for mass " + m + \
-                "\nHeader length is " + str(len(rawDataWrappers) + 4) + \
-                "\nThe following files are included in this data set:\n"
+                "\nHeader length is " + str(len(rawDataWrappers) + 3) + \
+                "\nThe following files are included in this data set:"
             #outputData starts out column-major
             outputData = rawDataWrappers[0].m_interpolatedTemp.copy() # start with temperature column
             labels = ["Temperature"]

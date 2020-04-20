@@ -78,7 +78,8 @@ class ProcessedDataWrapper():
         #keys are prefactors
         for k in self.m_desorptionEnergies.keys():
             headerString = "Processed TPD data for mass " + str(self.m_mass) + \
-                "\nHeader length is " + str(3) + \
+                "\nHeader length is " + str(4) + \
+                "\nPrefactor is " + "{:e}".format(k) + \
                 "\nA temperature column is followed by pairs of coverage and desorption energy columns:\n"
             #outputData starts out column-major
             outputData = self.m_parsedInputData[0,:].copy() # start with temperature column

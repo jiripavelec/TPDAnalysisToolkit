@@ -1,4 +1,5 @@
 import numpy as np
+import threading
 
 class ProcessedDataWrapper():
     def __init__(self, filePath):
@@ -10,6 +11,8 @@ class ProcessedDataWrapper():
         self.m_listOfColumns = []
         self.m_parsedInputData = []
         self.m_totalCoverages = []
+        self.m_coverages = {} #dictionary to connect dataset with prefactor as key
+        self.m_desorptionEnergies = {} #dictionary to connect dataset with prefactor as key
 
     def parseProcessedDataFile(self):
         if(self.m_dataParsed):
@@ -32,30 +35,38 @@ class ProcessedDataWrapper():
     def getInputData(self):
         return self.m_parsedInputData
 
+    def clearInvertedData(self):
+        self.m_coverages = {} #dictionary to connect dataset with prefactor as key
+        self.m_desorptionEnergies = {} #dictionary to connect dataset with prefactor as key
+
     def invertProcessedData(self, prefactor, rampRate = 1, gasConstant_R = 8.314):
         #gas constant R in J/mol/K
         #ramp rate in K/s
-        self.m_coverages = np.zeros(shape=self.m_parsedInputData.shape)
-        self.m_desorptionEnergies = np.zeros(shape=self.m_parsedInputData.shape)
+        # coverageBuffer = np.zeros(shape=self.m_parsedInputData.shape)
+        # desorptionEnergiesBuffer = np.zeros(shape=self.m_parsedInputData.shape)
+        self.m_coverages[str(prefactor)] = np.zeros(shape=self.m_parsedInputData.shape)
+        self.m_desorptionEnergies[str(prefactor)] = np.zeros(shape=self.m_parsedInputData.shape)
 
         #calculate coverage vs temperature
         for i in range(len(self.m_totalCoverages)-1):
-            self.m_coverages[i,:] = np.array([self.m_totalCoverages[i+1] - np.trapz(self.m_parsedInputData[i+1,:j],x=self.m_parsedInputData[0,:j]) for j in range(self.m_parsedInputData.shape[1])])
+            self.m_coverages[str(prefactor)][i,:] = np.array([self.m_totalCoverages[i+1] - np.trapz(self.m_parsedInputData[i+1,:j],x=self.m_parsedInputData[0,:j]) for j in range(self.m_parsedInputData.shape[1])])
         # if (len(self.m_totalCoverages) > 1): #if we have multiple datasets, go through all of them
         factor1 = (rampRate * prefactor)
         factor2 = - gasConstant_R * 0.001 * 0.01036410 #factor for eV
         for i in range(len(self.m_totalCoverages)-1):
-            temp = self.m_parsedInputData[i+1,:] / self.m_coverages[i,:] / factor1
+            temp = self.m_parsedInputData[i+1,:] / self.m_coverages[str(prefactor)][i,:] / factor1
             # self.m_coverages = np.vstack((self.m_totalCoverages,np.trapz(self.m_parsedInputData[i,:],x=self.m_parsedInputData[0,:]) - self.m_totalCoverages[i]))
-            self.m_desorptionEnergies[i,:] = factor2 * self.m_parsedInputData[0,:] * np.log(temp)
+            self.m_desorptionEnergies[str(prefactor)][i,:] = factor2 * self.m_parsedInputData[0,:] * np.log(temp)
 
+        # self.m_coverages[str(prefactor)] = coverageBuffer
+        # self.m_desorptionEnergies[str(prefactor)] = desorptionEnergiesBuffer
         #E_des(:,i)=-R.*temp.*log(des_rate(:,i)./(ramp_rate.*pref_fce.*coverage_fc(:,i)))*0.001;% in kJ/mol
 
-    def getCoverageVSTemp(self):
-        return np.vstack((self.m_parsedInputData[0,:],self.m_coverages))
+    def getCoverageVSTemp(self, prefactor):
+        return np.vstack((self.m_parsedInputData[0,:],self.m_coverages[str(prefactor)]))
 
-    def getDesEnergyVSCoverageList(self):
+    def getDesEnergyVSCoverageList(self, prefactor):
         result = []
         for i in range(len(self.m_totalCoverages)-1):
-            result.append(np.vstack((self.m_coverages[i,:],self.m_desorptionEnergies[i,:])))
+            result.append(np.vstack((self.m_coverages[str(prefactor)][i,:],self.m_desorptionEnergies[str(prefactor)][i,:])))
         return result

@@ -227,7 +227,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         self.m_normSelection = ttk.Combobox(self.m_chord, state = tk.DISABLED)
         self.m_normSelection.grid(row=10, column=1, columnspan=2, sticky= "nsew")
 
-        self.m_subtractCB = EnhancedCheckButton(self.m_chord, text = "Subtract Spectrum", command=self.toggleSubtractCB, state = tk.DISABLED)
+        self.m_subtractCB = EnhancedCheckButton(self.m_chord, text = "Subtract Spectrum (select file):", command=self.toggleSubtractCB, state = tk.DISABLED)
         self.m_subtractCB.grid(row = 11, column = 1, sticky = "nsw")
 
         self.m_subtractSelection = ttk.Combobox(self.m_chord, state = tk.DISABLED)
@@ -240,7 +240,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
 
         #Display options
 
-        self.m_displayOptionsLabel = ttk.Label(self.m_chord, text='Display Options')
+        self.m_displayOptionsLabel = ttk.Label(self.m_chord, text='Display Options:')
         self.m_displayOptionsLabel.grid(row = 14, column = 0, columnspan = 2, sticky="nsw")
 
         self.m_massDisplayOptions = DisplayOptionsFrame(self.m_chord, self.plotSelectedMasses)

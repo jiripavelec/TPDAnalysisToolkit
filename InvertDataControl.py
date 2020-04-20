@@ -20,6 +20,7 @@ class InvertDataControl(ProcessingStepControlBase):
 
     def processInput(self):
         self.m_invertedData = None
+        #TODO: input checking + highlighting of incorrect entries
         if (not self.m_inputFilePath == None):
             self.m_parsedData = ProcessedDataWrapper(self.m_inputFilePath)
             self.m_parsedData.parseProcessedDataFile()
@@ -48,6 +49,9 @@ class InvertDataControl(ProcessingStepControlBase):
             self.m_tPrefactorStartEntry.configure(state = 'normal')
             self.m_tPrefactorEndEntry.configure(state = 'normal')
             
+    def saveData(self):
+        raise NotImplementedError
+
 
     def initNotebook(self, parent):
         self.m_notebook = ttk.Notebook(parent)
@@ -73,7 +77,7 @@ class InvertDataControl(ProcessingStepControlBase):
         self.m_fileNameLabel.grid(row = 1, column = 1, columnspan = 3, sticky="nsew")
 
         self.m_selectButton = ttk.Button(self.m_chord,text="Select File",command = self.selectFile)
-        self.m_selectButton.grid(row=2, column = 3, columnspan=1, sticky = "nsew")
+        self.m_selectButton.grid(row=2, column = 2, columnspan=1, sticky = "nse")
 
         #Options
 
@@ -122,23 +126,28 @@ class InvertDataControl(ProcessingStepControlBase):
         self.m_tPrefactorEndEntry = EnhancedEntry(self.m_chord)
         self.m_tPrefactorEndEntry.grid(row=10, column = 2, sticky = "nsw")
 
-        self.m_RBVariable.set(2)
+        self.m_RBVariable.set(0)
         self.changeRB()
 
         #Process Button
 
         self.m_processButton = ttk.Button(self.m_chord, text = "Process Input", command = self.processInput)
-        self.m_processButton.grid(row=11, column = 1, columnspan=2, sticky = "nse")
+        self.m_processButton.grid(row=11, column = 1, columnspan=2, sticky = "nsew")
 
         #Display options
 
-        self.m_displayOptionsLabel = ttk.Label(self.m_chord, text='Display Options')
-        self.m_displayOptionsLabel.grid(row = 12, column = 0, columnspan = 2, sticky="nsw")
+        # self.m_displayOptionsLabel = ttk.Label(self.m_chord, text='Display Options')
+        # self.m_displayOptionsLabel.grid(row = 12, column = 0, columnspan = 2, sticky="nsw")
 
-        self.m_massDisplayOptions = DisplayOptionsFrame(self.m_chord, self.plotSelectedMasses)
-        self.m_massDisplayOptions.grid(row = 13, column = 1, columnspan = 2, sticky = "nsw")
+        # self.m_massDisplayOptions = DisplayOptionsFrame(self.m_chord, self.plotSelectedMasses)
+        # self.m_massDisplayOptions.grid(row = 13, column = 1, columnspan = 2, sticky = "nsw")
 
-        self.m_massDisplayOptions.m_availableMassesListBox
+        # self.m_massDisplayOptions.m_availableMassesListBox
+
+        #Save Button
+
+        self.m_saveDataButton = ttk.Button(self.m_chord, text = "Save Inverted Data", command = self.saveData)
+        self.m_saveDataButton.grid(row=12, column = 1, columnspan=2, sticky = "nsew")
 
         for child in self.m_chord.winfo_children():
             child.grid_configure(padx=3, pady=3)

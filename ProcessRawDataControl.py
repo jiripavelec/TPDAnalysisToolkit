@@ -127,7 +127,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             raise ValueError
         for m in massList:
             headerString = "Processed TPD data for mass " + m + \
-                "\nHeader length is " + str(len(rawDataWrappers + 4)) + \
+                "\nHeader length is " + str(len(rawDataWrappers) + 4) + \
                 "\nThe following files are included in this data set:\n"
             #outputData starts out column-major
             outputData = rawDataWrappers[0].m_interpolatedTemp.copy() # start with temperature column
@@ -221,7 +221,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         self.m_removeBackgroundCB = EnhancedCheckButton(self.m_chord, text="Remove Background")
         self.m_removeBackgroundCB.grid(row = 8, column = 2, sticky = "nsw")
 
-        self.m_normalizeCB = EnhancedCheckButton(self.m_chord, text = "Normalize", command=self.toggleNormalizeCB)
+        self.m_normalizeCB = EnhancedCheckButton(self.m_chord, text = "Normalize to coverage of (select file):", command=self.toggleNormalizeCB)
         self.m_normalizeCB.grid(row = 9, column = 1, sticky = "nsw")
 
         self.m_normSelection = ttk.Combobox(self.m_chord, state = tk.DISABLED)

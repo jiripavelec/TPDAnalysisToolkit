@@ -76,12 +76,7 @@ class Accordion(tk.Frame):
                     #    label=label, i=i: label.config(bg=self.style['title_bg']))
                        label=c.m_label: label.config(bg=self.style['title_bg']))
         
-        self._click_handler(chords[0],chords)
-        # chords[0].grid() # start with first chord open
-        # chords[0].onClickedEvent()
-        # self.grid_rowconfigure(1, weight=1)
-
-        # chords[0].pack()
+        self._click_handler(chords[1],chords) # start with first chord open for debugging purposes
                        
     def _click_handler(self, target, chords):
         for chord in chords: #close other chords

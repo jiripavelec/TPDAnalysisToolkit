@@ -78,7 +78,6 @@ class RawDataWrapper():
             tRampEndIndex += 1 # find highest index of the ramp
             if(tRampEndIndex == self.m_correctedTemp.size - 1): break
 
-        #TODO: cut data by finding correct temperature, taking its index => then the time
         self.m_interpolatedTemp = np.arange(tCutStart, tCutEnd, tStep)
         for m in self.getMassList():
             temp = np.interp(self.m_interpolatedTemp, self.m_correctedTemp[tRampStartIndex:tRampEndIndex],
@@ -87,6 +86,9 @@ class RawDataWrapper():
                 temp = self.smooth_running_average(temp, smoothpoints)
             if removeBackground:
                 temp -= np.amin(temp)
+                zeroIndices = np.where(temp == 0) #find zeros
+                for i in zeroIndices:
+                    temp[i] = np.finfo(float).eps #add machine epsilon to zeros to avoid divide by zero in log later on
             # if normalize: #first step to normalizing -> find coverages
             self.m_coverages[m] = np.trapz(temp, dx= tStep) #write absolute coverage into dictionary
             self.m_interpolatedData[m] = temp

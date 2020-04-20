@@ -70,3 +70,34 @@ class ProcessedDataWrapper():
         for i in range(len(self.m_totalCoverages)-1):
             result.append(np.vstack((self.m_coverages[str(prefactor)][i,:],self.m_desorptionEnergies[str(prefactor)][i,:])))
         return result
+
+    def saveInvertedDataToFile(self,outputFilePath):
+        if(outputFilePath == None):
+            raise ValueError
+        
+        #keys are prefactors
+        for k in self.m_desorptionEnergies.keys():
+            headerString = "Processed TPD data for mass " + str(self.m_mass) + \
+                "\nHeader length is " + str(3) + \
+                "\nA temperature column is followed by pairs of coverage and desorption energy columns:\n"
+            #outputData starts out column-major
+            outputData = self.m_parsedInputData[0,:].copy() # start with temperature column
+            labels = ["Temperature"]
+            coverages = [str(0.0)]
+            for i in range(len(self.m_totalCoverages) - 1):
+                # headerString = headerString + w.m_fileName + "\n" #write filename to header for quick overview
+                outputData = np.vstack((outputData, self.m_coverages[k][i,:], self.m_desorptionEnergies[k][i,:])) #append data column for coverage and then mass
+                labels.append("Coverage") # append total coverage once for coverage column
+                labels.append("EDes") # append total coverage a second time for desorption energy column
+                coverages.append(str(self.m_totalCoverages[i+1])) # append total coverage once for coverage column
+                coverages.append(str(self.m_totalCoverages[i+1])) # append total coverage a second time for desorption energy column
+
+            #make one file per mass
+            namedOutputFilePath = outputFilePath + ".M" + str(self.m_mass) + "Prefactor_" + "{:e}".format(k) + ".invdat" #pdat for processed data
+            stringData = np.vstack((np.array(labels,dtype=str),np.array(coverages,dtype=str)))
+
+            with open(namedOutputFilePath, mode='a') as fileHandle:
+                #write header and stringData first
+                np.savetxt(fileHandle, stringData, fmt="%s", delimiter=' ', header=headerString)
+                #then write float data (after transposing it)
+                np.savetxt(fileHandle, outputData.transpose(), delimiter=' ')

@@ -116,8 +116,8 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         if(len(substrings) > 1):
             for s in substrings[1:-1]:
                 fileName = fileName + '.' + s
-        dateTimeString = str(datetime.now()).replace('-','').replace(' ', '_').replace(':','')
-        fileName = fileName + '.' + dateTimeString
+        # dateTimeString = str(datetime.now()).replace('-','').replace(' ', '_').replace(':','')
+        # fileName = fileName + '.' + dateTimeString
         outputFilePath = outputFilePath + '/' + fileName
 
         self.SaveProcessedDataToFile(outputFilePath,self.m_massDisplayOptions.getAllMasses(), self.m_parsedData)
@@ -140,7 +140,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
                 coverages.append(str(w.m_coverages[m]))
 
             #make one file per mass
-            namedOutputFilePath = outputFilePath + ".Mass_" + str(m) + ".pdat" #pdat for processed data
+            namedOutputFilePath = outputFilePath + ".M" + str(m) + ".pdat" #pdat for processed data
             stringData = np.vstack((np.array(labels,dtype=str),np.array(coverages,dtype=str)))
 
             with open(namedOutputFilePath, mode='a') as fileHandle:

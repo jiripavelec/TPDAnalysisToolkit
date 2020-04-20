@@ -4,6 +4,9 @@ from PlotsFrame import MPLContainer
 from Controls import Chord, ScrolledListBox, EnhancedCheckButton, ProcessingStepControlBase, EnhancedEntry, DisplayOptionsFrame #ui element
 from tkinter.filedialog import askopenfilename
 from ProcessedDataWrapper import ProcessedDataWrapper
+from tkinter.filedialog import asksaveasfilename
+from datetime import datetime
+import math
 
 class InvertDataControl(ProcessingStepControlBase):
     def __init__(self, controller):
@@ -31,17 +34,21 @@ class InvertDataControl(ProcessingStepControlBase):
             if(self.m_RBVariable.get() == 0): #single prefactor
                 self.m_prefactors = ["{:e}".format(float(self.m_tPrefactorEntry.get()))]
             elif(self.m_RBVariable.get() == 1): #linear range
-                self.m_prefactors = []
                 currentEntry = float(self.m_tPrefactorStartEntry.get())
                 lastEntry = float(self.m_tPrefactorEndEntry.get())
                 incrementEntry = float(self.m_tPrefactorIncrementEntry.get())
+                if((lastEntry - currentEntry)/incrementEntry > 20):
+                    raise ValueError #ridiculous amount of data points
+                self.m_prefactors = []
                 while(currentEntry <= lastEntry):
                     self.m_prefactors.append("{:e}".format(currentEntry))
                     currentEntry += incrementEntry #increase by order of magnitude
             else: #multiplicative range
-                self.m_prefactors = []
                 currentEntry = float(self.m_tPrefactorStartEntry.get())
                 lastEntry = float(self.m_tPrefactorEndEntry.get())
+                if(math.log(lastEntry) - math.log(currentEntry) > 20):
+                    raise ValueError #ridiculous amount of data points
+                self.m_prefactors = []
                 while(currentEntry <= lastEntry):
                     self.m_prefactors.append("{:e}".format(currentEntry))
                     currentEntry *= 10.0 #increase by order of magnitude
@@ -56,7 +63,7 @@ class InvertDataControl(ProcessingStepControlBase):
             return
         else:
             selectedPrefactor = self.m_prefactorCB.get()
-            if(selectedPrefactor == None):
+            if(selectedPrefactor == ''):
                 self.m_prefactorCB.current(0) #set to first entry
                 selectedPrefactor = self.m_prefactorCB.get()
             for c in self.mplContainers:
@@ -83,7 +90,23 @@ class InvertDataControl(ProcessingStepControlBase):
             self.m_tPrefactorEndEntry.configure(state = 'normal')
             
     def saveData(self):
-        raise NotImplementedError
+        if (self.m_parsedData == None):
+            return
+        outputFilePath = asksaveasfilename()
+        substrings = outputFilePath.split('/')
+        #consider using s = '/' result = s.join(substrings[x:y])
+        outputFilePath = substrings[0]
+        for s in substrings[1:-1]:
+            outputFilePath = outputFilePath + '/' + s
+        substrings = substrings[-1].split('.')
+        fileName = substrings[0]
+        if(len(substrings) > 1):
+            for s in substrings[1:-1]:
+                fileName = fileName + '.' + s
+        # dateTimeString = str(datetime.now()).replace('-','').replace(' ', '_').replace(':','')
+        # fileName = fileName + '.' + dateTimeString
+        outputFilePath = outputFilePath + '/' + fileName
+        self.m_parsedData.saveInvertedDataToFile(outputFilePath)
 
 
     def initNotebook(self, parent):
@@ -159,7 +182,12 @@ class InvertDataControl(ProcessingStepControlBase):
         self.m_tPrefactorEndEntry = EnhancedEntry(self.m_chord)
         self.m_tPrefactorEndEntry.grid(row=10, column = 2, sticky = "nsw")
 
-        self.m_RBVariable.set(0)
+        #default values
+
+        self.m_tPrefactorStartEntry.setBackingVar("1e13")
+        self.m_tPrefactorEndEntry.setBackingVar("1e20")
+
+        self.m_RBVariable.set(2)
         self.changeRB()
 
         #Process Button

@@ -61,8 +61,8 @@ class InvertDataControl(ProcessingStepControlBase):
             self.m_parsedData.simulateCoveragesFromInvertedData()
             self.m_parsedData.evaluateData()
 
-            self.mplContainers[4].clearPlots()
-            self.mplContainers[4].addLinePlots(self.m_parsedData.getChiSquaredVSPrefactor())
+            self.mplContainers[5].clearPlots()
+            self.mplContainers[5].addLinePlots(self.m_parsedData.getChiSquaredVSPrefactor())
 
             self.m_prefactorCB["values"] = self.m_prefactors
             self.plotDataForSelectedPrefactor()
@@ -83,8 +83,10 @@ class InvertDataControl(ProcessingStepControlBase):
             for e in self.m_parsedData.getDesEnergyVSCoverageList(float(selectedPrefactor)):
                 self.mplContainers[2].addLinePlots(e)
             self.mplContainers[3].clearPlots()
-            self.mplContainers[3].addLinePlots(self.m_parsedData.getExpDesorptionRateVSTemp)
-            self.mplContainers[3].addLinePlots(self.m_parsedData.getSimDesRateVSTemp(float(selectedPrefactor)))
+            # self.mplContainers[3].addLinePlots(self.m_parsedData.getExpDesorptionRateVSTemp())
+            self.mplContainers[3].addLinePlots(self.m_parsedData.getSimCoverageVSTemp(float(selectedPrefactor)))
+            self.mplContainers[4].clearPlots()
+            self.mplContainers[4].addLinePlots(self.m_parsedData.getSimDesRateVSTemp(float(selectedPrefactor)))
             
 
     def changeRB(self):
@@ -129,6 +131,7 @@ class InvertDataControl(ProcessingStepControlBase):
         self.mplContainers.append(MPLContainer(self.m_notebook, "Input Data", "Desorption Rate (arb. U.)", "Temperature (K)"))
         self.mplContainers.append(MPLContainer(self.m_notebook, "Coverage vs. Temperature", "Coverage", "Temperature (K)"))
         self.mplContainers.append(MPLContainer(self.m_notebook, "Energy vs. Coverage", "Energy (eV)", "Coverage"))
+        self.mplContainers.append(MPLContainer(self.m_notebook, "Simulated Coverage vs Temperature", "Coverge (ML)", "Temperature (K)"))
         self.mplContainers.append(MPLContainer(self.m_notebook, "Simulated Desorption Rate vs Coverage", "Desorption Rate (ML/K)", "Coverage"))
         self.mplContainers.append(MPLContainer(self.m_notebook, "Chi Squared vs Prefactor", "Chi Squared Value", "Prefactor"))
 
@@ -200,8 +203,8 @@ class InvertDataControl(ProcessingStepControlBase):
 
         #default values
 
-        self.m_tPrefactorStartEntry.setBackingVar("1e13")
-        self.m_tPrefactorEndEntry.setBackingVar("1e20")
+        self.m_tPrefactorStartEntry.setBackingVar("1e15")
+        self.m_tPrefactorEndEntry.setBackingVar("1e17")
 
         self.m_RBVariable.set(2)
         self.changeRB()

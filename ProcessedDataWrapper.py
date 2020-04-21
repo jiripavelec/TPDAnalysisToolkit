@@ -36,7 +36,7 @@ class ProcessedDataWrapper():
         else:
             self.m_normalized = True
 
-        temp = np.loadtxt(self.m_filePath, dtype = float, skiprows= headerLength + 2)
+        temp = np.loadtxt(self.m_filePath, dtype = float, comments = None, skiprows= headerLength + 2)
         
         #now columns can be traversed contiguously in memory
         self.m_parsedInputData = temp.transpose().copy()
@@ -118,23 +118,25 @@ class ProcessedDataWrapper():
                 np.savetxt(fileHandle, outputData.transpose(), delimiter=' ')
 
     def polanyiWigner(self,prefactor,coverageRow,monolayerCoverage,monolayerDesEnergy,temperature,eCharge = 1.6022e-19,kBoltz=1.3806e-23):
-        return -prefactor*coverageRow*np.exp(-np.interp(coverageRow,monolayerCoverage,monolayerDesEnergy)*eCharge/(kBoltz*temperature))
+        interpolatedEnergyInEV = np.interp(coverageRow,monolayerCoverage,monolayerDesEnergy)
+        result = -prefactor*coverageRow*np.exp(-interpolatedEnergyInEV*(eCharge/kBoltz)/temperature)
+        return result
 
     def simulateCoveragesFromInvertedData(self, tStep = 0.1):
         if (not self.m_dataInverted):
             raise ValueError #we need to perform inversion before simulation and evaluation
 
-        monolayerIndex = self.m_totalCoverages.index(1.0) #index of the data column associated with 1ML coverage
+        monolayerIndex = self.m_totalCoverages.index(1.0) - 1 #index of the data column associated with 1ML coverage
         temperature = self.m_parsedInputData[0,:] #temperature data column
         for k in self.m_expCoverages.keys():
-            monolayerCoverage = self.m_expCoverages[k][monolayerIndex,:] #should be same every time
-            monolayerDesEnergy = self.m_desorptionEnergies[k][monolayerIndex,:] #should be different every time
+            monolayerCoverage = self.m_expCoverages[k][monolayerIndex,::-1].copy() #should be same every time
+            monolayerDesEnergy = self.m_desorptionEnergies[k][monolayerIndex,::-1].copy() #should be different every time
             floatPrefactor = float(k)
             self.m_simCoverages[k] = np.zeros(shape=(len(temperature), len(self.m_totalCoverages) - 1))
             self.m_simDesorptionRate[k] = self.m_simCoverages[k].copy() #start with zeros and same shape
             self.m_simCoverages[k][0,:] = self.m_totalCoverages[1:] #starting values for coverages
             for i in range(len(temperature) - 1):
-                refSimCoverageRow = self.m_simCoverages[k][i,:]
+                refSimCoverageRow = self.m_simCoverages[k][i,:].copy()
                 #RK4 integration
                 k1 = self.polanyiWigner(floatPrefactor,
                                         refSimCoverageRow,
@@ -157,15 +159,21 @@ class ProcessedDataWrapper():
                                         monolayerDesEnergy,
                                         temperature[i] + tStep)
                 self.m_simDesorptionRate[k][i,:] = - k1.copy()
+                # for e in self.m_simDesorptionRate[k][i,:]:
+                #     if e >= 1.0:
+                #         e = 0.0
                 newSimCoverageRow = refSimCoverageRow + (1.0/6.0)*(k1+ 2.0*k2 + 2.0*k3 + k4)*tStep
-                done = False
-                for c in newSimCoverageRow:
-                    if c <= 0.0: #if simulated coverage is zero we have effectively desorbed the original dosed coverage
-                        c = 0
-                        done = True
-                self.m_simCoverages[k][i+1,:] = newSimCoverageRow # write new row to simulated data array
-                if done:
-                    break
+                # done = False
+                for j in range(len(newSimCoverageRow)):
+                    if newSimCoverageRow[j] < 1.0e-5: #nice idea, but can't do this because 
+                        newSimCoverageRow[j] = 0.0
+                    if newSimCoverageRow[j] > 1.0: #at some point the simulation diverges
+                        newSimCoverageRow[j] = 0.0
+                    
+                        # done = True
+                self.m_simCoverages[k][i+1,:] = newSimCoverageRow.copy() # write new row to simulated data array
+                # if done:
+                #     break
             self.m_simCoverages[k] = self.m_simCoverages[k].transpose().copy() #column major now
             self.m_simDesorptionRate[k] = self.m_simDesorptionRate[k].transpose().copy() #column major now
         self.m_dataSimulated = True #simulation done?
@@ -186,16 +194,14 @@ class ProcessedDataWrapper():
                 obs = self.m_parsedInputData[i+1,:] #observed desorption rate
                 difference = sim - obs
                 diffSquared = difference*difference
-                self.m_chiSquared[k][i] = np.cumsum(np.where(not obs == 0.0, diffSquared/obs, diffSquared/np.finfo(float).eps))
+                self.m_chiSquared[k][i] = np.sum(np.where( obs != 0.0, diffSquared/obs, diffSquared/np.finfo(float).eps))
 
     def getChiSquaredVSPrefactor(self):
-        prefactorList = self.m_chiSquared.keys()
+        prefactorList = list(self.m_chiSquared) #this returns the keys of the dictionary as an indexable list
         result = np.zeros((len(prefactorList),len(self.m_chiSquared[prefactorList[0]])))
+        result[0,:]
         for i in range(len(prefactorList)):
             for j in range(len(self.m_chiSquared[prefactorList[i]])):
                 result[i,j] = self.m_chiSquared[prefactorList[i]][j]
-        return result.transpose().copy()
-                
-                
-                
-
+        result = np.vstack((np.array([float(p) for p in prefactorList]),result.transpose()))
+        return result

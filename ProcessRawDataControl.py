@@ -6,7 +6,8 @@ from Controls import Chord, ScrolledListBox, EnhancedCheckButton, ProcessingStep
 from tkinter.filedialog import askdirectory, askopenfilenames, asksaveasfilename
 from RawDataWrapper import RawDataWrapper
 import numpy as np
-
+import os.path
+from os import path
 
 class ProcessRawDataControl(ProcessingStepControlBase):
     def __init__(self, controller):
@@ -141,6 +142,8 @@ class ProcessRawDataControl(ProcessingStepControlBase):
 
             #make one file per mass
             namedOutputFilePath = outputFilePath + ".M" + str(m) + ".pdat" #pdat for processed data
+            if(path.exists(namedOutputFilePath)):
+                raise ValueError #TODO: raise error and ask for rename
             stringData = np.vstack((np.array(labels,dtype=str),np.array(coverages,dtype=str)))
 
             with open(namedOutputFilePath, mode='a') as fileHandle:

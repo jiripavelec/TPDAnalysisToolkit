@@ -118,7 +118,7 @@ class ProcessedDataWrapper():
                 np.savetxt(fileHandle, outputData.transpose(), delimiter=' ')
 
     def polanyiWigner(self,prefactor,coverageRow,monolayerCoverage,monolayerDesEnergy,temperature,eCharge = 1.6022e-19,kBoltz=1.3806e-23):
-        return -prefactor*coverageRow*np.exp(-np.interp(monolayerCoverage,monolayerDesEnergy,coverageRow)*eCharge/(kBoltz*temperature))
+        return -prefactor*coverageRow*np.exp(-np.interp(coverageRow,monolayerCoverage,monolayerDesEnergy)*eCharge/(kBoltz*temperature))
 
     def simulateCoveragesFromInvertedData(self, tStep = 0.1):
         if (not self.m_dataInverted):
@@ -130,7 +130,7 @@ class ProcessedDataWrapper():
             monolayerCoverage = self.m_expCoverages[k][monolayerIndex,:] #should be same every time
             monolayerDesEnergy = self.m_desorptionEnergies[k][monolayerIndex,:] #should be different every time
             floatPrefactor = float(k)
-            self.m_simCoverages[k] = np.zeros(shape=self.m_parsedInputData.transpose().shape)
+            self.m_simCoverages[k] = np.zeros(shape=(len(temperature), len(self.m_totalCoverages) - 1))
             self.m_simDesorptionRate[k] = self.m_simCoverages[k].copy() #start with zeros and same shape
             self.m_simCoverages[k][0,:] = self.m_totalCoverages[1:] #starting values for coverages
             for i in range(len(temperature) - 1):

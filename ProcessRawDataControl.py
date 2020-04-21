@@ -2,7 +2,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from datetime import datetime
 from PlotsFrame import MPLContainer
-from Controls import Chord, ScrolledListBox, EnhancedCheckButton, ProcessingStepControlBase, DisplayOptionsFrame, EnhancedEntry #ui element
+from Controls import Chord, ScrolledListBox, EnhancedCheckButton, ProcessingStepControlBase, DisplayOptionsFrame, EnhancedEntry #ui elements
 from tkinter.filedialog import askdirectory, askopenfilenames, asksaveasfilename
 from RawDataWrapper import RawDataWrapper
 import numpy as np
@@ -15,7 +15,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
 
     def selectFiles(self):
         # self.m_filesDirectory = askdirectory()
-        buffer = list(askopenfilenames(defaultextension=".csv"))
+        buffer = list(askopenfilenames(defaultextension=".csv", filetypes=[('Comma-separated Values','*.csv'), ('All files','*.*')]))
         if not (len(buffer) == 0):
             self.m_filePaths = buffer.copy() #we don't want to use the same instance => .copy()
             self.m_fileList = list()

@@ -3,6 +3,7 @@ import tkinter.ttk as ttk
 from Controls import Accordion
 from ProcessRawDataControl import ProcessRawDataControl
 from InvertDataControl import InvertDataControl
+from RedheadAnalysisControl import RedheadAnalysisControl
 
 #ControlsFrame BEGIN
 class ControlsFrame(tk.Frame):
@@ -21,6 +22,10 @@ class ControlsFrame(tk.Frame):
         #For inversion of processed data
         self.m_invertDataControl = InvertDataControl(self)
         self.Controls.append(self.m_invertDataControl)
+
+        #For redhead analysis
+        self.m_redheadAnalysisControl = RedheadAnalysisControl(self)
+        self.Controls.append(self.m_redheadAnalysisControl)
 
     def initChords(self,plotsFrame):
         for c in self.Controls:

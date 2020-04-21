@@ -10,12 +10,12 @@ import math
 
 class InvertDataControl(ProcessingStepControlBase):
     def __init__(self, controller):
-        super().__init__("Invert TPD Data (Inversion Analysis Step #1)", controller)
+        super().__init__("Inversion Analysis", controller)
         self.m_parsedData = None
         self.m_prefactors = []
 
     def selectFile(self):
-        buffer = askopenfilename(defaultextension=".pdat")
+        buffer = askopenfilename(defaultextension=".pdat", filetypes=[('Processed Data','*.pdat'), ('All files','*.*')])
         if (not buffer == None): #we only want a new filepath if it is a valid path
             self.m_inputFilePath = buffer
             substrings = self.m_inputFilePath.split('/')

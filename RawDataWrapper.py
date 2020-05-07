@@ -7,12 +7,25 @@ class RawDataWrapper():
         self.m_fileName = substrings[len(substrings) - 1]
         self.m_dataParsed = False
         self.m_dataProcessed = False
+        self.m_coveragesNormalized = False
         self.m_interpolatedData = {}
+        self.m_parsedCoverage = "No coverage in filename!"
         self.m_coverages = {}
 
     def parseRawDataFile(self):
         if(self.m_dataParsed):
             return
+
+        substrings = self.m_fileName.split(' ')
+        for s in substrings:
+            if (s[-1] == 'L'):
+                try:
+                    float(s[:-1]) #this will throw a value error if not possible
+                    self.m_parsedCoverage = s
+                    break
+                except ValueError:
+                    continue #Not a float
+
         self.m_headerData = np.loadtxt(self.m_filePath,dtype=str, skiprows=1,max_rows=1, delimiter=',')
          #second item is the number of lines remaining in the header after the second line
         headerLength = int(self.m_headerData.item(1))
@@ -43,7 +56,7 @@ class RawDataWrapper():
         return [self.m_listOfColumns.index(m) for m in massList]
 
     def smooth_running_average(self, x, N): #running average
-        cumsum = np.cumsum(np.insert(x, 0, 0)) 
+        cumsum = np.cumsum(np.insert(x, 0, 0))
         smoothResult = (cumsum[N:] - cumsum[:-N]) / float(N)
         smoothResult = np.insert(smoothResult,0,x[:N-1])
         smoothResult = np.append(smoothResult,x[N:-1:-1])
@@ -104,6 +117,7 @@ class RawDataWrapper():
             # self.m_coverages[m] = np.trapz(self.m_interpolatedData[m], dx= self.m_tStep)
             self.m_coverages[m] /= referenceCoverage
             self.m_interpolatedData[m] /= referenceCoverage
+        self.m_coveragesNormalized = True
 
     def getProcessedData(self, desiredMasses):
         result = self.m_interpolatedTemp
@@ -113,6 +127,21 @@ class RawDataWrapper():
         # return np.concatenate((self.m_correctedTemp,self.m_parsedRawData[self.m_listOfColumns.index('temperature')+1:,:]))
         return result
 
+    def getCoverageLabels(self, desiredMasses):
+        result = []
+        for m in desiredMasses:
+            if self.m_coveragesNormalized:
+                result.append("M" + m + ' {:04.2f} ML'.format(self.m_coverages[m]))
+            else:
+                result.append("M" + m + " " + self.m_parsedCoverage)
+                # result.append("M" + m + ' {:f} Counts'.format(self.m_coverages[m]))
+        return result
+
+    def getLangmuirLabels(self, desiredMasses):
+        result = []
+        for m in desiredMasses:
+            result.append("M" + m + " " + self.m_parsedCoverage)
+        return result
     # def saveProcessedData(self, massList = None, filename = None):
     #     #use tkFileDialog.asksaveasfile
     #     if not self.m_dataProcessed:
@@ -140,9 +169,9 @@ class RawDataWrapper():
 
     #     np.savetxt(outputFilePath, output.transpose(), delimiter=',', header=headerString)
 
-        
-        
-        
-        
+
+
+
+
 
 

@@ -64,9 +64,11 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         for c in self.mplContainers:
             c.clearPlots()
 
+        tempMasses = self.m_massDisplayOptions.getMassesToDisplay()
+
         for d in self.m_parsedData:
-            self.mplContainers[0].addLinePlots(d.getRawData(self.m_massDisplayOptions.getMassesToDisplay()))
-            self.mplContainers[1].addLinePlots(d.getProcessedData(self.m_massDisplayOptions.getMassesToDisplay()))
+            self.mplContainers[0].addLinePlots(d.getRawData(tempMasses),d.getLangmuirLabels(tempMasses))
+            self.mplContainers[1].addLinePlots(d.getProcessedData(tempMasses),d.getCoverageLabels(tempMasses))
 
     def processInput(self):
         self.m_parsedData = []

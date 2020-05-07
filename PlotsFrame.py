@@ -1,5 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
+import operator
 
 from datetime import datetime
 import matplotlib as mpl
@@ -56,7 +57,7 @@ class MPLContainer(tk.Frame):
         # bck = mpl.get_backend()
         # print("Backendis" + bck)
         self.m_figure = Figure( dpi=96)
-        self.m_subplot = self.m_figure.add_subplot(111)
+        self.m_subplot = self.m_figure.add_subplot(111) #add_subplot returns axes
 
         self.m_subplot.set_title(self.m_title)
         self.m_subplot.set_xlabel(self.m_xAxisName)
@@ -88,12 +89,34 @@ class MPLContainer(tk.Frame):
             line = self.m_subplot.lines.pop(i)
             del line
 
-    def addLinePlots(self, ndarrayData):
+    def addLinePlots(self, ndarrayData, labels = None):
         #draw new lines
+        # tempLines = []
+
         if ndarrayData.ndim >= 2:
             for i in range(1,ndarrayData.shape[0]):
-                self.m_subplot.plot(ndarrayData[0,:],ndarrayData[i,:])
+                # tempLines.append(self.m_subplot.plot(ndarrayData[0,:],ndarrayData[i,:]))
+                if(labels != None):
+                    self.m_subplot.plot(ndarrayData[0,:],ndarrayData[i,:], label = labels[i-1])
+                else:
+                    self.m_subplot.plot(ndarrayData[0,:],ndarrayData[i,:])
+            # self.m_subplot.plot(ndarrayData[0,:],ndarrayData[1:,:])
 
+        if (labels != None):
+            handles, labels = self.m_subplot.get_legend_handles_labels()
+            # reverse the order
+            #self.m_subplot.legend(handles[::-1], labels[::-1])
+
+            # or sort them by labels
+            hl = sorted(zip(handles, labels),
+                        key=operator.itemgetter(1))
+            handles2, labels2 = zip(*hl)
+            self.m_subplot.legend(handles2, labels2)
+
+        # if (labels != None):
+        #     # self.m_subplot.legend(tempLines, labels)
+        #     self.m_subplot.legend(self.m_subplot.lines, labels)
+                
         #resize axes
         self.m_subplot.relim()
 

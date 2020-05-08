@@ -7,6 +7,7 @@ from ProcessedDataWrapper import ProcessedDataWrapper
 from tkinter.filedialog import asksaveasfilename
 from datetime import datetime
 import math
+import multiprocessing
 
 class InvertDataControl(ProcessingStepControlBase):
     def __init__(self, controller):
@@ -55,14 +56,25 @@ class InvertDataControl(ProcessingStepControlBase):
                     self.m_prefactors.append("{:e}".format(currentEntry))
                     currentEntry *= 10.0 #increase by order of magnitude
 
+            # if( len(self.m_prefactors) == 1): #only one prefactor
+            #     self.m_parsedData.invertProcessedData(float(self.m_prefactors[0])) #do the calculations
+            # else: #try multiprocessing
+            #     cpu_count = multiprocessing.cpu_count()
+            #     if( cpu_count == 1): #single-core
+            #         for p in self.m_prefactors:
+            #             self.m_parsedData.invertProcessedData(float(p)) #do the calculations
+            #     else: #try using as many cores as there are prefactors, or at least as many cores as we have (minus one for UI thread)
+            #         with multiprocessing.Pool(min(cpu_count - 1,len(self.m_prefactors))) as p:
+            #             p.map(self.m_parsedData.invertProcessedData, [float(p) for p in self.m_prefactors])
+            
             for p in self.m_prefactors:
                 self.m_parsedData.invertProcessedData(float(p)) #do the calculations
-            
+
             self.m_parsedData.simulateCoveragesFromInvertedData()
             self.m_parsedData.evaluateData()
 
             self.mplContainers[5].clearPlots()
-            self.mplContainers[5].addLinePlots(self.m_parsedData.getChiSquaredVSPrefactor())
+            self.mplContainers[5].addLinePlots(self.m_parsedData.getChiSquaredVSPrefactor(),logXAxis = True, logYAxis = True)
 
             self.m_prefactorCB["values"] = self.m_prefactors
             self.plotDataForSelectedPrefactor()
@@ -76,17 +88,17 @@ class InvertDataControl(ProcessingStepControlBase):
                 self.m_prefactorCB.current(0) #set to first entry
                 selectedPrefactor = self.m_prefactorCB.get()
             self.mplContainers[0].clearPlots()
-            self.mplContainers[0].addLinePlots(self.m_parsedData.getInputData())
+            self.mplContainers[0].addLinePlots(self.m_parsedData.getInputData(),self.m_parsedData.getCoverageLabels())
             self.mplContainers[1].clearPlots()
-            self.mplContainers[1].addLinePlots(self.m_parsedData.getExpCoverageVSTemp(float(selectedPrefactor)))
+            self.mplContainers[1].addLinePlots(self.m_parsedData.getExpCoverageVSTemp(float(selectedPrefactor)),self.m_parsedData.getCoverageLabels())
             self.mplContainers[2].clearPlots()
-            for e in self.m_parsedData.getDesEnergyVSCoverageList(float(selectedPrefactor)):
-                self.mplContainers[2].addLinePlots(e)
+            for e,lbl in zip(self.m_parsedData.getDesEnergyVSCoverageList(float(selectedPrefactor)),self.m_parsedData.getCoverageLabels()):
+                self.mplContainers[2].addLinePlots(e,lbl)
             self.mplContainers[3].clearPlots()
             # self.mplContainers[3].addLinePlots(self.m_parsedData.getExpDesorptionRateVSTemp())
-            self.mplContainers[3].addLinePlots(self.m_parsedData.getSimCoverageVSTemp(float(selectedPrefactor)))
+            self.mplContainers[3].addLinePlots(self.m_parsedData.getSimCoverageVSTemp(float(selectedPrefactor)),self.m_parsedData.getCoverageLabels())
             self.mplContainers[4].clearPlots()
-            self.mplContainers[4].addLinePlots(self.m_parsedData.getSimDesRateVSTemp(float(selectedPrefactor)))
+            self.mplContainers[4].addLinePlots(self.m_parsedData.getSimDesRateVSTemp(float(selectedPrefactor)),self.m_parsedData.getCoverageLabels())
             
 
     def changeRB(self):

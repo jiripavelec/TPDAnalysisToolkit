@@ -74,7 +74,7 @@ class ProcessedDataWrapper():
         self.m_dataInverted = True
 
     def getExpCoverageVSTemp(self, prefactor):
-        return np.vstack((self.m_parsedInputData[0,:],self.m_expCoverages[str(prefactor)]))
+        return np.vstack((self.m_parsedInputData[0,:],self.m_expCoverages[str(prefactor)][1:,:]))
 
     def getExpDesorptionRateVSTemp(self):
         return self.m_parsedInputData
@@ -194,14 +194,23 @@ class ProcessedDataWrapper():
                 obs = self.m_parsedInputData[i+1,:] #observed desorption rate
                 difference = sim - obs
                 diffSquared = difference*difference
-                self.m_chiSquared[k][i] = np.sum(np.where( obs != 0.0, diffSquared/obs, diffSquared/np.finfo(float).eps))
+                # self.m_chiSquared[k][i] = np.sum(np.where( obs != 0.0, diffSquared/obs, diffSquared/np.finfo(float).eps))
+                self.m_chiSquared[k][i] = np.sum(np.where( obs > 1.0e-6, diffSquared/obs, diffSquared/np.finfo(float).eps))
+                # if self.m_chiSquared[k][i] > 1000:
+                #     print("Wierd chiSquared")
 
     def getChiSquaredVSPrefactor(self):
         prefactorList = list(self.m_chiSquared) #this returns the keys of the dictionary as an indexable list
         result = np.zeros((len(prefactorList),len(self.m_chiSquared[prefactorList[0]])))
-        result[0,:]
+        #result[0,:]
         for i in range(len(prefactorList)):
             for j in range(len(self.m_chiSquared[prefactorList[i]])):
                 result[i,j] = self.m_chiSquared[prefactorList[i]][j]
         result = np.vstack((np.array([float(p) for p in prefactorList]),result.transpose()))
+        return result
+
+    def getCoverageLabels(self):
+        result = []
+        for c in self.m_totalCoverages[1:]:
+            result.append("M" + str(self.m_mass) + ' {:04.2f} ML'.format(c))
         return result

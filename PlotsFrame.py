@@ -89,14 +89,16 @@ class MPLContainer(tk.Frame):
             line = self.m_subplot.lines.pop(i)
             del line
 
-    def addLinePlots(self, ndarrayData, labels = None):
+    def addLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False):
         #draw new lines
         # tempLines = []
 
         if ndarrayData.ndim >= 2:
             for i in range(1,ndarrayData.shape[0]):
                 # tempLines.append(self.m_subplot.plot(ndarrayData[0,:],ndarrayData[i,:]))
-                if(labels != None):
+                if (type(labels) is str):
+                    self.m_subplot.plot(ndarrayData[0,:],ndarrayData[i,:], label = labels)
+                elif(labels != None):
                     self.m_subplot.plot(ndarrayData[0,:],ndarrayData[i,:], label = labels[i-1])
                 else:
                     self.m_subplot.plot(ndarrayData[0,:],ndarrayData[i,:])
@@ -113,6 +115,10 @@ class MPLContainer(tk.Frame):
             handles2, labels2 = zip(*hl)
             self.m_subplot.legend(handles2, labels2)
 
+        if (logXAxis):
+            self.m_subplot.set_xscale("log")
+        if (logYAxis):
+            self.m_subplot.set_yscale("log")
         # if (labels != None):
         #     # self.m_subplot.legend(tempLines, labels)
         #     self.m_subplot.legend(self.m_subplot.lines, labels)

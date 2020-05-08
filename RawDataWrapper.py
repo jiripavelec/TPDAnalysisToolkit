@@ -20,8 +20,8 @@ class RawDataWrapper():
         for s in substrings:
             if (s[-1] == 'L'):
                 try:
-                    float(s[:-1]) #this will throw a value error if not possible
-                    self.m_parsedCoverage = s
+                    s = float(s[:-1]) #this will throw a value error if not possible
+                    self.m_parsedCoverage = "{:04.2f}L".format(s)
                     break
                 except ValueError:
                     continue #Not a float

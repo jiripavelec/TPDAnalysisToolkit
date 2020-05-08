@@ -74,7 +74,7 @@ class ProcessedDataWrapper():
         self.m_dataInverted = True
 
     def getExpCoverageVSTemp(self, prefactor):
-        return np.vstack((self.m_parsedInputData[0,:],self.m_expCoverages[str(prefactor)][1:,:]))
+        return np.vstack((self.m_parsedInputData[0,:],self.m_expCoverages[str(prefactor)][:-1,:]))
 
     def getExpDesorptionRateVSTemp(self):
         return self.m_parsedInputData
@@ -136,7 +136,7 @@ class ProcessedDataWrapper():
             self.m_simDesorptionRate[k] = self.m_simCoverages[k].copy() #start with zeros and same shape
             self.m_simCoverages[k][0,:] = self.m_totalCoverages[1:] #starting values for coverages
             for i in range(len(temperature) - 1):
-                refSimCoverageRow = self.m_simCoverages[k][i,:].copy()
+                refSimCoverageRow = self.m_simCoverages[k][i,:]
                 #RK4 integration
                 k1 = self.polanyiWigner(floatPrefactor,
                                         refSimCoverageRow,
@@ -177,6 +177,17 @@ class ProcessedDataWrapper():
             self.m_simCoverages[k] = self.m_simCoverages[k].transpose().copy() #column major now
             self.m_simDesorptionRate[k] = self.m_simDesorptionRate[k].transpose().copy() #column major now
         self.m_dataSimulated = True #simulation done?
+
+        # if( len(self.m_prefactors) == 1): #only one prefactor
+        #     self.m_parsedData.invertProcessedData(float(self.m_prefactors[0])) #do the calculations
+        # else: #try multiprocessing
+        #     cpu_count = multiprocessing.cpu_count()
+        #     if( cpu_count == 1): #single-core
+        #         for p in self.m_prefactors:
+        #             self.m_parsedData.invertProcessedData(float(p)) #do the calculations
+        #     else: #try using as many cores as there are prefactors, or at least as many cores as we have (minus one for UI thread)
+        #         with multiprocessing.Pool(min(cpu_count - 1,len(self.m_prefactors))) as p:
+        #             p.map(self.m_parsedData.invertProcessedData, [float(p) for p in self.m_prefactors])
 
     def getSimCoverageVSTemp(self, prefactor):
         return np.vstack((self.m_parsedInputData[0,:],self.m_simCoverages[str(prefactor)]))

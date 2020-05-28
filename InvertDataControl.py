@@ -153,7 +153,8 @@ class InvertDataControl(ProcessingStepControlBase):
         self.m_notebook.grid(row=0,column=0,sticky="nsew")
 
     def initChordUI(self, parentAccordion):
-        self.m_chord = Chord(parentAccordion, self.m_notebook, title=self.m_title)
+        self.m_chordContainer = Chord(parentAccordion, self.m_notebook, title=self.m_title)
+        self.m_chord = self.m_chordContainer.m_scrollable_frame
 
         # File selection
 

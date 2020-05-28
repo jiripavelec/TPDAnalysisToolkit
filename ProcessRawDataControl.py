@@ -170,7 +170,8 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         self.m_notebook.grid(row=0,column=0,sticky="nsew")
 
     def initChordUI(self, parent):
-        self.m_chord = Chord(parent, self.m_notebook, title=self.m_title)
+        self.m_chordContainer = Chord(parent, self.m_notebook, title=self.m_title)
+        self.m_chord = self.m_chordContainer.m_scrollable_frame
 
         # File selection
 

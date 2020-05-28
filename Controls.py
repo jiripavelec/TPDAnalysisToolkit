@@ -13,7 +13,23 @@ class Chord(ttk.Frame):
         self.controlRef = controlRef
         self.m_label = ""
 
-    
+        #creating scrollable content container here
+        self.m_canvas = tk.Canvas(self)
+        self.m_scrollbar = ttk.Scrollbar(self, orient="vertical", command=self.m_canvas.yview)
+        self.m_scrollable_frame = ttk.Frame(self.m_canvas)
+        self.m_scrollable_frame.bind(
+                "<Configure>",
+                lambda e: self.m_canvas.configure(
+                    scrollregion=self.m_canvas.bbox("all")
+                )
+            )
+        self.m_canvas.create_window((0, 0), window=self.m_scrollable_frame, anchor="nw")
+        self.m_canvas.configure(yscrollcommand=self.m_scrollbar.set)
+
+        self.m_canvas.pack(side="left", fill="both", expand=True)
+        self.m_scrollbar.pack(side="right", fill="y")
+
+
     def setRowIdx(self, rowIndex):
         self.m_row = rowIndex
 

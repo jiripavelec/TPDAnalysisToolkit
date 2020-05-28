@@ -31,7 +31,7 @@ class ControlsFrame(tk.Frame):
         for c in self.Controls:
             c.initNotebook(plotsFrame)
             c.initChordUI(self.accordion)
-        self.accordion.append_chords([c.m_chord for c in self.Controls])
+        self.accordion.append_chords([c.m_chordContainer for c in self.Controls])
         self.accordion.pack(fill=tk.BOTH, expand = True)
 
     # def requestProcessedData(self):

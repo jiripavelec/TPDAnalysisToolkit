@@ -26,8 +26,8 @@ class Chord(ttk.Frame):
         self.m_canvas.create_window((0, 0), window=self.m_scrollable_frame, anchor="nw")
         self.m_canvas.configure(yscrollcommand=self.m_scrollbar.set)
 
-        self.m_canvas.pack(side="left", fill="both", expand=True)
-        self.m_scrollbar.pack(side="right", fill="y")
+        self.m_scrollbar.pack(side="left", fill="y")
+        self.m_canvas.pack(side="left", fill="y", expand=True)
 
 
     def setRowIdx(self, rowIndex):

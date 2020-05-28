@@ -14,18 +14,17 @@ class MainFrame(tk.Frame):
     def initUI(self):
         self.master.title("TPD Toolkit")
         self.pack(fill=tk.BOTH, expand=True)
-        #TODO: consider using tkinter PanedWindow for draggable divider
-        #see
-        #https://stackoverflow.com/questions/27102077/make-stretchable-split-screen-in-tkinter
-        #and
-        #http://effbot.org/tkinterbook/panedwindow.htm
 
-        self.plotsFrame = PlotsFrame(self, bg ='white')
-        self.plotsFrame.place(relx = 0.25, rely = 0.0, relwidth = 0.75, relheight = 1.0, anchor = "nw", bordermode = tk.INSIDE)
+        self.m_panedWindow = ttk.PanedWindow(self, orient=tk.HORIZONTAL)
+        self.m_panedWindow.pack(side=tk.LEFT, fill = tk.BOTH, expand=True)
 
-        self.controlsFrame = ControlsFrame(self, bg = 'white', relief='groove')
-        self.controlsFrame.place(relx = 0.0, rely = 0.0, relwidth = 0.25, relheight = 1.0, anchor = "nw", bordermode = tk.INSIDE)
+        self.plotsFrame = PlotsFrame(self.m_panedWindow, bg ='white')
+        # self.plotsFrame.place(relx = 0.25, rely = 0.0, relwidth = 0.75, relheight = 1.0, anchor = "nw", bordermode = tk.INSIDE)
+        self.controlsFrame = ControlsFrame(self.m_panedWindow, bg = 'white', relief='groove')
+        # self.controlsFrame.place(relx = 0.0, rely = 0.0, relwidth = 0.25, relheight = 1.0, anchor = "nw", bordermode = tk.INSIDE)
         self.controlsFrame.initChords(self.plotsFrame)
+        self.m_panedWindow.add(self.controlsFrame)
+        self.m_panedWindow.add(self.plotsFrame)
 
         self.lastWidth = self.winfo_width()
         self.lastHeight = self.winfo_height()

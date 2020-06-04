@@ -14,7 +14,7 @@ class Chord(ttk.Frame):
         self.m_label = ""
 
         #creating scrollable content container here
-        self.m_canvas = tk.Canvas(self)
+        self.m_canvas = tk.Canvas(self, bd=0, highlightthickness=0)
         self.m_scrollbar = ttk.Scrollbar(self, orient="vertical", command=self.m_canvas.yview)
         self.m_scrollable_frame = ttk.Frame(self.m_canvas)
         self.m_scrollable_frame.bind(
@@ -92,7 +92,7 @@ class Accordion(tk.Frame):
                     #    label=label, i=i: label.config(bg=self.style['title_bg']))
                        label=c.m_label: label.config(bg=self.style['title_bg']))
         
-        self._click_handler(chords[1],chords) # start with first chord open for debugging purposes
+        self._click_handler(chords[0],chords) # start with first chord open for debugging purposes
                        
     def _click_handler(self, target, chords):
         for chord in chords: #close other chords

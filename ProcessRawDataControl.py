@@ -12,6 +12,8 @@ from os import path
 class ProcessRawDataControl(ProcessingStepControlBase):
     def __init__(self, controller):
         super().__init__("Process TPD Data", controller)
+        self.m_filePaths = []
+        self.m_parsedData = []
         # self.m_filesDirectory = ""
 
     def selectFiles(self):
@@ -70,7 +72,39 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             self.mplContainers[0].addLinePlots(d.getRawData(tempMasses),d.getLangmuirLabels(tempMasses))
             self.mplContainers[1].addLinePlots(d.getProcessedData(tempMasses),d.getCoverageLabels(tempMasses))
 
+    def checkInput(self):
+        if(len(self.m_filePaths) == 0): #check for file selection
+            tk.messagebox.showerror("Input Files", "Please select at least one file to process.")
+            return False
+
+        try:
+            int(self.m_tCutStartEntry.get())
+        except ValueError:
+            tk.messagebox.showerror("Cut Data Start Temp", "Please enter an integer for the temperature at which to start cutting data.")
+            return False
+
+        try:
+            int(self.m_tCutEndEntry.get())
+        except ValueError:
+            tk.messagebox.showerror("Cut Data End Temp", "Please enter an integer for the temperature at which to stop cutting data.")
+            return False
+
+        try: #check for tCutStart
+            int(self.m_tRampStartEntry.get())
+        except ValueError:
+            tk.messagebox.showerror("Ramp Start Temp", "Please enter an integer for a temperature slightly beyond the start of the linear temperature ramp.")
+            return False
+
+        try: #check for tCutEnd
+            int(self.m_tRampEndEntry.get())
+        except ValueError:
+            tk.messagebox.showerror("Remp End Temp", "Please enter an integer for a temperature slightly before the end of the linear temperature ramp.")
+            return False
+        
+        return True
+
     def processInput(self):
+        if(not self.checkInput()): return False
         self.m_parsedData = []
         #TODO: check input, maybe highlight missing entries!
         for f in self.m_filePaths:
@@ -107,6 +141,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
 
     def saveData(self):
         if (len(self.m_parsedData) == 0):
+            tk.messagebox.showerror("Save Error", "Please process some data before attempting to save it.")
             return
         outputFilePath = asksaveasfilename()
         substrings = outputFilePath.split('/')

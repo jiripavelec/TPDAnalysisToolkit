@@ -14,6 +14,7 @@ class InvertDataControl(ProcessingStepControlBase):
         super().__init__("Inversion Analysis", controller)
         self.m_parsedData = None
         self.m_prefactors = []
+        self.m_inputFilePath = None
 
     def selectFile(self):
         buffer = askopenfilename(defaultextension=".pdat", filetypes=[('Processed Data','*.pdat'), ('All files','*.*')])
@@ -22,6 +23,37 @@ class InvertDataControl(ProcessingStepControlBase):
             substrings = self.m_inputFilePath.split('/')
             self.m_inputFileName = substrings[len(substrings) - 1]
             self.m_fileNameLabel.configure(text = self.m_inputFileName)
+
+    def checkInput(self):
+        if(self.m_inputFilePath == None): #check for file selection
+            tk.messagebox.showerror("Input Files", "Please select a file to process.")
+            return False
+
+        # try:
+        #     int(self.m_tCutStartEntry.get())
+        # except ValueError:
+        #     tk.messagebox.showerror("Cut Data Start Temp", "Please enter an integer for the temperature at which to start cutting data.")
+        #     return False
+
+        # try:
+        #     int(self.m_tCutEndEntry.get())
+        # except ValueError:
+        #     tk.messagebox.showerror("Cut Data End Temp", "Please enter an integer for the temperature at which to stop cutting data.")
+        #     return False
+
+        # try: #check for tCutStart
+        #     int(self.m_tRampStartEntry.get())
+        # except ValueError:
+        #     tk.messagebox.showerror("Ramp Start Temp", "Please enter an integer for a temperature slightly beyond the start of the linear temperature ramp.")
+        #     return False
+
+        # try: #check for tCutEnd
+        #     int(self.m_tRampEndEntry.get())
+        # except ValueError:
+        #     tk.messagebox.showerror("Remp End Temp", "Please enter an integer for a temperature slightly before the end of the linear temperature ramp.")
+        #     return False
+        
+        return True
 
     def processInput(self):
         self.m_invertedData = None

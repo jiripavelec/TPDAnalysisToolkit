@@ -5,6 +5,8 @@ from ControlsFrame import ControlsFrame#, Chord, ScrolledListBox, EnhancedCheckB
 from PlotsFrame import PlotsFrame, MPLContainer
 from os import listdir
 from os.path import isfile, join
+import multiprocessing
+import sys
 
 class MainFrame(tk.Frame):
     def __init__(self):#, parent, controller):
@@ -30,11 +32,14 @@ class MainFrame(tk.Frame):
         self.lastHeight = self.winfo_height()
 
     def resetResizeTime(self, event):
-        if( (not (self.lastWidth == self.winfo_width)) or (not (self.lastHeight == self.winfo_height))):
+        if(not isinstance(event.widget, tk.Tk)):
+            return
+        elif( (not (self.lastWidth == event.width)) or (not (self.lastHeight == event.height))):
+            # print('(' + str(self.lastWidth) + ',' + str(self.lastHeight) + ") to (" + str(event.width) + ',' + str(event.height) + ')')
             self.controlsFrame.resetResizeTime()
             # self.leftFrame.Controls.m_notebook.resizeDateTime = datetime.now()
-            self.lastWidth = self.winfo_width
-            self.lastHeight = self.winfo_height
+            self.lastWidth = event.width
+            self.lastHeight = event.height
         #else we didnt resize as the dimensions have not changed
 
 def main():
@@ -45,5 +50,8 @@ def main():
     root.mainloop()
 
 if __name__ == '__main__':
+    if sys.platform.startswith('win'):
+        # On Windows calling this function is necessary.
+        multiprocessing.freeze_support()
     main()
 

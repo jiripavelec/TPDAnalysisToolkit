@@ -82,7 +82,7 @@ class MPLContainer(tk.Frame):
         
 
 
-        self.resizeAnimation = anim.FuncAnimation(self.m_figure, func=self.resizePlot, interval=1000)#interval in milliseconds
+        self.resizeAnimation = anim.FuncAnimation(self.m_figure, func=self.resizePlot, interval=600)#, blit = True)#interval in milliseconds
     
     def clearPlots(self):
         for i in range(len(self.m_subplot.lines)-1,-1,-1):
@@ -125,6 +125,11 @@ class MPLContainer(tk.Frame):
                 
         #resize axes
         self.m_subplot.relim()
+        # self.m_subplot.autoscale_view()
+
+        # self.canvas.draw()
+        # self.canvas.flush_events()
+
 
     # def animate(self,plot):
         

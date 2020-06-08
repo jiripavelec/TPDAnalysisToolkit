@@ -107,7 +107,7 @@ class InvertDataControl(ProcessingStepControlBase):
 
             #plot chi-squared value vs prefactor for all input coverages
             self.mplContainers[5].clearPlots()
-            self.mplContainers[5].addLinePlots(self.m_parsedData.getChiSquaredVSPrefactor(),logXAxis = True, logYAxis = True)
+            self.mplContainers[5].addLinePlots(self.m_parsedData.getChiSquaredVSPrefactor(),self.m_parsedData.getCoverageLabels(),logXAxis = True, logYAxis = True)
 
             self.m_prefactorCB["values"] = self.m_prefactors
             self.plotDataForSelectedPrefactor()

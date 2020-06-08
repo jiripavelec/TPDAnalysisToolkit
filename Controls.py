@@ -14,7 +14,7 @@ class Chord(ttk.Frame):
         self.m_label = ""
 
         #creating scrollable content container here
-        self.m_canvas = tk.Canvas(self, bd=0, highlightthickness=0)
+        self.m_canvas = tk.Canvas(self, bd=0, highlightthickness=0, bg = "#ececec") #ececec only for mac, consider using OS type to switch
         self.m_scrollbar = ttk.Scrollbar(self, orient="vertical", command=self.m_canvas.yview)
         self.m_scrollable_frame = ttk.Frame(self.m_canvas)
         self.m_scrollable_frame.bind(
@@ -27,7 +27,7 @@ class Chord(ttk.Frame):
         self.m_canvas.configure(yscrollcommand=self.m_scrollbar.set)
 
         self.m_scrollbar.pack(side="left", fill="y")
-        self.m_canvas.pack(side="left", fill="both", expand=True)
+        self.m_canvas.pack(side="left", fill = "both", expand=True)
 
     def setRowIdx(self, rowIndex):
         self.m_row = rowIndex

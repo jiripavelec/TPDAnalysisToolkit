@@ -105,6 +105,7 @@ class InvertDataControl(ProcessingStepControlBase):
             self.m_parsedData.simulateCoveragesFromInvertedData()
             self.m_parsedData.evaluateData()
 
+            #plot chi-squared value vs prefactor for all input coverages
             self.mplContainers[5].clearPlots()
             self.mplContainers[5].addLinePlots(self.m_parsedData.getChiSquaredVSPrefactor(),logXAxis = True, logYAxis = True)
 
@@ -119,16 +120,22 @@ class InvertDataControl(ProcessingStepControlBase):
             if(selectedPrefactor == ''):
                 self.m_prefactorCB.current(0) #set to first entry
                 selectedPrefactor = self.m_prefactorCB.get()
+
+            #plot input data
             self.mplContainers[0].clearPlots()
             self.mplContainers[0].addLinePlots(self.m_parsedData.getInputData(),self.m_parsedData.getCoverageLabels())
+            #plot coverage vs temperature from experimental data
             self.mplContainers[1].clearPlots()
             self.mplContainers[1].addLinePlots(self.m_parsedData.getExpCoverageVSTemp(float(selectedPrefactor)),self.m_parsedData.getCoverageLabels())
+            #plot desorption energy vs coverage from experimental data
             self.mplContainers[2].clearPlots()
             for e,lbl in zip(self.m_parsedData.getDesEnergyVSCoverageList(float(selectedPrefactor)),self.m_parsedData.getCoverageLabels()):
                 self.mplContainers[2].addLinePlots(e,lbl)
+            #plot simulated coverage vs temperature
             self.mplContainers[3].clearPlots()
             # self.mplContainers[3].addLinePlots(self.m_parsedData.getExpDesorptionRateVSTemp())
             self.mplContainers[3].addLinePlots(self.m_parsedData.getSimCoverageVSTemp(float(selectedPrefactor)),self.m_parsedData.getCoverageLabels())
+            #plot simulated desorption rate vs temperature
             self.mplContainers[4].clearPlots()
             self.mplContainers[4].addLinePlots(self.m_parsedData.getSimDesRateVSTemp(float(selectedPrefactor)),self.m_parsedData.getCoverageLabels())
             

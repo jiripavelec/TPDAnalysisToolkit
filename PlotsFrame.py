@@ -45,6 +45,7 @@ class MPLContainer(tk.Frame):
         if(timeDelta.total_seconds()*1000 > 500): #if we stopped resizing, unhide plot
             # self.canvas.get_tk_widget().place_forget()
             self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.OUTSIDE,height=self.winfo_height(),width=self.winfo_width())
+            self.canvas.flush_events()
             # self.canvas.get_tk_widget().pack(side=tk.TOP, fill = tk.BOTH, expand = True)
             # self.canvas.get_tk_widget().grid(sticky = "nsew", row = 0, column = 0)
             self.plotHidden = False
@@ -68,7 +69,6 @@ class MPLContainer(tk.Frame):
         #normally plt.show() now, but different for tk
         self.canvas = FigureCanvasTkAgg(self.m_figure,self)
         self.canvas.draw()
-        # self.canvas.get_tk_widget().pack(side=tk.TOP,fill=tk.BOTH,expand=True)
         # canvas.get_tk_widget().grid(row=0,column=0,sticky="nsew")
         # self.grid_rowconfigure(index=0,weight=1,minsize=self.winfo_height())
         # self.grid_columnconfigure(index=0,weight=1,minsize=self.winfo_width())
@@ -78,11 +78,11 @@ class MPLContainer(tk.Frame):
         self.plotHidden = False
         self.m_toolbar = NavigationToolbar2Tk(self.canvas, self)
         self.m_toolbar.update()
+        # self.canvas.get_tk_widget().pack(side=tk.TOP,fill=tk.BOTH,expand=True)
+        # self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.OUTSIDE,height=self.winfo_height(),width=self.winfo_width())
         self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.INSIDE,relheight = 1.0, relwidth = 1.0)
-        
 
-
-        self.resizeAnimation = anim.FuncAnimation(self.m_figure, func=self.resizePlot, interval=600)#, blit = True)#interval in milliseconds
+        self.resizeAnimation = anim.FuncAnimation(self.m_figure, func=self.resizePlot, interval=1000)#, blit = True)#interval in milliseconds
     
     def clearPlots(self):
         for i in range(len(self.m_subplot.lines)-1,-1,-1):

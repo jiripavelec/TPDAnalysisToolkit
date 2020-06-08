@@ -1,6 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from datetime import datetime
+import sys
 # from PlotsFrame import * 
 
 
@@ -14,7 +15,10 @@ class Chord(ttk.Frame):
         self.m_label = ""
 
         #creating scrollable content container here
-        self.m_canvas = tk.Canvas(self, bd=0, highlightthickness=0, bg = "#ececec") #ececec only for mac, consider using OS type to switch
+        if sys.platform.startswith('win'):
+            self.m_canvas = tk.Canvas(self, bd=0, highlightthickness=0, bg = "#ececec") #ececec only for mac, consider using OS type to switch
+        else:
+            self.m_canvas = tk.Canvas(self, bd=0, highlightthickness=0)
         self.m_scrollbar = ttk.Scrollbar(self, orient="vertical", command=self.m_canvas.yview)
         self.m_scrollable_frame = ttk.Frame(self.m_canvas)
         self.m_scrollable_frame.bind(

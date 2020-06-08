@@ -26,36 +26,53 @@ class InvertDataControl(ProcessingStepControlBase):
 
     def checkInput(self):
         if(self.m_inputFilePath == None): #check for file selection
-            tk.messagebox.showerror("Input Files", "Please select a file to process.")
+            tk.messagebox.showerror("Input File", "Please select a preprocssed file on which to perform the inversion analysis.")
             return False
 
-        # try:
-        #     int(self.m_tCutStartEntry.get())
-        # except ValueError:
-        #     tk.messagebox.showerror("Cut Data Start Temp", "Please enter an integer for the temperature at which to start cutting data.")
-        #     return False
+        if(self.m_RBVariable.get() == 0): #single prefactor
+            try:
+                float(self.m_tPrefactorEntry.get())
+            except ValueError:
+                tk.messagebox.showerror("Prefactor Value", "Please enter a float for the prefactor. For example 1e17.")
+                return False
 
-        # try:
-        #     int(self.m_tCutEndEntry.get())
-        # except ValueError:
-        #     tk.messagebox.showerror("Cut Data End Temp", "Please enter an integer for the temperature at which to stop cutting data.")
-        #     return False
+        else: #prefactor range
+            try: #prefactor start
+                float(self.m_tPrefactorStartEntry.get())
+            except ValueError:
+                tk.messagebox.showerror("Lowest Prefactor", "Please enter a float for the lowest prefactor. For example 1e13.")
+                return False
 
-        # try: #check for tCutStart
-        #     int(self.m_tRampStartEntry.get())
-        # except ValueError:
-        #     tk.messagebox.showerror("Ramp Start Temp", "Please enter an integer for a temperature slightly beyond the start of the linear temperature ramp.")
-        #     return False
+            try: #prefactor end
+                float(self.m_tPrefactorEndEntry.get())
+            except ValueError:
+                tk.messagebox.showerror("Highest Prefactor", "Please enter a float for the highest prefactor. For example 1e21.")
+                return False
 
-        # try: #check for tCutEnd
-        #     int(self.m_tRampEndEntry.get())
-        # except ValueError:
-        #     tk.messagebox.showerror("Remp End Temp", "Please enter an integer for a temperature slightly before the end of the linear temperature ramp.")
-        #     return False
-        
+            currentEntry = float(self.m_tPrefactorStartEntry.get())
+            lastEntry = float(self.m_tPrefactorEndEntry.get())
+            
+            if(self.m_RBVariable.get() == 1): #linear range
+                try: #prefactor end
+                    float(self.m_tPrefactorIncrementEntry.get())
+                except ValueError:
+                    tk.messagebox.showerror("Increment", "Please enter a float for the prefactor increment.")
+                    return False
+
+                incrementEntry = float(self.m_tPrefactorIncrementEntry.get())
+                if((lastEntry - currentEntry)/incrementEntry > 20):
+                    tk.messagebox.showerror("Number of Data Points", "Too many simulated data points required. Adapt range so that less than 20 simulations are necessary per spectrum.")
+                    # raise ValueError #ridiculous amount of data points
+
+            else: #multiplicative range
+                if(math.log(lastEntry) - math.log(currentEntry) > 20):
+                    tk.messagebox.showerror("Number of Data Points", "Too many simulated data points required. Adapt range so that less than 20 simulations are necessary per spectrum.")
+                    # raise ValueError #ridiculous amount of data points
+
         return True
 
     def processInput(self):
+        if(not self.checkInput()): return
         self.m_invertedData = None
         #TODO: input checking + highlighting of incorrect entries
         if (not self.m_inputFilePath == None):

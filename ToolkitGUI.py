@@ -26,6 +26,8 @@ class MainFrame(tk.Frame):
         # self.plotsFrame.place(relx = 0.25, rely = 0.0, relwidth = 0.75, relheight = 1.0, anchor = "nw", bordermode = tk.INSIDE)
         # self.controlsFrame = ControlsFrame(self, bg = 'white', relief='groove')
         # self.controlsFrame.place(relx = 0.0, rely = 0.0, relwidth = 0.25, relheight = 1.0, anchor = "nw", bordermode = tk.INSIDE)
+        # self.plotsFrame.pack(side = "right", fill = "both", expand = True)
+        # self.controlsFrame.pack(side = "left", fill = "y")
         
         self.controlsFrame.initChords(self.plotsFrame)
         self.m_panedWindow.add(self.controlsFrame)

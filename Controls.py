@@ -35,6 +35,9 @@ class Chord(ttk.Frame):
     def onClickedEvent(self):
         self.controlRef.tkraise()
     
+    def getContentWidth(self):
+        # return max([c.winfo_reqwidth() for c in self.m_scrollable_frame.winfo_children()])
+        return self.m_scrollable_frame.winfo_width()
 #Chord END
 
 #Accordion BEGIN
@@ -60,8 +63,8 @@ class Accordion(tk.Frame):
 
         self.update_idletasks()
         row = 0
-        # width = max([c.winfo_reqwidth() for c in chords])
-        width = 50
+        # width = max([c.getContentWidth() for c in chords])
+        width = 55
 
         for c in chords:
             # i = tk.PhotoImage() # blank image to force Label to use pixel size

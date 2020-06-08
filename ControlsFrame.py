@@ -27,12 +27,16 @@ class ControlsFrame(tk.Frame):
         self.m_redheadAnalysisControl = RedheadAnalysisControl(self)
         self.Controls.append(self.m_redheadAnalysisControl)
 
+        #separator for easier displaying
+        self.m_separator = ttk.Separator(self)
+        self.m_separator.pack(side = tk.RIGHT, fill= tk.Y)
+
     def initChords(self,plotsFrame):
         for c in self.Controls:
             c.initNotebook(plotsFrame)
             c.initChordUI(self.accordion)
         self.accordion.append_chords([c.m_chordContainer for c in self.Controls])
-        self.accordion.pack(fill=tk.BOTH, expand = True)
+        self.accordion.pack(side = tk.LEFT, fill=tk.BOTH, expand = True)
 
     # def requestProcessedData(self):
     #     return self.m_rawDataControl.getProcessedData()

@@ -7,7 +7,8 @@ from tkinter.filedialog import askdirectory, askopenfilenames, asksaveasfilename
 from RawDataWrapper import RawDataWrapper
 import numpy as np
 import os.path
-from os import path
+from os import path, chdir
+# from glob import glob
 
 class ProcessRawDataControl(ProcessingStepControlBase):
     def __init__(self, controller):
@@ -37,6 +38,25 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         #     print(self.m_filesListBox.get(i) + " " + self.m_filePaths[i])
         # for (a,b) in zip(self.m_filesListBox.get(0, self.m_filesListBox.size() - 1), self.m_filePaths):
 
+    def selectDir(self):
+        dirPath = askdirectory(mustexist = True)
+        if not (len(dirPath) == 0):
+            # os.chdir("/mydir")
+            self.m_filePaths.clear()
+            self.m_fileList = list()
+            self.m_filesListBox.clear()
+            candidates = os.listdir(dirPath)
+            for candidate in candidates: #look at all paths in directory
+                if(os.path.isfile(dirPath + '/' + candidate) and candidate[-4:] == ".csv"): #filter out directories
+                    if(candidate.find("TPD") != -1): #look for "TPD" ini filename to differentiate data from prep files
+                        self.m_filePaths.append(dirPath + candidate)
+                        self.m_fileList.insert(0,candidate)
+            [self.m_filesListBox.insert(0, f) for f in self.m_fileList]
+            self.m_fileList.reverse()
+            self.m_subtractSelection["values"] = self.m_fileList
+            self.m_normSelection["values"] = self.m_fileList                        
+
+
     def deselectFiles(self):
         indices = list(self.m_filesListBox.curselection())
         indices.reverse()
@@ -58,8 +78,11 @@ class ProcessRawDataControl(ProcessingStepControlBase):
 
     def toggleNormalizeCB(self):
         if(self.m_normalizeCB.instate(['!selected'])):
+            self.m_removeBackgroundCB.configure(state = tk.NORMAL)
             self.m_normSelection.configure(state = tk.DISABLED)
         else:
+            self.m_removeBackgroundCB.set(1) #if we want to normalize, we also have to remove the background, otherwise it does not make sense
+            self.m_removeBackgroundCB.configure(state = tk.DISABLED)
             self.m_normSelection.configure(state = tk.NORMAL)
 
     def plotSelectedMasses(self):
@@ -219,8 +242,11 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         self.m_fileButtonFrame = ttk.Frame(self.m_chord)
         self.m_fileButtonFrame.grid(row=2, column = 0, columnspan = 3, sticky = "nsew")
 
-        self.m_selectButton = ttk.Button(self.m_fileButtonFrame,text="Select Files",command = self.selectFiles)
-        self.m_selectButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
+        self.m_selectFilesButton = ttk.Button(self.m_fileButtonFrame,text="Select Files",command = self.selectFiles)
+        self.m_selectFilesButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
+
+        self.m_selectFilesButton = ttk.Button(self.m_fileButtonFrame,text="Select Directory",command = self.selectDir)
+        self.m_selectFilesButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
 
         self.m_deselectButton = ttk.Button(self.m_fileButtonFrame,text="Remove Selected",command = self.deselectFiles)
         self.m_deselectButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)

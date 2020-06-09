@@ -77,7 +77,9 @@ class InvertDataControl(ProcessingStepControlBase):
         #TODO: input checking + highlighting of incorrect entries
         if (not self.m_inputFilePath == None):
             self.m_parsedData = ProcessedDataWrapper(self.m_inputFilePath)
-            self.m_parsedData.parseProcessedDataFile()
+            if(not self.m_parsedData.parseProcessedDataFile()):
+                tk.messagebox.showerror("Input File", "Please use an input file with normalized coverages!")
+                return
             if(not self.m_parsedData.m_normalized):
                 return #need a normalized monolayer coverage for inversion + simulation to make sense
             # self.m_parsedData.clearInvertedData() #incase we are reusing the wrapper

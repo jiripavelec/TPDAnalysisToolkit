@@ -33,7 +33,7 @@ class ProcessedDataWrapper():
         self.m_totalCoverages = [float(c) for c in firstTwoLines[1,:]]
         if not (1.0 in self.m_totalCoverages):
             self.m_normalized = False
-            raise ValueError
+            return False
         else:
             self.m_normalized = True
 
@@ -42,6 +42,7 @@ class ProcessedDataWrapper():
         #now columns can be traversed contiguously in memory
         self.m_parsedInputData = temp.transpose().copy()
         self.m_dataParsed = True
+        return True
 
     def getInputData(self):
         return self.m_parsedInputData

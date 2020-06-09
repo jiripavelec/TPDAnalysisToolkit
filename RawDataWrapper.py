@@ -7,6 +7,9 @@ class RawDataWrapper():
         self.m_fileName = substrings[len(substrings) - 1]
         self.m_dataParsed = False
         self.m_dataProcessed = False
+        self.m_correctedTemp = None
+        self.m_interpolatedTemp = None
+        self.m_interpolatedTime = None
         self.m_coveragesNormalized = False
         self.m_interpolatedData = {}
         self.m_parsedCoverage = "No coverage in filename!"
@@ -48,6 +51,11 @@ class RawDataWrapper():
         for i in self.massListToIndices(desiredMasses):
             temp = np.vstack((temp, self.m_parsedRawData[i,:]))
         return temp
+
+    def getRawTempVSRawTime(self):
+        # result = np.vstack((self.m_interpolatedTime, self.m_interpolatedTemp))
+        result = np.vstack((self.m_parsedRawData[0,:], self.m_parsedRawData[(self.m_listOfColumns.index('temperature')),:]))
+        return result
 
     def getMassList(self):
         return self.m_listOfColumns[2:] #first two columns are "ms" and "temperature"
@@ -92,6 +100,9 @@ class RawDataWrapper():
             if(tRampEndIndex == self.m_correctedTemp.size - 1): break
 
         self.m_interpolatedTemp = np.arange(tCutStart, tCutEnd, tStep) #generate equidistantly spaced range of temperature points
+        self.m_interpolatedTime = np.interp(self.m_interpolatedTemp, self.m_correctedTemp[tRampStartIndex:tRampEndIndex], self.m_parsedRawData[0,tRampStartIndex:tRampEndIndex])
+
+
         for m in self.getMassList(): #for each mass
             #interpolate data by default
             interpDataBuffer = np.interp(self.m_interpolatedTemp, self.m_correctedTemp[tRampStartIndex:tRampEndIndex],

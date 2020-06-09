@@ -49,7 +49,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             for candidate in candidates: #look at all paths in directory
                 if(os.path.isfile(dirPath + '/' + candidate) and candidate.endswith(".csv")): #filter out directories
                     if(candidate.find("TPD") != -1): #look for "TPD" ini filename to differentiate data from prep files
-                        self.m_filePaths.append(dirPath + candidate)
+                        self.m_filePaths.append(dirPath + '/' + candidate)
                         self.m_fileList.insert(0,candidate)
             [self.m_filesListBox.insert(0, f) for f in self.m_fileList]
             self.m_fileList.reverse()
@@ -98,6 +98,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         for d in self.m_parsedData:
             self.mplContainers[0].addLinePlots(d.getRawData(tempMasses),d.getLangmuirLabels(tempMasses))
             self.mplContainers[1].addLinePlots(d.getProcessedData(tempMasses),d.getCoverageLabels(tempMasses))
+            self.mplContainers[2].addLinePlots(d.getRawTempVSRawTime())
 
     def checkInput(self):
         if(len(self.m_filePaths) == 0): #check for file selection
@@ -143,7 +144,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
                                         int(self.m_tCutStartEntry.get()),
                                         int(self.m_tCutEndEntry.get()),
                                         self.m_removeBackgroundCB.instate(['selected']),
-                                        self.m_smoothCB.instate(['selected']))
+                                        self.m_smoothCountsCB.instate(['selected']))
 
         if (self.m_normalizeCB.instate(['selected'])): #if we want to normalize data to a specific coverage
             monolayerData = None
@@ -225,6 +226,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         self.m_notebook = ttk.Notebook(parent)
         self.mplContainers.append(MPLContainer(self.m_notebook, "Raw Data", "Desorption Rate", "Temperature (K)"))
         self.mplContainers.append(MPLContainer(self.m_notebook, "Processed Data", "Desorption Rate", "Temperature (K)"))
+        self.mplContainers.append(MPLContainer(self.m_notebook, "Temperature Ramp", "Temperature (K)", "Time (ms)"))
 
         for c in self.mplContainers:
             self.m_notebook.add(c, text = c.m_title)
@@ -286,14 +288,19 @@ class ProcessRawDataControl(ProcessingStepControlBase):
 
         # Checkbuttons + Comboboxes for options:
 
-        self.m_smoothCB = EnhancedCheckButton(self.m_chord, text="Smooth")
-        self.m_smoothCB.grid(row = 8, column = 1, sticky = "nsw")
+        self.m_smoothTempCB = EnhancedCheckButton(self.m_chord, text="Smooth Temperature")
+        self.m_smoothTempCB.grid(row = 8, column = 1, sticky = "nsw")
+        self.m_smoothTempCB.set(1)
+        self.m_smoothTempCB.configure(state = tk.DISABLED)
 
-        self.m_removeBackgroundCB = EnhancedCheckButton(self.m_chord, text="Remove Background")
-        self.m_removeBackgroundCB.grid(row = 8, column = 2, sticky = "nsw")
+        self.m_smoothCountsCB = EnhancedCheckButton(self.m_chord, text="Smooth Counts/s")
+        self.m_smoothCountsCB.grid(row = 8, column = 2, sticky = "nsw")
 
         self.m_normalizeCB = EnhancedCheckButton(self.m_chord, text = "Normalize to coverage of (select file):", command=self.toggleNormalizeCB)
         self.m_normalizeCB.grid(row = 9, column = 1, sticky = "nsw")
+
+        self.m_removeBackgroundCB = EnhancedCheckButton(self.m_chord, text="Remove Background")
+        self.m_removeBackgroundCB.grid(row = 9, column = 2, sticky = "nsw")
 
         self.m_normSelection = ttk.Combobox(self.m_chord, state = tk.DISABLED)
         self.m_normSelection.grid(row=10, column=1, columnspan=2, sticky= "nsew")

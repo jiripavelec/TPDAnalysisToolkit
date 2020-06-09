@@ -125,17 +125,19 @@ class Accordion(tk.Frame):
 class ScrolledListBox(ttk.Frame):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
-        self.m_scrollbarV = tk.Scrollbar(self, orient=tk.VERTICAL)
-        # self.m_scrollbarH = tk.Scrollbar(self, orient=tk.HORIZONTAL)
+        self.m_internalFrame = ttk.Frame(self)
+        self.m_scrollbarV = tk.Scrollbar(self.m_internalFrame, orient=tk.VERTICAL)
+        self.m_scrollbarH = tk.Scrollbar(self, orient=tk.HORIZONTAL)
 
-        # self.m_listBox = tk.Listbox(self, selectmode = tk.EXTENDED, yscrollcommand=self.m_scrollbarV.set, xscrollcommand=self.m_scrollbarH.set)
-        self.m_listBox = tk.Listbox(self, selectmode = tk.EXTENDED, yscrollcommand=self.m_scrollbarV.set)
+        self.m_listBox = tk.Listbox(self.m_internalFrame, selectmode = tk.EXTENDED, yscrollcommand=self.m_scrollbarV.set, xscrollcommand=self.m_scrollbarH.set)
+        # self.m_listBox = tk.Listbox(self, selectmode = tk.EXTENDED, yscrollcommand=self.m_scrollbarV.set)
         self.m_scrollbarV.config(command=self.m_listBox.yview)
-        # self.m_scrollbarH.config(command=self.m_listBox.xview)
+        self.m_scrollbarH.config(command=self.m_listBox.xview)
 
+        self.m_internalFrame.pack(side=tk.TOP, fill=tk.X)
         self.m_scrollbarV.pack(side=tk.RIGHT, fill=tk.Y)
         self.m_listBox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        # self.m_scrollbarH.pack(side=tk.BOTTOM, fill=tk.X)
+        self.m_scrollbarH.pack(side=tk.BOTTOM, fill=tk.X)
 
     def insert(self, index, *elements):
         self.m_listBox.insert(index, *elements)

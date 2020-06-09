@@ -31,6 +31,7 @@ class MPLContainer(tk.Frame):
         self.m_xAxisName = xAxisName
         self.m_yAxisName = yAxisName
         self.initUI(parent)
+        self.m_usingMarkers = False
 
     def resizePlot(self, *args, **kwargs):
         # print("Width = " + str(self.winfo_width()))
@@ -89,6 +90,26 @@ class MPLContainer(tk.Frame):
             line = self.m_subplot.lines.pop(i)
             del line
 
+    def switchToMarkers(self):
+        for child in self.m_subplot.get_children():
+            if(type(child) is mpl.lines.Line2D):
+                child.set_linestyle('None')
+                child.set_marker('+')
+
+    def switchToLines(self):
+        for child in self.m_subplot.get_children():
+            if(type(child) is mpl.lines.Line2D):
+                child.set_marker('None')
+                child.set_linestyle('solid')
+
+    def toggleMarkers(self):
+        if(self.m_usingMarkers):
+            self.switchToLines()
+            self.m_usingMarkers = False
+        else:
+            self.switchToMarkers()
+            self.m_usingMarkers = True
+
     def addLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False):
         #draw new lines
         # tempLines = []
@@ -103,6 +124,9 @@ class MPLContainer(tk.Frame):
                 else:
                     self.m_subplot.plot(ndarrayData[0,:],ndarrayData[i,:])
             # self.m_subplot.plot(ndarrayData[0,:],ndarrayData[1:,:])
+
+        if(self.m_usingMarkers):
+            self.switchToMarkers() #because we plot with lines by default when adding or subtracting lines
 
         if (labels != None):
             handles, labels = self.m_subplot.get_legend_handles_labels()

@@ -47,7 +47,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             self.m_filesListBox.clear()
             candidates = os.listdir(dirPath)
             for candidate in candidates: #look at all paths in directory
-                if(os.path.isfile(dirPath + '/' + candidate) and candidate[-4:] == ".csv"): #filter out directories
+                if(os.path.isfile(dirPath + '/' + candidate) and candidate.endswith(".csv")): #filter out directories
                     if(candidate.find("TPD") != -1): #look for "TPD" ini filename to differentiate data from prep files
                         self.m_filePaths.append(dirPath + candidate)
                         self.m_fileList.insert(0,candidate)
@@ -84,6 +84,10 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             self.m_removeBackgroundCB.set(1) #if we want to normalize, we also have to remove the background, otherwise it does not make sense
             self.m_removeBackgroundCB.configure(state = tk.DISABLED)
             self.m_normSelection.configure(state = tk.NORMAL)
+
+    def toggleMarkers(self):
+        for c in self.mplContainers:
+            c.toggleMarkers()
 
     def plotSelectedMasses(self):
         for c in self.mplContainers:
@@ -310,13 +314,16 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         self.m_displayOptionsLabel = ttk.Label(self.m_chord, text='Display Options:')
         self.m_displayOptionsLabel.grid(row = 14, column = 0, columnspan = 2, sticky="nsw")
 
-        self.m_massDisplayOptions = DisplayOptionsFrame(self.m_chord, self.plotSelectedMasses)
-        self.m_massDisplayOptions.grid(row = 15, column = 1, columnspan = 2, sticky = "nsw")
+        self.m_toggleMarkersButton = ttk.Button(self.m_chord, text = "Toggle Markers", command = self.toggleMarkers)
+        self.m_toggleMarkersButton.grid(row=15, column = 1, columnspan=2, sticky = "nsew")
 
-        self.m_massDisplayOptions.m_availableMassesListBox
+        self.m_massDisplayOptions = DisplayOptionsFrame(self.m_chord, self.plotSelectedMasses)
+        self.m_massDisplayOptions.grid(row = 16, column = 1, columnspan = 2, sticky = "nsw")
+
+        # self.m_massDisplayOptions.m_availableMassesListBox
 
         self.m_saveDataButton = ttk.Button(self.m_chord, text = "Save Processed Data", command = self.saveData)
-        self.m_saveDataButton.grid(row=16, column = 1, columnspan=3, sticky = "nsew")
+        self.m_saveDataButton.grid(row=17, column = 1, columnspan=3, sticky = "nsew")
 
         for child in self.m_chord.winfo_children():
             child.grid_configure(padx=3, pady=3)

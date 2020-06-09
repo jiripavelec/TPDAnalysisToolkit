@@ -76,14 +76,14 @@ class RawDataWrapper():
         self.m_correctedTemp = self.smooth_running_average(self.m_correctedTemp, 20)
 
         tempSearchInput = np.abs(self.m_correctedTemp - tRampStart)
-        tRampStartIndex = np.argwhere(tempSearchInput == np.amin(tempSearchInput))[-1][0]
+        tRampStartIndex = np.argwhere(tempSearchInput == np.amin(tempSearchInput))[-1][0] #find closest value to input
 
         while self.m_correctedTemp[tRampStartIndex + 1] > self.m_correctedTemp[tRampStartIndex]:
             tRampStartIndex -= 1 # find lowest index of the ramp
             if(tRampStartIndex == 0): break
 
         tempSearchInput = np.abs(self.m_correctedTemp - tRampEnd)
-        tRampEndIndex = np.argwhere(tempSearchInput == np.amin(tempSearchInput))[-1][0]
+        tRampEndIndex = np.argwhere(tempSearchInput == np.amin(tempSearchInput))[-1][0] #find closest value to input
 
         del tempSearchInput #no need to waste memory
 
@@ -91,20 +91,21 @@ class RawDataWrapper():
             tRampEndIndex += 1 # find highest index of the ramp
             if(tRampEndIndex == self.m_correctedTemp.size - 1): break
 
-        self.m_interpolatedTemp = np.arange(tCutStart, tCutEnd, tStep)
-        for m in self.getMassList():
-            temp = np.interp(self.m_interpolatedTemp, self.m_correctedTemp[tRampStartIndex:tRampEndIndex],
+        self.m_interpolatedTemp = np.arange(tCutStart, tCutEnd, tStep) #generate equidistantly spaced range of temperature points
+        for m in self.getMassList(): #for each mass
+            #interpolate data by default
+            interpDataBuffer = np.interp(self.m_interpolatedTemp, self.m_correctedTemp[tRampStartIndex:tRampEndIndex],
                 self.m_parsedRawData[self.m_listOfColumns.index(m),tRampStartIndex:tRampEndIndex])
-            if smooth:
-                temp = self.smooth_running_average(temp, smoothpoints)
-            if removeBackground:
-                temp -= np.amin(temp)
-                zeroIndices = np.where(temp == 0) #find zeros
+            if smooth: #if we use the smooth option, also smooth the data (counts/s)
+                interpDataBuffer = self.smooth_running_average(interpDataBuffer, smoothpoints)
+            if removeBackground: #if we want to remove the background, do that
+                interpDataBuffer -= np.amin(interpDataBuffer)
+                zeroIndices = np.where(interpDataBuffer == 0) #find zeros
                 for i in zeroIndices:
-                    temp[i] = np.finfo(float).eps #add machine epsilon to zeros to avoid divide by zero in log later on
+                    interpDataBuffer[i] = np.finfo(float).eps #add machine epsilon to zeros to avoid divide by zero in log later on
             # if normalize: #first step to normalizing -> find coverages
-            self.m_coverages[m] = np.trapz(temp, dx= tStep) #write absolute coverage into dictionary
-            self.m_interpolatedData[m] = temp
+            self.m_coverages[m] = np.trapz(interpDataBuffer, dx= tStep) #write absolute coverage into dictionary
+            self.m_interpolatedData[m] = interpDataBuffer #write buffer into "permanent" storage
         self.m_dataProcessed = True
 
     def normalizeDataTo(self, referenceRawDataWrapper):

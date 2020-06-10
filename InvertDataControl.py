@@ -65,7 +65,7 @@ class InvertDataControl(ProcessingStepControlBase):
                     # raise ValueError #ridiculous amount of data points
 
             else: #multiplicative range
-                if(math.log(lastEntry) - math.log(currentEntry) > 20):
+                if(math.log10(lastEntry) - math.log10(currentEntry) > 20):
                     tk.messagebox.showerror("Number of Data Points", "Too many simulated data points required. Adapt range so that less than 20 simulations are necessary per spectrum.")
                     # raise ValueError #ridiculous amount of data points
 
@@ -74,7 +74,7 @@ class InvertDataControl(ProcessingStepControlBase):
     def processInput(self):
         if(not self.checkInput()): return
         self.m_invertedData = None
-        #TODO: input checking + highlighting of incorrect entries
+        
         if (not self.m_inputFilePath == None):
             self.m_parsedData = ProcessedDataWrapper(self.m_inputFilePath)
             if(not self.m_parsedData.parseProcessedDataFile()):
@@ -91,8 +91,8 @@ class InvertDataControl(ProcessingStepControlBase):
                 currentEntry = float(self.m_tPrefactorStartEntry.get())
                 lastEntry = float(self.m_tPrefactorEndEntry.get())
                 incrementEntry = float(self.m_tPrefactorIncrementEntry.get())
-                if((lastEntry - currentEntry)/incrementEntry > 20):
-                    raise ValueError #ridiculous amount of data points
+                # if((lastEntry - currentEntry)/incrementEntry > 20):
+                #     raise ValueError #ridiculous amount of data points
                 self.m_prefactors = []
                 while(currentEntry <= lastEntry):
                     self.m_prefactors.append("{:e}".format(currentEntry))
@@ -100,8 +100,8 @@ class InvertDataControl(ProcessingStepControlBase):
             else: #multiplicative range
                 currentEntry = float(self.m_tPrefactorStartEntry.get())
                 lastEntry = float(self.m_tPrefactorEndEntry.get())
-                if(math.log10(lastEntry) - math.log10(currentEntry) > 20):
-                    raise ValueError #ridiculous amount of data points
+                # if(math.log10(lastEntry) - math.log10(currentEntry) > 20):
+                #     raise ValueError #ridiculous amount of data points
                 self.m_prefactors = []
                 while(currentEntry <= lastEntry):
                     self.m_prefactors.append("{:e}".format(currentEntry))
@@ -173,7 +173,11 @@ class InvertDataControl(ProcessingStepControlBase):
             self.m_tPrefactorIncrementEntry.configure(state = 'disabled')
             self.m_tPrefactorStartEntry.configure(state = 'normal')
             self.m_tPrefactorEndEntry.configure(state = 'normal')
-            
+
+    def toggleMarkers(self):
+        for c in self.mplContainers:
+            c.toggleMarkers()
+
     def saveData(self):
         if (self.m_parsedData == None):
             return
@@ -292,17 +296,20 @@ class InvertDataControl(ProcessingStepControlBase):
         self.m_displayOptionsLabel = ttk.Label(self.m_chord, text='Display Options:')
         self.m_displayOptionsLabel.grid(row = 12, column = 0, columnspan = 2, sticky="nsw")
 
+        self.m_toggleMarkersButton = ttk.Button(self.m_chord, text = "Toggle Markers", command = self.toggleMarkers)
+        self.m_toggleMarkersButton.grid(row=13, column = 1, columnspan=2, sticky = "nsew")
+
         self.m_prefactorCBLabel = ttk.Label(self.m_chord, text='Select prefactor to display data for:')
-        self.m_prefactorCBLabel.grid(row = 13, column = 1, columnspan = 2, sticky="nsw")
+        self.m_prefactorCBLabel.grid(row = 14, column = 1, columnspan = 2, sticky="nsw")
 
         self.m_prefactorCB = ttk.Combobox(self.m_chord)
         self.m_prefactorCB.bind("<<ComboboxSelected>>", self.plotDataForSelectedPrefactor) #binding to event because CB does not have 'command' param
-        self.m_prefactorCB.grid(row = 14, column = 1, columnspan = 2, sticky = "nsew")
+        self.m_prefactorCB.grid(row = 15, column = 1, columnspan = 2, sticky = "nsew")
 
         #Save Button
 
         self.m_saveDataButton = ttk.Button(self.m_chord, text = "Save Inverted Data", command = self.saveData)
-        self.m_saveDataButton.grid(row=15, column = 1, columnspan=2, sticky = "nsew")
+        self.m_saveDataButton.grid(row=16, column = 1, columnspan=2, sticky = "nsew")
 
         for child in self.m_chord.winfo_children():
             child.grid_configure(padx=3, pady=3)

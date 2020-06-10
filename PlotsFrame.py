@@ -164,6 +164,7 @@ class MPLContainer(tk.Frame):
             axes.set_xscale("log")
         if (logYAxis):
             axes.set_yscale("log")
+            # axes.set_ylim(bottom=0)
 
         axes.relim()
 
@@ -175,6 +176,10 @@ class MPLContainer(tk.Frame):
             raise NameError #should use primary line plots, since secondary axis is not defined for this plot
         self.__addLinePlots(self.m_secondaryAxis, ndarrayData, labels, logXAxis, logYAxis)
         
+    def setBottomYLimitZero(self):
+        self.m_subplot.set_ylim(bottom=0)
+
+
 #MPLContainer END
 
 #PlotsFrame BEGIN

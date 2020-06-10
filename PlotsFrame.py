@@ -25,13 +25,17 @@ import matplotlib.animation as anim
 
 #MPLContainer BEGIN
 class MPLContainer(tk.Frame):
-    def __init__(self, parent, title, yAxisName, xAxisName, *args, **kwargs):
+    def __init__(self, parent, title, yAxisName, xAxisName, secondaryAxis = False, secondaryYAxisName = "" , *args, **kwargs):
         super().__init__(parent, bg="white", *args, **kwargs)
         self.m_title = title
         self.m_xAxisName = xAxisName
         self.m_yAxisName = yAxisName
-        self.initUI(parent)
         self.m_usingMarkers = False
+        self.m_secondaryAxisRequired = secondaryAxis
+        if(secondaryAxis and secondaryYAxisName == ""):
+            raise ValueError #need a secondaryYAxisName!
+        self.m_secondaryYAxisName = secondaryYAxisName
+        self.initUI(parent)
 
     def resizePlot(self, *args, **kwargs):
         # print("Width = " + str(self.winfo_width()))
@@ -64,6 +68,10 @@ class MPLContainer(tk.Frame):
         self.m_subplot.set_title(self.m_title)
         self.m_subplot.set_xlabel(self.m_xAxisName)
         self.m_subplot.set_ylabel(self.m_yAxisName)
+
+        if(self.m_secondaryAxisRequired):
+            self.m_secondaryAxis = self.m_subplot.twinx()
+            self.m_secondaryAxis.set_ylabel(self.m_secondaryYAxisName)
         # f = mpl.pyplot.Figure(figsize=(5,5), dpi=96)
         # a = f.add_subplot(111)#111 means only one chart as opposed to 121 meanign 2
         # self.m_subplot.plot([1,2,3,4,5,6,7,8],[5,6,1,3,8,9,3,5])
@@ -86,21 +94,37 @@ class MPLContainer(tk.Frame):
         self.resizeAnimation = anim.FuncAnimation(self.m_figure, func=self.resizePlot, interval=1000)#, blit = True)#interval in milliseconds
     
     def clearPlots(self):
-        for i in range(len(self.m_subplot.lines)-1,-1,-1):
-            line = self.m_subplot.lines.pop(i)
-            del line
+        if(len(self.m_subplot.lines) > 0):
+            for i in range(len(self.m_subplot.lines)-1,-1,-1):
+                line = self.m_subplot.lines.pop(i)
+                del line
+        if(self.m_secondaryAxisRequired):
+            if(len(self.m_secondaryAxis.lines) > 0):
+                for i in range(len(self.m_secondaryAxis.lines)-1,-1,-1):
+                    line = self.m_secondaryAxis.lines.pop(i)
+                    del line
 
-    def switchToMarkers(self):
-        for child in self.m_subplot.get_children():
+    def __switchToMarkers(self, axes):
+        for child in axes.get_children():
             if(type(child) is mpl.lines.Line2D):
                 child.set_linestyle('None')
                 child.set_marker('+')
 
-    def switchToLines(self):
-        for child in self.m_subplot.get_children():
+    def switchToMarkers(self):
+        self.__switchToMarkers(self.m_subplot)
+        if(self.m_secondaryAxisRequired):
+            self.__switchToMarkers(self.m_secondaryAxis)
+
+    def __switchToLines(self, axes):
+        for child in axes.get_children():
             if(type(child) is mpl.lines.Line2D):
                 child.set_marker('None')
                 child.set_linestyle('solid')
+
+    def switchToLines(self):
+        self.__switchToLines(self.m_subplot)
+        if(self.m_secondaryAxisRequired):
+            self.__switchToLines(self.m_secondaryAxis)
 
     def toggleMarkers(self):
         if(self.m_usingMarkers):
@@ -110,26 +134,25 @@ class MPLContainer(tk.Frame):
             self.switchToMarkers()
             self.m_usingMarkers = True
 
-    def addLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False):
-        #draw new lines
-        # tempLines = []
-
+    def __addLinePlots(self, axes, ndarrayData, labels, logXAxis, logYAxis):
         if ndarrayData.ndim >= 2:
             for i in range(1,ndarrayData.shape[0]):
-                # tempLines.append(self.m_subplot.plot(ndarrayData[0,:],ndarrayData[i,:]))
                 if (type(labels) is str):
-                    self.m_subplot.plot(ndarrayData[0,:],ndarrayData[i,:], label = labels)
+                    axes.plot(ndarrayData[0,:],ndarrayData[i,:], label = labels)
                 elif(labels != None):
-                    self.m_subplot.plot(ndarrayData[0,:],ndarrayData[i,:], label = labels[i-1])
+                    axes.plot(ndarrayData[0,:],ndarrayData[i,:], label = labels[i-1])
                 else:
-                    self.m_subplot.plot(ndarrayData[0,:],ndarrayData[i,:])
-            # self.m_subplot.plot(ndarrayData[0,:],ndarrayData[1:,:])
+                    axes.plot(ndarrayData[0,:],ndarrayData[i,:])
 
         if(self.m_usingMarkers):
             self.switchToMarkers() #because we plot with lines by default when adding or subtracting lines
 
         if (labels != None):
             handles, labels = self.m_subplot.get_legend_handles_labels()
+            if(self.m_secondaryAxisRequired):
+                handles2, labels2 = self.m_secondaryAxis.get_legend_handles_labels()
+                handles = handles + handles2
+                labels = labels + labels2
             # reverse the order
             #self.m_subplot.legend(handles[::-1], labels[::-1])
 
@@ -140,22 +163,19 @@ class MPLContainer(tk.Frame):
             self.m_subplot.legend(handles2, labels2)
 
         if (logXAxis):
-            self.m_subplot.set_xscale("log")
+            axes.set_xscale("log")
         if (logYAxis):
-            self.m_subplot.set_yscale("log")
-        # if (labels != None):
-        #     # self.m_subplot.legend(tempLines, labels)
-        #     self.m_subplot.legend(self.m_subplot.lines, labels)
-                
-        #resize axes
-        self.m_subplot.relim()
-        # self.m_subplot.autoscale_view()
+            axes.set_yscale("log")
 
-        # self.canvas.draw()
-        # self.canvas.flush_events()
+        axes.relim()
 
+    def addPrimaryLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False):
+        self.__addLinePlots(self.m_subplot, ndarrayData, labels, logXAxis, logYAxis)
 
-    # def animate(self,plot):
+    def addSecondaryLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False):
+        if(not self.m_secondaryAxisRequired):
+            raise NameError #should use primary line plots, since secondary axis is not defined for this plot
+        self.__addLinePlots(self.m_secondaryAxis, ndarrayData, labels, logXAxis, logYAxis)
         
 #MPLContainer END
 

@@ -56,7 +56,6 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             self.m_subtractSelection["values"] = self.m_fileList
             self.m_normSelection["values"] = self.m_fileList                        
 
-
     def deselectFiles(self):
         indices = list(self.m_filesListBox.curselection())
         indices.reverse()
@@ -96,9 +95,10 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         tempMasses = self.m_massDisplayOptions.getMassesToDisplay()
 
         for d in self.m_parsedData:
-            self.mplContainers[0].addLinePlots(d.getRawData(tempMasses),d.getLangmuirLabels(tempMasses))
-            self.mplContainers[1].addLinePlots(d.getProcessedData(tempMasses),d.getCoverageLabels(tempMasses))
-            self.mplContainers[2].addLinePlots(d.getRawTempVSRawTime())
+            self.mplContainers[0].addPrimaryLinePlots(d.getRawDataVSRawTime(tempMasses),d.getLangmuirLabels(tempMasses))
+            self.mplContainers[0].addSecondaryLinePlots(d.getRawTempVSRawTime(),"Temperature")
+            self.mplContainers[1].addPrimaryLinePlots(d.getProcessedData(tempMasses),d.getCoverageLabels(tempMasses))
+            self.mplContainers[2].addPrimaryLinePlots(d.getRawTempVSRawTime())
 
     def checkInput(self):
         if(len(self.m_filePaths) == 0): #check for file selection
@@ -217,14 +217,10 @@ class ProcessRawDataControl(ProcessingStepControlBase):
                 #then write float data (after transposing it)
                 np.savetxt(fileHandle, outputData.transpose(), delimiter=' ')
 
-
-
-    # def getProcessedData(self):
-    #     return self.m_parsedData
-
     def initNotebook(self, parent):
         self.m_notebook = ttk.Notebook(parent)
-        self.mplContainers.append(MPLContainer(self.m_notebook, "Raw Data", "Desorption Rate", "Temperature (K)"))
+        # self.mplContainers.append(MPLContainer(self.m_notebook, "Raw Data", "Desorption Rate", "Temperature (K)"))
+        self.mplContainers.append(MPLContainer(self.m_notebook, "Raw Data", "Desorption Rate", "Time (ms)", secondaryAxis=True,secondaryYAxisName="Temperature (K)"))
         self.mplContainers.append(MPLContainer(self.m_notebook, "Processed Data", "Desorption Rate", "Temperature (K)"))
         self.mplContainers.append(MPLContainer(self.m_notebook, "Temperature Ramp", "Temperature (K)", "Time (ms)"))
 

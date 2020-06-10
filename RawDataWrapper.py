@@ -46,11 +46,17 @@ class RawDataWrapper():
         self.m_dataParsed = True
         # del temp #free memory, or at least suggest it to the garbage collector
 
-    def getRawData(self, desiredMasses):
-        temp = np.array(self.m_parsedRawData[(self.m_listOfColumns.index('temperature')),:])
+    def getRawDataVSRawTemp(self, desiredMasses):
+        result = np.array(self.m_parsedRawData[(self.m_listOfColumns.index('temperature')),:])
         for i in self.massListToIndices(desiredMasses):
-            temp = np.vstack((temp, self.m_parsedRawData[i,:]))
-        return temp
+            result = np.vstack((result, self.m_parsedRawData[i,:]))
+        return result
+
+    def getRawDataVSRawTime(self, desiredMasses):
+        result = np.array(self.m_parsedRawData[(self.m_listOfColumns.index('ms')),:])
+        for i in self.massListToIndices(desiredMasses):
+            result = np.vstack((result, self.m_parsedRawData[i,:]))
+        return result
 
     def getRawTempVSRawTime(self):
         # result = np.vstack((self.m_interpolatedTime, self.m_interpolatedTemp))

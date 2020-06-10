@@ -126,7 +126,7 @@ class InvertDataControl(ProcessingStepControlBase):
 
             #plot chi-squared value vs prefactor for all input coverages
             self.mplContainers[5].clearPlots()
-            self.mplContainers[5].addLinePlots(self.m_parsedData.getChiSquaredVSPrefactor(),self.m_parsedData.getCoverageLabels(),logXAxis = True, logYAxis = True)
+            self.mplContainers[5].addPrimaryLinePlots(self.m_parsedData.getChiSquaredVSPrefactor(),self.m_parsedData.getCoverageLabels(),logXAxis = True, logYAxis = True)
 
             self.m_prefactorCB["values"] = self.m_prefactors
             self.plotDataForSelectedPrefactor()
@@ -142,21 +142,21 @@ class InvertDataControl(ProcessingStepControlBase):
 
             #plot input data
             self.mplContainers[0].clearPlots()
-            self.mplContainers[0].addLinePlots(self.m_parsedData.getInputData(),self.m_parsedData.getCoverageLabels())
+            self.mplContainers[0].addPrimaryLinePlots(self.m_parsedData.getInputData(),self.m_parsedData.getCoverageLabels())
             #plot coverage vs temperature from experimental data
             self.mplContainers[1].clearPlots()
-            self.mplContainers[1].addLinePlots(self.m_parsedData.getExpCoverageVSTemp(float(selectedPrefactor)),self.m_parsedData.getCoverageLabels())
+            self.mplContainers[1].addPrimaryLinePlots(self.m_parsedData.getExpCoverageVSTemp(float(selectedPrefactor)),self.m_parsedData.getCoverageLabels())
             #plot desorption energy vs coverage from experimental data
             self.mplContainers[2].clearPlots()
             for e,lbl in zip(self.m_parsedData.getDesEnergyVSCoverageList(float(selectedPrefactor)),self.m_parsedData.getCoverageLabels()):
-                self.mplContainers[2].addLinePlots(e,lbl)
+                self.mplContainers[2].addPrimaryLinePlots(e,lbl)
             #plot simulated coverage vs temperature
             self.mplContainers[3].clearPlots()
             # self.mplContainers[3].addLinePlots(self.m_parsedData.getExpDesorptionRateVSTemp())
-            self.mplContainers[3].addLinePlots(self.m_parsedData.getSimCoverageVSTemp(float(selectedPrefactor)),self.m_parsedData.getCoverageLabels())
+            self.mplContainers[3].addPrimaryLinePlots(self.m_parsedData.getSimCoverageVSTemp(float(selectedPrefactor)),self.m_parsedData.getCoverageLabels())
             #plot simulated desorption rate vs temperature
             self.mplContainers[4].clearPlots()
-            self.mplContainers[4].addLinePlots(self.m_parsedData.getSimDesRateVSTemp(float(selectedPrefactor)),self.m_parsedData.getCoverageLabels())
+            self.mplContainers[4].addPrimaryLinePlots(self.m_parsedData.getSimDesRateVSTemp(float(selectedPrefactor)),self.m_parsedData.getCoverageLabels())
             
 
     def changeRB(self):

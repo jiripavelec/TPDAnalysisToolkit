@@ -214,7 +214,8 @@ class ProcessedDataWrapper():
                 difference = sim - obs
                 diffSquared = difference*difference
                 # self.m_chiSquared[k][i] = np.sum(np.where( obs != 0.0, diffSquared/obs, diffSquared/np.finfo(float).eps))
-                self.m_chiSquared[k][i] = np.sum(np.where( obs > 1.0e-6, diffSquared/obs, diffSquared/np.finfo(float).eps))
+                # self.m_chiSquared[k][i] = np.sum(np.where( obs > 1.0e-6, diffSquared/obs, diffSquared/np.finfo(float).eps))
+                self.m_chiSquared[k][i] = np.sum(np.where( obs > 1.0e-6, diffSquared/obs, 0))
                 # if self.m_chiSquared[k][i] > 1000:
                 #     print("Wierd chiSquared")
 

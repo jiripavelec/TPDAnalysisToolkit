@@ -100,7 +100,7 @@ class InvertDataControl(ProcessingStepControlBase):
             else: #multiplicative range
                 currentEntry = float(self.m_tPrefactorStartEntry.get())
                 lastEntry = float(self.m_tPrefactorEndEntry.get())
-                if(math.log(lastEntry) - math.log(currentEntry) > 20):
+                if(math.log10(lastEntry) - math.log10(currentEntry) > 20):
                     raise ValueError #ridiculous amount of data points
                 self.m_prefactors = []
                 while(currentEntry <= lastEntry):
@@ -126,7 +126,7 @@ class InvertDataControl(ProcessingStepControlBase):
 
             #plot chi-squared value vs prefactor for all input coverages
             self.mplContainers[5].clearPlots()
-            self.mplContainers[5].addPrimaryLinePlots(self.m_parsedData.getChiSquaredVSPrefactor(),self.m_parsedData.getCoverageLabels(),logXAxis = True, logYAxis = True)
+            self.mplContainers[5].addPrimaryLinePlots(self.m_parsedData.getChiSquaredVSPrefactor(),self.m_parsedData.getCoverageLabels(),logXAxis = True)#, logYAxis = True)
 
             self.m_prefactorCB["values"] = self.m_prefactors
             self.plotDataForSelectedPrefactor()

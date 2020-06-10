@@ -209,7 +209,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             #make one file per mass
             namedOutputFilePath = outputFilePath + ".M" + str(m) + ".pdat" #pdat for processed data
             if(path.exists(namedOutputFilePath)):
-                raise ValueError #TODO: raise error and ask for rename
+                tk.messagebox.showerror("File exists!","Please choose another name, or explicitly delete the " + outputFilePath + "to overwrite in the file explorer.")
             stringData = np.vstack((np.array(labels,dtype=str),np.array(coverages,dtype=str)))
 
             with open(namedOutputFilePath, mode='a') as fileHandle:

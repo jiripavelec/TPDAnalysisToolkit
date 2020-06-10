@@ -156,8 +156,7 @@ class InvertDataControl(ProcessingStepControlBase):
             self.mplContainers[3].addPrimaryLinePlots(self.m_parsedData.getSimCoverageVSTemp(float(selectedPrefactor)),self.m_parsedData.getCoverageLabels())
             #plot simulated desorption rate vs temperature
             self.mplContainers[4].clearPlots()
-            self.mplContainers[4].addPrimaryLinePlots(self.m_parsedData.getSimDesRateVSTemp(float(selectedPrefactor)),self.m_parsedData.getCoverageLabels())
-            
+            self.mplContainers[4].addPrimaryLinePlots(self.m_parsedData.getSimDesRateVSTemp(float(selectedPrefactor)),self.m_parsedData.getCoverageLabels())  
 
     def changeRB(self):
         self.m_tPrefactorEntry.configure(state = 'disabled')
@@ -193,7 +192,6 @@ class InvertDataControl(ProcessingStepControlBase):
         # fileName = fileName + '.' + dateTimeString
         outputFilePath = outputFilePath + '/' + fileName
         self.m_parsedData.saveInvertedDataToFile(outputFilePath)
-
 
     def initNotebook(self, parent):
         self.m_notebook = ttk.Notebook(parent)

@@ -98,7 +98,8 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             self.mplContainers[0].addPrimaryLinePlots(d.getRawDataVSRawTime(tempMasses),d.getLangmuirLabels(tempMasses))
             self.mplContainers[0].addSecondaryLinePlots(d.getRawTempVSRawTime(),"Temperature")
             self.mplContainers[1].addPrimaryLinePlots(d.getProcessedData(tempMasses),d.getCoverageLabels(tempMasses))
-            self.mplContainers[2].addPrimaryLinePlots(d.getRawTempVSRawTime())
+            self.mplContainers[2].addPrimaryLinePlots(d.getProcessedArrheniusData(tempMasses),d.getCoverageLabels(tempMasses))
+            self.mplContainers[3].addPrimaryLinePlots(d.getRawTempVSRawTime())
 
     def checkInput(self):
         if(len(self.m_filePaths) == 0): #check for file selection
@@ -222,6 +223,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         # self.mplContainers.append(MPLContainer(self.m_notebook, "Raw Data", "Desorption Rate", "Temperature (K)"))
         self.mplContainers.append(MPLContainer(self.m_notebook, "Raw Data", "Desorption Rate", "Time (ms)", secondaryAxis=True,secondaryYAxisName="Temperature (K)"))
         self.mplContainers.append(MPLContainer(self.m_notebook, "Processed Data", "Desorption Rate", "Temperature (K)"))
+        self.mplContainers.append(MPLContainer(self.m_notebook, "Arrhenius Plot (Processed)", "ln(Desorption Rate)", "Reciprocal Temperature (1/K)", invertXAxis=True))
         self.mplContainers.append(MPLContainer(self.m_notebook, "Temperature Ramp", "Temperature (K)", "Time (ms)"))
 
         for c in self.mplContainers:

@@ -25,7 +25,7 @@ import matplotlib.animation as anim
 
 #MPLContainer BEGIN
 class MPLContainer(tk.Frame):
-    def __init__(self, parent, title, yAxisName, xAxisName, secondaryAxis = False, secondaryYAxisName = "" , *args, **kwargs):
+    def __init__(self, parent, title, yAxisName, xAxisName, secondaryAxis = False, secondaryYAxisName = "" , invertXAxis = False, *args, **kwargs):
         super().__init__(parent, bg="white", *args, **kwargs)
         self.m_title = title
         self.m_xAxisName = xAxisName
@@ -35,11 +35,10 @@ class MPLContainer(tk.Frame):
         if(secondaryAxis and secondaryYAxisName == ""):
             raise ValueError #need a secondaryYAxisName!
         self.m_secondaryYAxisName = secondaryYAxisName
+        self.m_invertXAxis = invertXAxis
         self.initUI(parent)
 
     def resizePlot(self, *args, **kwargs):
-        # print("Width = " + str(self.winfo_width()))
-        # print("Height = " + str(self.winfo_height()))
         now = datetime.now()
         if(not self.plotHidden): #hide the plot if we just started resizing
             self.canvas.get_tk_widget().place_forget()
@@ -59,22 +58,21 @@ class MPLContainer(tk.Frame):
 
     def initUI(self, parent):
         self.pack(side=tk.TOP, fill = tk.BOTH, expand=True)
-        # self.place(anchor="nw",bordermode=tk.INSIDE,height=100,relwidth=100)
-        # bck = mpl.get_backend()
-        # print("Backendis" + bck)
+
         self.m_figure = Figure( dpi=96)
         self.m_subplot = self.m_figure.add_subplot(111) #add_subplot returns axes
+        # a = f.add_subplot(111)#111 means only one chart as opposed to 121 meanign 2
 
         self.m_subplot.set_title(self.m_title)
         self.m_subplot.set_xlabel(self.m_xAxisName)
         self.m_subplot.set_ylabel(self.m_yAxisName)
+        if(self.m_invertXAxis):
+            self.m_subplot.invert_xaxis()
 
         if(self.m_secondaryAxisRequired):
             self.m_secondaryAxis = self.m_subplot.twinx()
             self.m_secondaryAxis.set_ylabel(self.m_secondaryYAxisName)
-        # f = mpl.pyplot.Figure(figsize=(5,5), dpi=96)
-        # a = f.add_subplot(111)#111 means only one chart as opposed to 121 meanign 2
-        # self.m_subplot.plot([1,2,3,4,5,6,7,8],[5,6,1,3,8,9,3,5])
+        
         #normally plt.show() now, but different for tk
         self.canvas = FigureCanvasTkAgg(self.m_figure,self)
         self.canvas.draw()

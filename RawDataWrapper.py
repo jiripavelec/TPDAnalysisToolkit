@@ -9,9 +9,11 @@ class RawDataWrapper():
         self.m_dataProcessed = False
         self.m_correctedTemp = None
         self.m_interpolatedTemp = None
-        self.m_interpolatedTime = None
+        self.m_reciprocalTemp = None
+        # self.m_interpolatedTime = None
         self.m_coveragesNormalized = False
         self.m_interpolatedData = {}
+        self.m_logInterpolatedData = {}
         self.m_parsedCoverage = "No coverage in filename!"
         self.m_coverages = {}
 
@@ -106,7 +108,8 @@ class RawDataWrapper():
             if(tRampEndIndex == self.m_correctedTemp.size - 1): break
 
         self.m_interpolatedTemp = np.arange(tCutStart, tCutEnd, tStep) #generate equidistantly spaced range of temperature points
-        self.m_interpolatedTime = np.interp(self.m_interpolatedTemp, self.m_correctedTemp[tRampStartIndex:tRampEndIndex], self.m_parsedRawData[0,tRampStartIndex:tRampEndIndex])
+        self.m_reciprocalTemp = np.reciprocal(self.m_interpolatedTemp)
+        # self.m_interpolatedTime = np.interp(self.m_interpolatedTemp, self.m_correctedTemp[tRampStartIndex:tRampEndIndex], self.m_parsedRawData[0,tRampStartIndex:tRampEndIndex])
 
 
         for m in self.getMassList(): #for each mass
@@ -123,6 +126,7 @@ class RawDataWrapper():
             # if normalize: #first step to normalizing -> find coverages
             self.m_coverages[m] = np.trapz(interpDataBuffer, dx= tStep) #write absolute coverage into dictionary
             self.m_interpolatedData[m] = interpDataBuffer #write buffer into "permanent" storage
+            self.m_logInterpolatedData[m] = np.log(interpDataBuffer)
         self.m_dataProcessed = True
 
     def normalizeDataTo(self, referenceRawDataWrapper):
@@ -139,10 +143,15 @@ class RawDataWrapper():
 
     def getProcessedData(self, desiredMasses):
         result = self.m_interpolatedTemp
-        # for i in self.massListToIndices(desiredMasses):
         for m in desiredMasses:
             result = np.vstack((result, self.m_interpolatedData[m]))
         # return np.concatenate((self.m_correctedTemp,self.m_parsedRawData[self.m_listOfColumns.index('temperature')+1:,:]))
+        return result
+
+    def getProcessedArrheniusData(self, desiredMasses):
+        result = self.m_reciprocalTemp
+        for m in desiredMasses:
+            result = np.vstack((result, self.m_logInterpolatedData[m]))
         return result
 
     def getCoverageLabels(self, desiredMasses):

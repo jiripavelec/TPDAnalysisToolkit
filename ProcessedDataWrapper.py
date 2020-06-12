@@ -70,6 +70,7 @@ class ProcessedDataWrapper():
             temp = self.m_parsedInputData[i+1,:] / (self.m_expCoverages[str(prefactor)][i,:] * factor1)
             # self.m_expCoverages = np.vstack((self.m_totalCoverages,np.trapz(self.m_parsedInputData[i,:],x=self.m_parsedInputData[0,:]) - self.m_totalCoverages[i]))
             self.m_desorptionEnergies[str(prefactor)][i,:] = factor2 * self.m_parsedInputData[0,:] * np.log(temp)
+            # self.m_desorptionEnergies[str(prefactor)][i,np.where(self.m_expCoverages[str(prefactor)][i,:] == self.m_totalCoverages[i+1])] = 0.0 #set desorption energy to zero where coverage stays constant (i.e. temperatures below desorption peaks)
 
         # self.m_expCoverages[str(prefactor)] = coverageBuffer
         # self.m_desorptionEnergies[str(prefactor)] = desorptionEnergiesBuffer

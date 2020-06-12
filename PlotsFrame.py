@@ -66,12 +66,14 @@ class MPLContainer(tk.Frame):
         self.m_subplot.set_title(self.m_title)
         self.m_subplot.set_xlabel(self.m_xAxisName)
         self.m_subplot.set_ylabel(self.m_yAxisName)
+        self.m_subplot.tick_params(direction="in")
         if(self.m_invertXAxis):
             self.m_subplot.invert_xaxis()
 
         if(self.m_secondaryAxisRequired):
             self.m_secondaryAxis = self.m_subplot.twinx()
             self.m_secondaryAxis.set_ylabel(self.m_secondaryYAxisName)
+            self.m_secondaryAxis.tick_params(direction="in")
         
         #normally plt.show() now, but different for tk
         self.canvas = FigureCanvasTkAgg(self.m_figure,self)
@@ -132,15 +134,15 @@ class MPLContainer(tk.Frame):
             self.switchToMarkers()
             self.m_usingMarkers = True
 
-    def __addLinePlots(self, axes, ndarrayData, labels, logXAxis, logYAxis):
+    def __addLinePlots(self, axes, ndarrayData, labels, logXAxis, logYAxis, pLineWidth = 0.75):
         if ndarrayData.ndim >= 2:
             for i in range(1,ndarrayData.shape[0]):
                 if (type(labels) is str):
-                    axes.plot(ndarrayData[0,:],ndarrayData[i,:], label = labels)
+                    axes.plot(ndarrayData[0,:],ndarrayData[i,:], label = labels, linewidth=pLineWidth)
                 elif(labels != None):
-                    axes.plot(ndarrayData[0,:],ndarrayData[i,:], label = labels[i-1])
+                    axes.plot(ndarrayData[0,:],ndarrayData[i,:], label = labels[i-1], linewidth=pLineWidth)
                 else:
-                    axes.plot(ndarrayData[0,:],ndarrayData[i,:])
+                    axes.plot(ndarrayData[0,:],ndarrayData[i,:], linewidth=pLineWidth)
 
         if(self.m_usingMarkers):
             self.switchToMarkers() #because we plot with lines by default when adding or subtracting lines

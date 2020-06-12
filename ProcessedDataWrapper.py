@@ -19,6 +19,7 @@ class ProcessedDataWrapper():
         self.m_simCoverages = {} #dictionary to connect dataset with prefactor as key, coverage(temp), from simulation
         self.m_simDesorptionRate = {} #dictionary to connect dataset with prefactor as key, dTheta/dT, from sim
         self.m_chiSquared = {}
+        self.m_includedFiles = []
 
     def parseProcessedDataFile(self):
         if(self.m_dataParsed):
@@ -28,6 +29,9 @@ class ProcessedDataWrapper():
         secondHeaderLine =  np.loadtxt(self.m_filePath, dtype=str, skiprows=1, max_rows=1, comments=None) #ignoring comments, same as before
         headerLength = int (secondHeaderLine[-1]) #last part of second header line is header length
 
+        for i in range(2, headerLength-1):
+            includedFileNameBuffer = np.loadtxt(self.m_filePath, dtype=str, skiprows=i, max_rows = 1, comments= None)
+            self.m_includedFiles.append(includedFileNameBuffer[2:])#ignore '# ' before line
         firstTwoLines = np.loadtxt(self.m_filePath, dtype=str, max_rows=2)
         self.m_listOfColumns = firstTwoLines[0,:]
         self.m_totalCoverages = [float(c) for c in firstTwoLines[1,:]]
@@ -97,7 +101,7 @@ class ProcessedDataWrapper():
         for k in self.m_desorptionEnergies.keys():
             headerString = "Processed TPD data for mass " + str(self.m_mass) + \
                 "\nHeader length is " + str(4) + \
-                "\nPrefactor is " + "{:e}".format(k) + \
+                "\nPrefactor is " + "{:e}".format(float(k)) + \
                 "\nA temperature column is followed by pairs of coverage and desorption energy columns:"
             #outputData starts out column-major
             outputData = self.m_parsedInputData[0,:].copy() # start with temperature column
@@ -106,13 +110,13 @@ class ProcessedDataWrapper():
             for i in range(len(self.m_totalCoverages) - 1):
                 # headerString = headerString + w.m_fileName + "\n" #write filename to header for quick overview
                 outputData = np.vstack((outputData, self.m_expCoverages[k][i,:], self.m_desorptionEnergies[k][i,:])) #append data column for coverage and then mass
-                labels.append("Coverage_" + self.m_listOfColumns[i]) # append total coverage once for coverage column
-                labels.append("EDes_" + self.m_listOfColumns[i]) # append total coverage a second time for desorption energy column
+                labels.append("Coverage_" + self.m_listOfColumns[i+1]) # append total coverage once for coverage column
+                labels.append("EDes_" + self.m_listOfColumns[i+1]) # append total coverage a second time for desorption energy column
                 coverages.append(str(self.m_totalCoverages[i+1])) # append total coverage once for coverage column
                 coverages.append(str(self.m_totalCoverages[i+1])) # append total coverage a second time for desorption energy column
 
             #make one file per mass
-            namedOutputFilePath = outputFilePath + ".M" + str(self.m_mass) + "Prefactor_" + "{:e}".format(k) + ".invdat" #pdat for processed data
+            namedOutputFilePath = outputFilePath + ".M" + str(self.m_mass) + "Prefactor_" + "{:e}".format(float(k)) + ".invdat" #pdat for processed data
             stringData = np.vstack((np.array(labels,dtype=str),np.array(coverages,dtype=str)))
 
             with open(namedOutputFilePath, mode='a') as fileHandle:

@@ -95,7 +95,7 @@ class MPLContainer(tk.Frame):
         # self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.OUTSIDE,height=self.winfo_height(),width=self.winfo_width())
         self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.INSIDE,relheight = 1.0, relwidth = 1.0)
 
-        self.resizeAnimation = anim.FuncAnimation(self.m_figure, func=self.resizePlot, interval=600)#, blit = True)#interval in milliseconds
+        self.resizeAnimation = anim.FuncAnimation(self.m_figure, func=self.resizePlot, interval=700)#, blit = True)#interval in milliseconds
     
     def clearPlots(self):
         if(len(self.m_subplot.lines) > 0):
@@ -138,7 +138,7 @@ class MPLContainer(tk.Frame):
             self.switchToMarkers()
             self.m_usingMarkers = True
 
-    def __addLinePlots(self, axes, ndarrayData, labels, logXAxis, logYAxis, pLineWidth = 0.75):
+    def __addLinePlots(self, axes, ndarrayData, labels, logXAxis, logYAxis, pLineWidth = 1):
         if ndarrayData.ndim >= 2:
             for i in range(1,ndarrayData.shape[0]):
                 if (type(labels) is str):

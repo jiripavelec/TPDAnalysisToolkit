@@ -241,7 +241,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         self.m_filesListBoxLabel = ttk.Label(self.m_chord, text='Input files:')
         self.m_filesListBoxLabel.grid(row = 0, column = 0, columnspan = 2, sticky="nsw")
 
-        self.m_filesListBox = ScrolledListBox(self.m_chord)
+        self.m_filesListBox = ScrolledListBox(self.m_chord, horizontallyScrollable=True)
         self.m_filesListBox.grid(row = 1, column = 0, columnspan = 4, sticky = "nsew")
 
         self.m_fileButtonFrame = ttk.Frame(self.m_chord)

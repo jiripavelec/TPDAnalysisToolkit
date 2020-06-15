@@ -8,7 +8,14 @@ mpl.use('TkAgg') #mpl backend
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib import backend_bases
 # mpl.rcParams['toolbar'] = 'None'
-backend_bases.NavigationToolbar2.toolitems = (
+from matplotlib.figure import Figure
+import matplotlib.animation as anim
+
+#Custom MPL Navigation Toolbar BEGIN
+class CustomNavigationToolbar(NavigationToolbar2Tk):
+    def __init__(self, pFigureCanvasTKAgg, parent, root, *args, **kwargs):
+        self.m_root = root
+        self.toolitems = (
         ('Home', 'Reset original view', 'home', 'home'),
         ('Back', 'Back to  previous view', 'back', 'back'),
         ('Forward', 'Forward to next view', 'forward', 'forward'),
@@ -17,11 +24,14 @@ backend_bases.NavigationToolbar2.toolitems = (
         ('Zoom', 'Zoom to rectangle', 'zoom_to_rect', 'zoom'),
         (None, None, None, None),
         ('Save', 'Save the figure', 'filesave', 'save_figure'),
+        ('Subplots', 'Configure subplots', 'subplots', 'configure_subplots')
       )
+        super().__init__(pFigureCanvasTKAgg, parent, *args, **kwargs)
 
-from matplotlib.figure import Figure
-import matplotlib.animation as anim
+    def configure_subplots(self):
+        raise NotImplementedError
 
+#Custom MPL Navigation Toolbar END
 
 #MPLContainer BEGIN
 class MPLContainer(tk.Frame):
@@ -89,7 +99,7 @@ class MPLContainer(tk.Frame):
         # self.pack_propagate(0)#should stop grid resizing
         self.resizeDateTime = datetime.now()
         self.plotHidden = False
-        self.m_toolbar = NavigationToolbar2Tk(self.canvas, self)
+        self.m_toolbar = CustomNavigationToolbar(self.canvas, self)
         self.m_toolbar.update()
         # self.canvas.get_tk_widget().pack(side=tk.TOP,fill=tk.BOTH,expand=True)
         # self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.OUTSIDE,height=self.winfo_height(),width=self.winfo_width())
@@ -199,18 +209,4 @@ class PlotsFrame(tk.Frame):
         # self.pack(side = tk.RIGHT, fill = tk.BOTH, expand = True)
         self.grid_rowconfigure(0,weight=1)
         self.grid_columnconfigure(0,weight=1)
-        # lbl = ttk.Label(self, text="Plots Frame")
-        # lbl.pack(side=tk.LEFT, padx=5, pady=5)
-
-        #todo: use self.frames to create multiple tab-frames for different plot outputs
-        # self.tab_control = ttk.Notebook(self)
-        # self.tab1 = MPLContainer(self.tab_control, bg="white")
-        # self.tab2 = ttk.Frame(self.tab_control)
-
-        # self.tab_control.add(self.tab1,text="first")
-        # self.tab_control.add(self.tab2,text="second")
-        # self.tab_control.pack(expand=1,fill='both')
-
-    # def resizeTest(self):
-    #     self.tab1.resizePlot()
 #PlotsFrame END

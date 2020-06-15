@@ -29,9 +29,10 @@ class ProcessedDataWrapper():
         secondHeaderLine =  np.loadtxt(self.m_filePath, dtype=str, skiprows=1, max_rows=1, comments=None) #ignoring comments, same as before
         headerLength = int (secondHeaderLine[-1]) #last part of second header line is header length
 
-        for i in range(2, headerLength-1):
-            includedFileNameBuffer = np.loadtxt(self.m_filePath, dtype=str, skiprows=i, max_rows = 1, comments= None)
-            self.m_includedFiles.append(includedFileNameBuffer[2:])#ignore '# ' before line
+        # for i in range(2, headerLength-1):
+        #     includedFileNameBuffer = np.loadtxt(self.m_filePath, dtype=str, skiprows=i, max_rows = 1, comments= None)
+        #     self.m_includedFiles.append(includedFileNameBuffer[2:])#ignore '# ' before line
+
         firstTwoLines = np.loadtxt(self.m_filePath, dtype=str, max_rows=2)
         self.m_listOfColumns = firstTwoLines[0,:]
         self.m_totalCoverages = [float(c) for c in firstTwoLines[1,:]]

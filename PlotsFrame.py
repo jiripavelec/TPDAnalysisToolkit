@@ -41,15 +41,19 @@ class MPLContainer(tk.Frame):
     def resizePlot(self, *args, **kwargs):
         now = datetime.now()
         if(not self.plotHidden): #hide the plot if we just started resizing
+            # self.canvas.begin_updates()
             self.canvas.get_tk_widget().place_forget()
+            self.m_figure.set_dpi(4)#setting figure to lowest dpi possible while hidden, because matplotlib tkagg backend keeps updating figure on resize, even while hidden :(
             # self.canvas.get_tk_widget().pack_forget()
             # self.canvas.get_tk_widget().grid_forget()
             self.plotHidden = True
         timeDelta = now - self.resizeDateTime #get timedelta since last resize event
         if(timeDelta.total_seconds()*1000 > 500): #if we stopped resizing, unhide plot
             # self.canvas.get_tk_widget().place_forget()
+            self.m_figure.set_dpi(96)
             self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.OUTSIDE,height=self.winfo_height(),width=self.winfo_width())
-            self.canvas.flush_events()
+            # self.canvas.end_updates()
+            # self.canvas.flush_events()
             # self.canvas.get_tk_widget().pack(side=tk.TOP, fill = tk.BOTH, expand = True)
             # self.canvas.get_tk_widget().grid(sticky = "nsew", row = 0, column = 0)
             self.plotHidden = False

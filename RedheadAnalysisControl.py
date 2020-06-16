@@ -3,10 +3,10 @@ import tkinter.ttk as ttk
 from Controls import Chord, ProcessingStepControlBase #ui element
 
 class RedheadAnalysisControl(ProcessingStepControlBase):
-    def __init__(self, controller):
+    def __init__(self, controller, root):
         super().__init__("Redhead Analysis (To Be Done)", controller)
 
-    def initNotebook(self, parent):
+    def initNotebook(self, parent, root):
         self.m_notebook = ttk.Notebook(parent)
 
     def initChordUI(self, parent):

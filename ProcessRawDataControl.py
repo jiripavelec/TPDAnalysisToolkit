@@ -11,7 +11,7 @@ from os import path, chdir
 # from glob import glob
 
 class ProcessRawDataControl(ProcessingStepControlBase):
-    def __init__(self, controller):
+    def __init__(self, controller, root):
         super().__init__("Process TPD Data", controller)
         self.m_filePaths = []
         self.m_parsedData = []
@@ -219,13 +219,13 @@ class ProcessRawDataControl(ProcessingStepControlBase):
                 #then write float data (after transposing it)
                 np.savetxt(fileHandle, outputData.transpose(), delimiter=' ')
 
-    def initNotebook(self, parent):
+    def initNotebook(self, parent, root):
         self.m_notebook = ttk.Notebook(parent)
         # self.mplContainers.append(MPLContainer(self.m_notebook, "Raw Data", "Desorption Rate", "Temperature (K)"))
-        self.mplContainers.append(MPLContainer(self.m_notebook, "Raw Data", "Desorption Rate", "Time (ms)", secondaryAxis=True,secondaryYAxisName="Temperature (K)"))
-        self.mplContainers.append(MPLContainer(self.m_notebook, "Processed Data", "Desorption Rate", "Temperature (K)"))
-        self.mplContainers.append(MPLContainer(self.m_notebook, "Arrhenius Plot (Processed)", "ln(Desorption Rate)", "Reciprocal Temperature (1/K)", invertXAxis=True))
-        self.mplContainers.append(MPLContainer(self.m_notebook, "Temperature Ramp", "Temperature (K)", "Time (ms)"))
+        self.mplContainers.append(MPLContainer(self.m_notebook, "Raw Data", "Desorption Rate", "Time (ms)", root, secondaryAxis=True,secondaryYAxisName="Temperature (K)"))
+        self.mplContainers.append(MPLContainer(self.m_notebook, "Processed Data", "Desorption Rate", "Temperature (K)", root))
+        self.mplContainers.append(MPLContainer(self.m_notebook, "Arrhenius Plot (Processed)", "ln(Desorption Rate)", "Reciprocal Temperature (1/K)", root, invertXAxis=True))
+        self.mplContainers.append(MPLContainer(self.m_notebook, "Temperature Ramp", "Temperature (K)", "Time (ms)", root))
 
         for c in self.mplContainers:
             self.m_notebook.add(c, text = c.m_title)

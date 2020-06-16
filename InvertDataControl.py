@@ -10,7 +10,7 @@ import math
 import multiprocessing
 
 class InvertDataControl(ProcessingStepControlBase):
-    def __init__(self, controller):
+    def __init__(self, controller, root):
         super().__init__("Inversion Analysis", controller)
         self.m_parsedData = None
         self.m_prefactors = []
@@ -197,15 +197,15 @@ class InvertDataControl(ProcessingStepControlBase):
         outputFilePath = outputFilePath + '/' + fileName
         self.m_parsedData.saveInvertedDataToFile(outputFilePath)
 
-    def initNotebook(self, parent):
+    def initNotebook(self, parent, root):
         self.m_notebook = ttk.Notebook(parent)
 
-        self.mplContainers.append(MPLContainer(self.m_notebook, "Input Data", "Desorption Rate (arb. U.)", "Temperature (K)"))
-        self.mplContainers.append(MPLContainer(self.m_notebook, "Coverage vs. Temperature", "Coverage", "Temperature (K)"))
-        self.mplContainers.append(MPLContainer(self.m_notebook, "Energy vs. Coverage", "Energy (eV)", "Coverage"))
-        self.mplContainers.append(MPLContainer(self.m_notebook, "Simulated Coverage vs Temperature", "Coverge (ML)", "Temperature (K)"))
-        self.mplContainers.append(MPLContainer(self.m_notebook, "Simulated Desorption Rate vs Coverage", "Desorption Rate (ML/K)", "Coverage"))
-        self.mplContainers.append(MPLContainer(self.m_notebook, "Chi Squared vs Prefactor", "Chi Squared Value", "Prefactor"))
+        self.mplContainers.append(MPLContainer(self.m_notebook, "Input Data", "Desorption Rate (arb. U.)", "Temperature (K)", root))
+        self.mplContainers.append(MPLContainer(self.m_notebook, "Coverage vs. Temperature", "Coverage", "Temperature (K)", root))
+        self.mplContainers.append(MPLContainer(self.m_notebook, "Energy vs. Coverage", "Energy (eV)", "Coverage", root))
+        self.mplContainers.append(MPLContainer(self.m_notebook, "Simulated Coverage vs Temperature", "Coverge (ML)", "Temperature (K)", root))
+        self.mplContainers.append(MPLContainer(self.m_notebook, "Simulated Desorption Rate vs Coverage", "Desorption Rate (ML/K)", "Coverage", root))
+        self.mplContainers.append(MPLContainer(self.m_notebook, "Chi Squared vs Prefactor", "Chi Squared Value", "Prefactor", root))
 
         for c in self.mplContainers:
             self.m_notebook.add(c, text = c.m_title)

@@ -24,18 +24,27 @@ class CustomNavigationToolbar(NavigationToolbar2Tk):
         ('Zoom', 'Zoom to rectangle', 'zoom_to_rect', 'zoom'),
         (None, None, None, None),
         ('Save', 'Save the figure', 'filesave', 'save_figure'),
-        ('Subplots', 'Configure subplots', 'subplots', 'configure_subplots')
+        ('Subplots', 'Configure subplots', 'subplots', 'advanced_settings')
       )
         super().__init__(pFigureCanvasTKAgg, parent, *args, **kwargs)
+        self.m_figureRef = pFigureCanvasTKAgg.figure
 
-    def configure_subplots(self):
+    def advanced_settings(self):
+        self.m_window = tk.Toplevel(self.m_root)
+        
         raise NotImplementedError
+
+    # def save_figure(self):
+        # previousSize = self.m_figureRef.get_size_inches()
+        # self.m_figureRef.set_size_inches(w=13.0/2.54, h=8.0/2.54)
+        # super().save_figure()
+        # self.m_figureRef.set_size_inches(previousSize)
 
 #Custom MPL Navigation Toolbar END
 
 #MPLContainer BEGIN
 class MPLContainer(tk.Frame):
-    def __init__(self, parent, title, yAxisName, xAxisName, secondaryAxis = False, secondaryYAxisName = "" , invertXAxis = False, *args, **kwargs):
+    def __init__(self, parent, title, yAxisName, xAxisName, root, secondaryAxis = False, secondaryYAxisName = "" , invertXAxis = False, *args, **kwargs):
         super().__init__(parent, bg="white", *args, **kwargs)
         self.m_title = title
         self.m_xAxisName = xAxisName
@@ -46,7 +55,7 @@ class MPLContainer(tk.Frame):
             raise ValueError #need a secondaryYAxisName!
         self.m_secondaryYAxisName = secondaryYAxisName
         self.m_invertXAxis = invertXAxis
-        self.initUI(parent)
+        self.initUI(parent, root)
 
     def resizePlot(self, *args, **kwargs):
         now = datetime.now()
@@ -70,7 +79,7 @@ class MPLContainer(tk.Frame):
         #else do nothing
             
 
-    def initUI(self, parent):
+    def initUI(self, parent, root):
         self.pack(side=tk.TOP, fill = tk.BOTH, expand=True)
 
         self.m_figure = Figure( dpi=96)
@@ -99,7 +108,7 @@ class MPLContainer(tk.Frame):
         # self.pack_propagate(0)#should stop grid resizing
         self.resizeDateTime = datetime.now()
         self.plotHidden = False
-        self.m_toolbar = CustomNavigationToolbar(self.canvas, self)
+        self.m_toolbar = CustomNavigationToolbar(self.canvas, self, root)
         self.m_toolbar.update()
         # self.canvas.get_tk_widget().pack(side=tk.TOP,fill=tk.BOTH,expand=True)
         # self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.OUTSIDE,height=self.winfo_height(),width=self.winfo_width())

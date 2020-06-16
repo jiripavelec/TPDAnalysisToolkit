@@ -9,18 +9,18 @@ import multiprocessing
 import sys
 
 class MainFrame(tk.Frame):
-    def __init__(self):#, parent, controller):
+    def __init__(self, root):#, parent, controller):
         super().__init__()
-        self.initUI()
+        self.initUI(root)
 
-    def initUI(self):
+    def initUI(self, root):
         self.master.title("TPD Toolkit")
         self.pack(fill=tk.BOTH, expand=True)
 
         self.m_panedWindow = ttk.PanedWindow(self, orient=tk.HORIZONTAL)
         self.m_panedWindow.pack(side=tk.LEFT, fill = tk.BOTH, expand=True)
         self.plotsFrame = PlotsFrame(self.m_panedWindow, bg ='white')
-        self.controlsFrame = ControlsFrame(self.m_panedWindow, bg = 'white', relief='groove')
+        self.controlsFrame = ControlsFrame(self.m_panedWindow, root, bg = 'white', relief='groove')
 
         # self.plotsFrame = PlotsFrame(self, bg ='white')
         # self.plotsFrame.place(relx = 0.25, rely = 0.0, relwidth = 0.75, relheight = 1.0, anchor = "nw", bordermode = tk.INSIDE)
@@ -29,7 +29,7 @@ class MainFrame(tk.Frame):
         # self.plotsFrame.pack(side = "right", fill = "both", expand = True)
         # self.controlsFrame.pack(side = "left", fill = "y")
         
-        self.controlsFrame.initChords(self.plotsFrame)
+        self.controlsFrame.initChords(self.plotsFrame, root)
         self.m_panedWindow.add(self.controlsFrame)
         self.m_panedWindow.add(self.plotsFrame)
 
@@ -50,7 +50,7 @@ class MainFrame(tk.Frame):
 def main():
     root = tk.Tk()
     root.geometry("1920x1080")
-    main = MainFrame()
+    main = MainFrame(root)
     root.bind('<Configure>',main.resetResizeTime)
     root.mainloop()
 

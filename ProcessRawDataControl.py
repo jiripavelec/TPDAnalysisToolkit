@@ -15,7 +15,6 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         super().__init__("Process TPD Data", controller)
         self.m_filePaths = []
         self.m_parsedData = []
-        # self.m_filesDirectory = ""
 
     def prepareFileSelections(self):
         self.m_fileList = list()
@@ -31,33 +30,21 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         self.m_normSelection["values"] = self.m_fileList
 
     def selectFiles(self):
-        # self.m_filesDirectory = askdirectory()
         buffer = list(askopenfilenames(defaultextension=".csv", filetypes=[('Comma-separated Values','*.csv'), ('All files','*.*')]))
         if not (len(buffer) == 0):
             self.m_filePaths = buffer.copy() #we don't want to use the same instance => .copy()
             self.prepareFileSelections()
 
-        # for i in range(len(self.m_filePaths)):
-        #     print(self.m_filesListBox.get(i) + " " + self.m_filePaths[i])
-        # for (a,b) in zip(self.m_filesListBox.get(0, self.m_filesListBox.size() - 1), self.m_filePaths):
-
     def selectDir(self):
         dirPath = askdirectory(mustexist = True)
         if not (len(dirPath) == 0):
-            # os.chdir("/mydir")
             self.m_filePaths.clear()
-            self.m_fileList = list()
-            self.m_filesListBox.clear()
             candidates = os.listdir(dirPath)
             for candidate in candidates: #look at all paths in directory
                 if(os.path.isfile(dirPath + '/' + candidate) and candidate.endswith(".csv")): #filter out directories
                     if(candidate.find("TPD") != -1): #look for "TPD" ini filename to differentiate data from prep files
                         self.m_filePaths.append(dirPath + '/' + candidate)
-                        self.m_fileList.insert(0,candidate)
-            [self.m_filesListBox.insert(0, f) for f in self.m_fileList]
-            self.m_fileList.reverse()
-            self.m_subtractSelection["values"] = self.m_fileList
-            self.m_normSelection["values"] = self.m_fileList                        
+            self.prepareFileSelections()                        
 
     def deselectFiles(self):
         indices = list(self.m_filesListBox.curselection())
@@ -68,9 +55,6 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             self.m_fileList.pop(i)
         self.m_subtractSelection["values"] = self.m_fileList
         self.m_normSelection["values"] = self.m_fileList
-
-        # for i in range(len(self.m_filePaths)):
-        #     print(self.m_filePaths[i] + " " + self.m_filesListBox.get(i))
 
     def toggleSubtractCB(self):
         if(self.m_subtractCB.instate(['!selected'])):

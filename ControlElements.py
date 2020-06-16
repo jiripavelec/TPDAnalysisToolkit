@@ -297,7 +297,6 @@ class ProcessingStepControlBase:
         self.m_chordInitDone = False
         self.m_notebookInitDone = False
         self.mplContainers = []
-        self.m_filesDirectory = ""
 
     #This is for the controls on the left side of the UI
     def initChordUI(self, parent):

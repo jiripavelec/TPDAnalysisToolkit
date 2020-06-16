@@ -204,10 +204,13 @@ class MPLContainer(tk.Frame):
             raise NameError #should use primary line plots, since secondary axis is not defined for this plot
         self.__addLinePlots(self.m_secondaryAxis, ndarrayData, labels, logXAxis, logYAxis)
         
-    def setBottomYLimitZero(self):
-        self.m_subplot.relim()
-        self.m_subplot.set_ylim(bottom=0)
+    def autoScaleLogY(self):
+        self.m_subplot.set_ylim(auto = True)
+        if(self.m_subplot.get_ylim()[0] < 0.0):
+            self.m_subplot.set_ylim(bottom=0, top = None)
 
+    # def setLegendCenterRight(self):
+    #     self.m_subplot.get_legend().s
 
 #MPLContainer END
 

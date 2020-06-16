@@ -17,22 +17,25 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         self.m_parsedData = []
         # self.m_filesDirectory = ""
 
+    def prepareFileSelections(self):
+        self.m_fileList = list()
+        self.m_filesListBox.clear()
+        for p in self.m_filePaths:
+            substrings = p.split('/')
+            fName = substrings[len(substrings) - 1]
+            self.m_fileList.insert(0,fName)
+
+        [self.m_filesListBox.insert(0, f) for f in self.m_fileList]
+        self.m_fileList.reverse()
+        self.m_subtractSelection["values"] = self.m_fileList
+        self.m_normSelection["values"] = self.m_fileList
+
     def selectFiles(self):
         # self.m_filesDirectory = askdirectory()
         buffer = list(askopenfilenames(defaultextension=".csv", filetypes=[('Comma-separated Values','*.csv'), ('All files','*.*')]))
         if not (len(buffer) == 0):
             self.m_filePaths = buffer.copy() #we don't want to use the same instance => .copy()
-            self.m_fileList = list()
-            self.m_filesListBox.clear()
-            for p in self.m_filePaths:
-                substrings = p.split('/')
-                fName = substrings[len(substrings) - 1]
-                self.m_fileList.insert(0,fName)
-            
-            [self.m_filesListBox.insert(0, f) for f in self.m_fileList]
-            self.m_fileList.reverse()
-            self.m_subtractSelection["values"] = self.m_fileList
-            self.m_normSelection["values"] = self.m_fileList
+            self.prepareFileSelections()
 
         # for i in range(len(self.m_filePaths)):
         #     print(self.m_filesListBox.get(i) + " " + self.m_filePaths[i])
@@ -164,10 +167,23 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             #normalize reference data last
             monolayerData.normalizeDataTo(monolayerData)
 
+        indexMapBuffer = [] #index i will contain tuple of (oldIndex,coverage) sorted by coverage
+        for i in range(len(self.m_parsedData)):
+            indexMapBuffer.append((i,self.m_parsedData[i].getParsedCoverageAsFloat())) #sorting input files by coverage
+        indexMapBuffer.sort(reverse = True, key = lambda a : a[1])#sort, such that old index and coverage are preserved
+
+        #buffers for different ordering
+        sortedParsedDataBuffer = [] 
+        sortedFilePathsBuffer = []
+        for i in range(len(indexMapBuffer)):
+            sortedParsedDataBuffer.append(self.m_parsedData[indexMapBuffer[i][0]])
+            sortedFilePathsBuffer.append(self.m_filePaths[indexMapBuffer[i][0]])
+        self.m_filePaths = sortedFilePathsBuffer #reference-copy
+        self.m_parsedData = sortedParsedDataBuffer #reference-copy
+        self.prepareFileSelections()
+
         self.m_massDisplayOptions.resetMasses(self.m_parsedData)
         self.plotSelectedMasses()
-
-        #TODO: autosave result
 
     def saveData(self):
         if (len(self.m_parsedData) == 0):

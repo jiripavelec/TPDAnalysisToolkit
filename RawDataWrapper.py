@@ -154,6 +154,9 @@ class RawDataWrapper():
             result = np.vstack((result, self.m_logInterpolatedData[m]))
         return result
 
+    def getParsedCoverageAsFloat(self):
+        return float(self.m_parsedCoverage[0:-1]) #TODO: in the future, one can use the calibration mol/uc/L to get ML normalized coverages
+
     def getCoverageLabels(self, desiredMasses):
         result = []
         for m in desiredMasses:

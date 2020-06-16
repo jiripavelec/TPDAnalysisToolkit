@@ -1,9 +1,9 @@
 import tkinter as tk
 import tkinter.ttk as ttk
-from ControlElements import Accordion
-from ProcessRawDataControl import ProcessRawDataControl
-from InvertDataControl import InvertDataControl
-from RedheadAnalysisControl import RedheadAnalysisControl
+from DataControls.ControlElements import Accordion
+from DataControls.ProcessRawDataControl import ProcessRawDataControl
+from DataControls.InvertDataControl import InvertDataControl
+from DataControls.RedheadAnalysisControl import RedheadAnalysisControl
 
 #ControlsFrame BEGIN
 class ControlsFrame(tk.Frame):

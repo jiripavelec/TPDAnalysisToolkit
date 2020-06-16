@@ -1,10 +1,10 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from datetime import datetime
-from PlotsFrame import MPLContainer
-from ControlElements import Chord, ScrolledListBox, EnhancedCheckButton, ProcessingStepControlBase, DisplayOptionsFrame, EnhancedEntry #ui elements
-from tkinter.filedialog import askdirectory, askopenfilenames, asksaveasfilename
-from DataModels.RawDataWrapper import RawDataWrapper
+from PlotsFrame import MPLContainer # pylint: disable=import-error
+from DataControls.ControlElements import Chord, ScrolledListBox, EnhancedCheckButton, ProcessingStepControlBase, DisplayOptionsFrame, EnhancedEntry #ui elements # pylint: disable=import-error
+from tkinter.filedialog import askdirectory, askopenfilenames, asksaveasfilename 
+from DataModels.RawDataWrapper import RawDataWrapper # pylint: disable=import-error
 import numpy as np
 import os.path
 from os import path, chdir

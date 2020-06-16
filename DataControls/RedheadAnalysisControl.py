@@ -1,6 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
-from ControlElements import Chord, ProcessingStepControlBase #ui element
+from DataControls.ControlElements import Chord, ProcessingStepControlBase #ui element # pylint: disable=import-error
 
 class RedheadAnalysisControl(ProcessingStepControlBase):
     def __init__(self, controller, root):

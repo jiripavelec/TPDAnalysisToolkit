@@ -2,7 +2,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from datetime import datetime
 from PlotsFrame import MPLContainer
-from Controls import Chord, ScrolledListBox, EnhancedCheckButton, ProcessingStepControlBase, DisplayOptionsFrame, EnhancedEntry #ui elements
+from ControlElements import Chord, ScrolledListBox, EnhancedCheckButton, ProcessingStepControlBase, DisplayOptionsFrame, EnhancedEntry #ui elements
 from tkinter.filedialog import askdirectory, askopenfilenames, asksaveasfilename
 from RawDataWrapper import RawDataWrapper
 import numpy as np

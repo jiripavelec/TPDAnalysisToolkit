@@ -1,6 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
-from Controls import Accordion
+from ControlElements import Accordion
 from ProcessRawDataControl import ProcessRawDataControl
 from InvertDataControl import InvertDataControl
 from RedheadAnalysisControl import RedheadAnalysisControl

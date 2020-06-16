@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from PlotsFrame import MPLContainer
-from Controls import Chord, ScrolledListBox, EnhancedCheckButton, ProcessingStepControlBase, EnhancedEntry, DisplayOptionsFrame #ui element
+from ControlElements import Chord, ScrolledListBox, EnhancedCheckButton, ProcessingStepControlBase, EnhancedEntry, DisplayOptionsFrame #ui element
 from tkinter.filedialog import askopenfilename
 from ProcessedDataWrapper import ProcessedDataWrapper
 from tkinter.filedialog import asksaveasfilename

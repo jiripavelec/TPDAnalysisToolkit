@@ -1,6 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
-from Controls import Chord, ProcessingStepControlBase #ui element
+from ControlElements import Chord, ProcessingStepControlBase #ui element
 
 class RedheadAnalysisControl(ProcessingStepControlBase):
     def __init__(self, controller, root):

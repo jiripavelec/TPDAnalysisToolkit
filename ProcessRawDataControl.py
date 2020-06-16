@@ -124,17 +124,17 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             tk.messagebox.showerror("Cut Data End Temp", "Please enter an integer for the temperature at which to stop cutting data.")
             return False
 
-        try: #check for tCutStart
-            int(self.m_tRampStartEntry.get())
-        except ValueError:
-            tk.messagebox.showerror("Ramp Start Temp", "Please enter an integer for a temperature slightly beyond the start of the linear temperature ramp.")
-            return False
+        # try: #check for tCutStart
+        #     int(self.m_tRampStartEntry.get())
+        # except ValueError:
+        #     tk.messagebox.showerror("Ramp Start Temp", "Please enter an integer for a temperature slightly beyond the start of the linear temperature ramp.")
+        #     return False
 
-        try: #check for tCutEnd
-            int(self.m_tRampEndEntry.get())
-        except ValueError:
-            tk.messagebox.showerror("Remp End Temp", "Please enter an integer for a temperature slightly before the end of the linear temperature ramp.")
-            return False
+        # try: #check for tCutEnd
+        #     int(self.m_tRampEndEntry.get())
+        # except ValueError:
+        #     tk.messagebox.showerror("Remp End Temp", "Please enter an integer for a temperature slightly before the end of the linear temperature ramp.")
+        #     return False
         
         return True
 
@@ -146,8 +146,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             wrapper = RawDataWrapper(f)
             wrapper.parseRawDataFile()
             self.m_parsedData.append(wrapper)
-            wrapper.processParsedData(int(self.m_tRampStartEntry.get()),
-                                        int(self.m_tRampEndEntry.get()),
+            wrapper.processParsedData(0,0,
                                         int(self.m_tCutStartEntry.get()),
                                         int(self.m_tCutEndEntry.get()),
                                         self.m_removeBackgroundCB.instate(['selected']),
@@ -296,17 +295,18 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         self.m_tCutEndEntry = EnhancedEntry(self.m_chord)
         self.m_tCutEndEntry.grid(row=5, column = 2, sticky = "nsw")
 
-        self.m_tRampStartLabel = ttk.Label(self.m_chord, text="Ramp Start Temp.:")
-        self.m_tRampStartLabel.grid(row=6, column = 1, sticky = "nse")
 
-        self.m_tRampStartEntry = EnhancedEntry(self.m_chord)
-        self.m_tRampStartEntry.grid(row=6, column = 2, sticky = "nsw")
+        # self.m_tRampStartLabel = ttk.Label(self.m_chord, text="Ramp Start Temp.:")
+        # self.m_tRampStartLabel.grid(row=6, column = 1, sticky = "nse")
 
-        self.m_tRampEndLabel = ttk.Label(self.m_chord, text="Ramp End Temp.:")
-        self.m_tRampEndLabel.grid(row=7, column = 1, sticky = "nse")
+        # self.m_tRampStartEntry = EnhancedEntry(self.m_chord)
+        # self.m_tRampStartEntry.grid(row=6, column = 2, sticky = "nsw")
 
-        self.m_tRampEndEntry = EnhancedEntry(self.m_chord)
-        self.m_tRampEndEntry.grid(row=7, column = 2, sticky = "nsw")
+        # self.m_tRampEndLabel = ttk.Label(self.m_chord, text="Ramp End Temp.:")
+        # self.m_tRampEndLabel.grid(row=7, column = 1, sticky = "nse")
+
+        # self.m_tRampEndEntry = EnhancedEntry(self.m_chord)
+        # self.m_tRampEndEntry.grid(row=7, column = 2, sticky = "nsw")
 
         # Checkbuttons + Comboboxes for options:
 

@@ -92,6 +92,8 @@ class RawDataWrapper():
 
         #get running average from temperature data
         self.m_correctedTemp = self.smooth_running_average(self.m_correctedTemp, 20)
+        tRampStart = np.median(self.m_correctedTemp) # starting the search in the middle of the temperature ramp (approximately)
+        tRampEnd = tRampStart
 
         tempSearchInput = np.abs(self.m_correctedTemp - tRampStart)
         tRampStartIndex = np.argwhere(tempSearchInput == np.amin(tempSearchInput))[-1][0] #find closest value to input
@@ -112,6 +114,7 @@ class RawDataWrapper():
         self.m_interpolatedTemp = np.arange(tCutStart, tCutEnd, tStep) #generate equidistantly spaced range of temperature points
         self.m_reciprocalTemp = np.reciprocal(self.m_interpolatedTemp)
         # self.m_interpolatedTime = np.interp(self.m_interpolatedTemp, self.m_correctedTemp[tRampStartIndex:tRampEndIndex], self.m_parsedRawData[0,tRampStartIndex:tRampEndIndex])
+        print(tRampStartIndex, tRampEndIndex)
 
 
         for m in self.getMassList(): #for each mass

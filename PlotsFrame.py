@@ -185,8 +185,8 @@ class MPLContainer(tk.Frame):
             # or sort them by labels
             hl = sorted(zip(handles, labels),
                         key=operator.itemgetter(1))
-            handles2, labels2 = zip(*hl)
-            self.m_subplot.legend(handles2, labels2)
+            handles, labels = zip(*hl)
+            self.m_subplot.legend(handles, labels)
 
         if (logXAxis):
             axes.set_xscale("log")
@@ -205,6 +205,7 @@ class MPLContainer(tk.Frame):
         self.__addLinePlots(self.m_secondaryAxis, ndarrayData, labels, logXAxis, logYAxis)
         
     def setBottomYLimitZero(self):
+        self.m_subplot.relim()
         self.m_subplot.set_ylim(bottom=0)
 
 

@@ -249,8 +249,9 @@ class DisplayOptionsFrame(ttk.Frame):
             else: #get intersection of masses
                 self.m_availableMassList = list(set(w.getMassList()) & set(self.m_availableMassList))
 
-        self.m_displayedMassesListBox.insert(0,self.m_availableMassList[0])
-        for m in self.m_availableMassList[1:]:
+        # self.m_displayedMassesListBox.insert(0,self.m_availableMassList[0])
+        # for m in self.m_availableMassList[1:]:
+        for m in self.m_availableMassList:
             self.m_availableMassesListBox.insert(0,m)
         self.updateButtonStates()
 

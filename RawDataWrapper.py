@@ -15,6 +15,7 @@ class RawDataWrapper():
         self.m_interpolatedData = {}
         self.m_logInterpolatedData = {}
         self.m_parsedCoverage = "No coverage in filename!"
+        self.m_parsedCoverageAvailable = False
         self.m_coverages = {}
 
     def parseRawDataFile(self):
@@ -27,6 +28,7 @@ class RawDataWrapper():
                 try:
                     s = float(s[:-1]) #this will throw a value error if not possible
                     self.m_parsedCoverage = "{:04.2f}L".format(s)
+                    self.m_parsedCoverageAvailable = True
                     break
                 except ValueError:
                     continue #Not a float
@@ -172,36 +174,3 @@ class RawDataWrapper():
         for m in desiredMasses:
             result.append("M" + m + " " + self.m_parsedCoverage)
         return result
-    # def saveProcessedData(self, massList = None, filename = None):
-    #     #use tkFileDialog.asksaveasfile
-    #     if not self.m_dataProcessed:
-    #         return
-    #     if(filename == None):
-    #         filename = self.m_fileName + '_processed.csv'
-    #     substrings = self.m_filePath.split('/')
-    #     outputFilePath = ""
-    #     for s in substrings[:-1]:
-    #         outputFilePath = outputFilePath + s + '/'
-    #     outputFilePath = outputFilePath + filename
-
-    #     headerString = "Temperature"
-    #     if (massList == None):
-    #         massList = self.getMassList()
-    #     for m in massList:
-    #         headerString = headerString + " " + m
-    #     headerString += "\n 0"
-    #     for m in massList:
-    #         headerString = headerString + " " + str(self.m_coverages[m])
-
-    #     output = self.m_interpolatedTemp
-    #     for m in massList:
-    #         output = np.vstack((output, self.m_interpolatedData[m]))
-
-    #     np.savetxt(outputFilePath, output.transpose(), delimiter=',', header=headerString)
-
-
-
-
-
-
-

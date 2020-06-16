@@ -96,6 +96,8 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             c.clearPlots()
 
         tempMasses = self.m_massDisplayOptions.getMassesToDisplay()
+        if(len(tempMasses) == 0):
+            return
 
         for d in self.m_parsedData:
             self.mplContainers[0].addPrimaryLinePlots(d.getRawDataVSRawTime(tempMasses),d.getLangmuirLabels(tempMasses))
@@ -167,6 +169,8 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             #normalize reference data last
             monolayerData.normalizeDataTo(monolayerData)
 
+
+        #sort input data by coverage
         indexMapBuffer = [] #index i will contain tuple of (oldIndex,coverage) sorted by coverage
         for i in range(len(self.m_parsedData)):
             indexMapBuffer.append((i,self.m_parsedData[i].getParsedCoverageAsFloat())) #sorting input files by coverage
@@ -220,7 +224,10 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             for w in rawDataWrappers:
                 headerString = headerString + w.m_fileName + "\n" #write filename to header for quick overview
                 outputData = np.vstack((outputData, w.m_interpolatedData[m])) #append data column for mass m in outputdata
-                labels.append(w.m_fileName.split(" ")[0]) # this should append file number
+                if(w.m_parsedCoverageAvailable):
+                    labels.append(w.m_parsedCoverage) #will append dosed coverage in Langmuir with "L" at the end
+                else:
+                    labels.append(w.m_fileName.split(" ")[0]) # this should append file number
                 coverages.append(str(w.m_coverages[m]))
 
             #make one file per mass

@@ -4,7 +4,7 @@ from datetime import datetime
 from PlotsFrame import MPLContainer
 from ControlElements import Chord, ScrolledListBox, EnhancedCheckButton, ProcessingStepControlBase, DisplayOptionsFrame, EnhancedEntry #ui elements
 from tkinter.filedialog import askdirectory, askopenfilenames, asksaveasfilename
-from RawDataWrapper import RawDataWrapper
+from DataModels.RawDataWrapper import RawDataWrapper
 import numpy as np
 import os.path
 from os import path, chdir

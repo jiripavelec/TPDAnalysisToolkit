@@ -2,7 +2,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from datetime import datetime
 import sys
-# from PlotsFrame import * 
+from PlotsFrame import MPLContainer # pylint: disable=import-error
 
 
 #Chord BEGIN
@@ -324,6 +324,13 @@ class ProcessingStepControlBase:
 
     def plotSelectedMasses(self):
         raise NotImplementedError()
+
+    def onNotebookTabChanged(self, event):
+        selected_tab = event.widget.select()
+        for c in event.widget.children:
+            if c is MPLContainer:
+                pass #c.hide or c.destroy, but if c is selected_tab, then show or create
+                
 
 #ProcessingStepControlBase END
 

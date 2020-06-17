@@ -228,6 +228,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
 
     def initNotebook(self, parent, root):
         self.m_notebook = ttk.Notebook(parent)
+        # self.m_notebook.bind("<<NotebookTabChanged>>", self.onNotebookTabChanged)
         # self.mplContainers.append(MPLContainer(self.m_notebook, "Raw Data", "Desorption Rate", "Temperature (K)"))
         self.mplContainers.append(MPLContainer(self.m_notebook, "Raw Data", "Desorption Rate", "Time (ms)", root, secondaryAxis=True,secondaryYAxisName="Temperature (K)"))
         self.mplContainers.append(MPLContainer(self.m_notebook, "Processed Data", "Desorption Rate", "Temperature (K)", root))

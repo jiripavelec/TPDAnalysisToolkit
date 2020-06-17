@@ -69,6 +69,7 @@ class MPLContainer(tk.Frame):
             # self.canvas.get_tk_widget().pack_forget()
             # self.canvas.get_tk_widget().grid_forget()
             self.plotHidden = True
+            return
         timeDelta = now - self.resizeDateTime #get timedelta since last resize event
         if(timeDelta.total_seconds()*1000 > 1200): #if we stopped resizing, unhide plot
             # self.canvas.get_tk_widget().place_forget()

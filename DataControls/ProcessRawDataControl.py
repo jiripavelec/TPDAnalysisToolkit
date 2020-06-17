@@ -230,7 +230,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         self.m_notebook = ttk.Notebook(parent)
         # self.m_notebook.bind("<<NotebookTabChanged>>", self.onNotebookTabChanged)
         # self.mplContainers.append(MPLContainer(self.m_notebook, "Raw Data", "Desorption Rate", "Temperature (K)"))
-        self.mplContainers.append(MPLContainer(self.m_notebook, "Raw Data", "Desorption Rate", "Time (ms)", root, secondaryAxis=True,secondaryYAxisName="Temperature (K)"))
+        self.mplContainers.append(MPLContainer(self.m_notebook, "Raw Data", "Desorption Rate", "Time (ms)", root, secondaryYAxis=True,secondaryYAxisName="Temperature (K)"))
         self.mplContainers.append(MPLContainer(self.m_notebook, "Processed Data", "Desorption Rate", "Temperature (K)", root))
         self.mplContainers.append(MPLContainer(self.m_notebook, "Arrhenius Plot (Processed)", "ln(Desorption Rate)", "Reciprocal Temperature (1/K)", root, invertXAxis=True))
         self.mplContainers.append(MPLContainer(self.m_notebook, "Temperature Ramp", "Temperature (K)", "Time (ms)", root))

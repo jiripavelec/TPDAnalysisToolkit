@@ -47,14 +47,14 @@ class CustomNavigationToolbar(NavigationToolbar2Tk):
 
 #MPLContainer BEGIN
 class MPLContainer(tk.Frame):
-    def __init__(self, parent, title, yAxisName, xAxisName, root, secondaryAxis = False, secondaryYAxisName = "" , invertXAxis = False, *args, **kwargs):
+    def __init__(self, parent, title, yAxisName, xAxisName, root, secondaryYAxis = False, secondaryYAxisName = "", invertXAxis = False, *args, **kwargs):
         super().__init__(parent, bg="white", *args, **kwargs)
         self.m_title = title
         self.m_xAxisName = xAxisName
         self.m_yAxisName = yAxisName
         self.m_usingMarkers = False
-        self.m_secondaryAxisRequired = secondaryAxis
-        if(secondaryAxis and secondaryYAxisName == ""):
+        self.m_secondaryYAxisRequired = secondaryYAxis
+        if(secondaryYAxis and secondaryYAxisName == ""):
             raise ValueError #need a secondaryYAxisName!
         self.m_secondaryYAxisName = secondaryYAxisName
         self.m_invertXAxis = invertXAxis
@@ -97,10 +97,10 @@ class MPLContainer(tk.Frame):
         if(self.m_invertXAxis):
             self.m_subplot.invert_xaxis()
 
-        if(self.m_secondaryAxisRequired):
-            self.m_secondaryAxis = self.m_subplot.twinx()
-            self.m_secondaryAxis.set_ylabel(self.m_secondaryYAxisName)
-            self.m_secondaryAxis.tick_params(direction="in")
+        if(self.m_secondaryYAxisRequired):
+            self.m_secondaryYAxis = self.m_subplot.twinx()
+            self.m_secondaryYAxis.set_ylabel(self.m_secondaryYAxisName)
+            self.m_secondaryYAxis.tick_params(direction="in")
         
         #normally plt.show() now, but different for tk
         self.canvas = FigureCanvasTkAgg(self.m_figure,self)
@@ -125,10 +125,10 @@ class MPLContainer(tk.Frame):
             for i in range(len(self.m_subplot.lines)-1,-1,-1):
                 line = self.m_subplot.lines.pop(i)
                 del line
-        if(self.m_secondaryAxisRequired):
-            if(len(self.m_secondaryAxis.lines) > 0):
-                for i in range(len(self.m_secondaryAxis.lines)-1,-1,-1):
-                    line = self.m_secondaryAxis.lines.pop(i)
+        if(self.m_secondaryYAxisRequired):
+            if(len(self.m_secondaryYAxis.lines) > 0):
+                for i in range(len(self.m_secondaryYAxis.lines)-1,-1,-1):
+                    line = self.m_secondaryYAxis.lines.pop(i)
                     del line
 
     def __switchToMarkers(self, axes):
@@ -139,8 +139,8 @@ class MPLContainer(tk.Frame):
 
     def switchToMarkers(self):
         self.__switchToMarkers(self.m_subplot)
-        if(self.m_secondaryAxisRequired):
-            self.__switchToMarkers(self.m_secondaryAxis)
+        if(self.m_secondaryYAxisRequired):
+            self.__switchToMarkers(self.m_secondaryYAxis)
 
     def __switchToLines(self, axes):
         for child in axes.get_children():
@@ -150,8 +150,8 @@ class MPLContainer(tk.Frame):
 
     def switchToLines(self):
         self.__switchToLines(self.m_subplot)
-        if(self.m_secondaryAxisRequired):
-            self.__switchToLines(self.m_secondaryAxis)
+        if(self.m_secondaryYAxisRequired):
+            self.__switchToLines(self.m_secondaryYAxis)
 
     def toggleMarkers(self):
         if(self.m_usingMarkers):
@@ -176,8 +176,8 @@ class MPLContainer(tk.Frame):
 
         if (labels != None):
             handles, labels = self.m_subplot.get_legend_handles_labels()
-            if(self.m_secondaryAxisRequired):
-                handles2, labels2 = self.m_secondaryAxis.get_legend_handles_labels()
+            if(self.m_secondaryYAxisRequired):
+                handles2, labels2 = self.m_secondaryYAxis.get_legend_handles_labels()
                 handles = handles + handles2
                 labels = labels + labels2
             # reverse the order
@@ -201,9 +201,9 @@ class MPLContainer(tk.Frame):
         self.__addLinePlots(self.m_subplot, ndarrayData, labels, logXAxis, logYAxis)
 
     def addSecondaryLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False):
-        if(not self.m_secondaryAxisRequired):
+        if(not self.m_secondaryYAxisRequired):
             raise NameError #should use primary line plots, since secondary axis is not defined for this plot
-        self.__addLinePlots(self.m_secondaryAxis, ndarrayData, labels, logXAxis, logYAxis)
+        self.__addLinePlots(self.m_secondaryYAxis, ndarrayData, labels, logXAxis, logYAxis)
         
     def autoScaleLogY(self):
         self.m_subplot.set_ylim(auto = True)
@@ -221,9 +221,19 @@ class PlotsFrame(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.initUI(parent)
+        self.m_notebooks = {}
 
     def initUI(self, parent):
         # self.pack(side = tk.RIGHT, fill = tk.BOTH, expand = True)
         self.grid_rowconfigure(0,weight=1)
         self.grid_columnconfigure(0,weight=1)
+
+    def raiseNotebook(self, key):
+        for (k,v) in self.m_notebooks.items():
+            if(k == key):
+                pass #TODO: place notebook
+                v.grid(row=0,column=0,sticky="nsew")
+            else:
+                pass #TODO: hide notebook
+                v.grid_forget()
 #PlotsFrame END

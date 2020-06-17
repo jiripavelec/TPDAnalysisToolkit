@@ -1,6 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
-from DataControls.ControlElements import Chord, ProcessingStepControlBase #ui element # pylint: disable=import-error
+from DataControls.ControlElements import Chord, ProcessingStepControlBase # pylint: disable=import-error
+from PlotsFrame import MPLContainer # pylint: disable=import-error
 
 class CoverageCalibrationControl(ProcessingStepControlBase):
     def __init__(self, controller, root):
@@ -8,6 +9,11 @@ class CoverageCalibrationControl(ProcessingStepControlBase):
 
     def initNotebook(self, parent, root):
         self.m_notebook = ttk.Notebook(parent)
+        self.mplContainers.append(MPLContainer(self.m_notebook, "Coverage", "Desorption Rate", "Temperature (K)", root))
+        for c in self.mplContainers:
+            self.m_notebook.add(c, text = c.m_title)
+        self.m_notebook.grid(row=0,column=0,sticky="nsew")
+
 
     def initChordUI(self, parent):
         self.m_chordContainer = Chord(parent, self.m_notebook, title=self.m_title)

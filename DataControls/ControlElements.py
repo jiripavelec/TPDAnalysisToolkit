@@ -62,7 +62,7 @@ class Accordion(tk.Frame):
         
         self.columnconfigure(0, weight=1)
         
-    def append_chords(self, chords=[]):
+    def append_chords(self, startingChord, chords=[]):
         '''pass a [list] of Chords to the Accordion object'''
 
         self.update_idletasks()
@@ -98,7 +98,7 @@ class Accordion(tk.Frame):
                     #    label=label, i=i: label.config(bg=self.style['title_bg']))
                        label=c.m_label: label.config(bg=self.style['title_bg']))
         
-        self._click_handler(chords[0],chords) # start with first chord open for debugging purposes
+        self._click_handler(chords[startingChord],chords) # start with first chord open for debugging purposes
                        
     def _click_handler(self, target, chords):
         for chord in chords: #close other chords

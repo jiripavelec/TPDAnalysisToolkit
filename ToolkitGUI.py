@@ -51,8 +51,8 @@ def main():
     root = tk.Tk()
     root.geometry("1920x1080")
     main = MainFrame(root)
-    if not sys.platform.startswith('win'):
-        root.bind('<Configure>',main.resetResizeTime)
+    # if not sys.platform.startswith('win'):
+    root.bind('<Configure>',main.resetResizeTime)
     root.mainloop()
 
 if __name__ == '__main__':

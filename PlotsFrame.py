@@ -228,15 +228,16 @@ class PlotsFrame(tk.Frame):
         self.grid_rowconfigure(0,weight=1)
         self.grid_columnconfigure(0,weight=1)
 
-    def registerNotebook(self, notebook, key):
-        self.m_notebooks[key] = notebook
+    def requestNotebook(self, key):
+        self.m_notebooks[key] = ttk.Notebook(self)
+        self.m_notebooks[key].grid(row=0,column=0,sticky="nsew") #initalize
+        self.m_notebooks[key].grid_forget() #but hide right away
+        return self.m_notebooks[key]
 
     def raiseNotebook(self, key):
-        for (k,v) in self.m_notebooks.items():
-            if(k == key):
-                pass #TODO: place notebook
-                v.grid(row=0,column=0,sticky="nsew")
-            else:
-                pass #TODO: hide notebook
-                v.grid_forget()
+        self.m_notebooks[key].grid(row=0,column=0,sticky="nsew")
+
+    def hideNotebook(self, key):
+        self.m_notebooks[key].grid_forget()
+
 #PlotsFrame END

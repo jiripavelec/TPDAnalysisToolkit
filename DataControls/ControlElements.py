@@ -9,7 +9,7 @@ from PlotsFrame import MPLContainer # pylint: disable=import-error
 class Chord(ttk.Frame):
     def __init__(self, parent, controller, title='', *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
-        self.title = title
+        self.m_title = title
         self.m_row = 0
         self.m_controller = controller
         self.m_label = ""
@@ -32,12 +32,16 @@ class Chord(ttk.Frame):
 
         self.m_scrollbar.pack(side="left", fill="y")
         self.m_canvas.pack(side="left", fill = "both", expand=True)
+        self.m_notebookRef = self.m_controller.requestNotebook(self.m_title)
 
     def setRowIdx(self, rowIndex):
         self.m_row = rowIndex
 
     def onClickedEvent(self):
-        self.m_controller.tkraise()
+        self.m_controller.raiseNotebook(self.m_title)
+
+    def hideNotebook(self):
+        self.m_controller.hideNotebook(self.m_title)
     
     def getContentWidth(self):
         # return max([c.winfo_reqwidth() for c in self.m_scrollable_frame.winfo_children()])
@@ -72,7 +76,7 @@ class Accordion(tk.Frame):
 
         for c in chords:
             # i = tk.PhotoImage() # blank image to force Label to use pixel size
-            c.m_label = tk.Label(self, text=c.title,
+            c.m_label = tk.Label(self, text=c.m_title,
                         #   image=i,
                           compound='center',
                           width=width,
@@ -102,8 +106,9 @@ class Accordion(tk.Frame):
                        
     def _click_handler(self, target, chords):
         for chord in chords: #close other chords
-            if len(chord.grid_info()) != 0:
+            if (len(chord.grid_info()) != 0) and (chord != target):
                 chord.grid_remove()
+                chord.hideNotebook()
                 self.grid_rowconfigure(chord.m_row,weight=0)
                 # chord.m_label.config(bg=self.style['title_bg'], fg =self.style['title_fg'])
                 # chord.m_label.config(bd=2)
@@ -291,19 +296,20 @@ class EnhancedComboBox(ttk.Combobox):
 
 #ProcessingStepControlBase BEGIN
 class ProcessingStepControlBase:
-    def __init__(self, title, controller):
+    def __init__(self, title, controller, accordion):
         self.m_title = title
         self.m_controller = controller
+        self.m_chord = Chord(accordion, controller, title)
         self.m_chordInitDone = False
         self.m_notebookInitDone = False
         self.mplContainers = []
 
     #This is for the controls on the left side of the UI
-    def initChordUI(self, parent):
+    def initChordUI(self):
         raise NotImplementedError()
 
     #This is for the tabs with plots on the right side of the UI
-    def initNotebook(self, parent):
+    def initNotebook(self, root):
         raise NotImplementedError()
 
     #This is to reduce the update frequency of plot resizing to

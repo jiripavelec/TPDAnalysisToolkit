@@ -11,8 +11,8 @@ from os import path, chdir
 # from glob import glob
 
 class ProcessRawDataControl(ProcessingStepControlBase):
-    def __init__(self, controller, root):
-        super().__init__("Process TPD Data", controller)
+    def __init__(self, controller, root, accordion):
+        super().__init__("Process TPD Data", controller, accordion)
         self.m_filePaths = []
         self.m_parsedData = []
 
@@ -226,22 +226,18 @@ class ProcessRawDataControl(ProcessingStepControlBase):
                 #then write float data (after transposing it)
                 np.savetxt(fileHandle, outputData.transpose(), delimiter=' ')
 
-    def initNotebook(self, parent, root):
-        self.m_notebook = ttk.Notebook(parent)
+    def initNotebook(self, root):
         # self.m_notebook.bind("<<NotebookTabChanged>>", self.onNotebookTabChanged)
         # self.mplContainers.append(MPLContainer(self.m_notebook, "Raw Data", "Desorption Rate", "Temperature (K)"))
-        self.mplContainers.append(MPLContainer(self.m_notebook, "Raw Data", "Desorption Rate", "Time (ms)", root, secondaryYAxis=True,secondaryYAxisName="Temperature (K)"))
-        self.mplContainers.append(MPLContainer(self.m_notebook, "Processed Data", "Desorption Rate", "Temperature (K)", root))
-        self.mplContainers.append(MPLContainer(self.m_notebook, "Arrhenius Plot (Processed)", "ln(Desorption Rate)", "Reciprocal Temperature (1/K)", root, invertXAxis=True))
-        self.mplContainers.append(MPLContainer(self.m_notebook, "Temperature Ramp", "Temperature (K)", "Time (ms)", root))
+        self.mplContainers.append(MPLContainer(self.m_chord.m_notebookRef, "Raw Data", "Desorption Rate", "Time (ms)", root, secondaryYAxis=True,secondaryYAxisName="Temperature (K)"))
+        self.mplContainers.append(MPLContainer(self.m_chord.m_notebookRef, "Processed Data", "Desorption Rate", "Temperature (K)", root))
+        self.mplContainers.append(MPLContainer(self.m_chord.m_notebookRef, "Arrhenius Plot (Processed)", "ln(Desorption Rate)", "Reciprocal Temperature (1/K)", root, invertXAxis=True))
+        self.mplContainers.append(MPLContainer(self.m_chord.m_notebookRef, "Temperature Ramp", "Temperature (K)", "Time (ms)", root))
 
         for c in self.mplContainers:
-            self.m_notebook.add(c, text = c.m_title)
+            self.m_chord.m_notebookRef.add(c, text = c.m_title)
 
-        self.m_notebook.grid(row=0,column=0,sticky="nsew")
-
-    def initChordUI(self, parent):
-        self.m_chord = Chord(parent, self.m_notebook, title=self.m_title)
+    def initChordUI(self):
         self.m_chordFrame = self.m_chord.m_scrollable_frame
 
         # File selection

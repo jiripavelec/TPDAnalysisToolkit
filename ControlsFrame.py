@@ -8,40 +8,40 @@ from DataControls.RedheadAnalysisControl import RedheadAnalysisControl
 
 #ControlsFrame BEGIN
 class ControlsFrame(tk.Frame):
-    def __init__(self, parent, root, *args, **kwargs):
+    def __init__(self, parent, root, plotsFrame, *args, **kwargs):
         super().__init__(parent,*args, **kwargs)
         self.Controls = []
-        self.initUI(parent, root)
+        self.initUI(plotsFrame, root)
 
-    def initUI(self, parent, root):
-        self.accordion = Accordion(self)
+    def initUI(self, plotsFrame, root):
+        self.m_accordion = Accordion(self)
         
         #For coverage calibration
-        self.m_coverageCalibrationControl = CoverageCalibrationControl(self, root)
+        self.m_coverageCalibrationControl = CoverageCalibrationControl(plotsFrame, root, self.m_accordion)
         self.Controls.append(self.m_coverageCalibrationControl)
 
         #For raw data processing
-        self.m_rawDataControl = ProcessRawDataControl(self, root)
+        self.m_rawDataControl = ProcessRawDataControl(plotsFrame, root, self.m_accordion)
         self.Controls.append(self.m_rawDataControl)
 
         #For inversion of processed data
-        self.m_invertDataControl = InvertDataControl(self, root)
+        self.m_invertDataControl = InvertDataControl(plotsFrame, root, self.m_accordion)
         self.Controls.append(self.m_invertDataControl)
 
         #For redhead analysis
-        self.m_redheadAnalysisControl = RedheadAnalysisControl(self, root)
+        self.m_redheadAnalysisControl = RedheadAnalysisControl(plotsFrame, root, self.m_accordion)
         self.Controls.append(self.m_redheadAnalysisControl)
 
         #separator for easier displaying
         self.m_separator = ttk.Separator(self)
         self.m_separator.pack(side = tk.RIGHT, fill= tk.Y)
 
-    def initChords(self,plotsFrame, root):
+    # def initChords(self,plotsFrame, root):
         for c in self.Controls:
-            c.initNotebook(plotsFrame, root)
-            c.initChordUI(self.accordion)
-        self.accordion.append_chords(1,[c.m_chord for c in self.Controls])
-        self.accordion.pack(side = tk.LEFT, fill=tk.BOTH, expand = True)
+            c.initNotebook(root)
+            c.initChordUI()
+        self.m_accordion.append_chords(1,[c.m_chord for c in self.Controls])
+        self.m_accordion.pack(side = tk.LEFT, fill=tk.BOTH, expand = True)
 
     # def requestProcessedData(self):
     #     return self.m_rawDataControl.getProcessedData()

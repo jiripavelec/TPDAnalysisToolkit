@@ -10,8 +10,8 @@ import math
 import multiprocessing
 
 class InvertDataControl(ProcessingStepControlBase):
-    def __init__(self, controller, root):
-        super().__init__("Inversion Analysis", controller)
+    def __init__(self, controller, root, accordion):
+        super().__init__("Inversion Analysis", controller, accordion)
         self.m_parsedData = None
         self.m_prefactors = []
         self.m_inputFilePath = None
@@ -197,23 +197,19 @@ class InvertDataControl(ProcessingStepControlBase):
         outputFilePath = outputFilePath + '/' + fileName
         self.m_parsedData.saveInvertedDataToFile(outputFilePath)
 
-    def initNotebook(self, parent, root):
-        self.m_notebook = ttk.Notebook(parent)
+    def initNotebook(self, root):
 
-        self.mplContainers.append(MPLContainer(self.m_notebook, "Input Data", "Desorption Rate (arb. U.)", "Temperature (K)", root))
-        self.mplContainers.append(MPLContainer(self.m_notebook, "Coverage vs. Temperature", "Coverage", "Temperature (K)", root))
-        self.mplContainers.append(MPLContainer(self.m_notebook, "Energy vs. Coverage", "Energy (eV)", "Coverage", root))
-        self.mplContainers.append(MPLContainer(self.m_notebook, "Simulated Coverage vs Temperature", "Coverge (ML)", "Temperature (K)", root))
-        self.mplContainers.append(MPLContainer(self.m_notebook, "Simulated Desorption Rate vs Coverage", "Desorption Rate (ML/K)", "Coverage", root))
-        self.mplContainers.append(MPLContainer(self.m_notebook, "Chi Squared vs Prefactor", "Chi Squared Value", "Prefactor", root))
+        self.mplContainers.append(MPLContainer(self.m_chord.m_notebookRef, "Input Data", "Desorption Rate (arb. U.)", "Temperature (K)", root))
+        self.mplContainers.append(MPLContainer(self.m_chord.m_notebookRef, "Coverage vs. Temperature", "Coverage", "Temperature (K)", root))
+        self.mplContainers.append(MPLContainer(self.m_chord.m_notebookRef, "Energy vs. Coverage", "Energy (eV)", "Coverage", root))
+        self.mplContainers.append(MPLContainer(self.m_chord.m_notebookRef, "Simulated Coverage vs Temperature", "Coverge (ML)", "Temperature (K)", root))
+        self.mplContainers.append(MPLContainer(self.m_chord.m_notebookRef, "Simulated Desorption Rate vs Coverage", "Desorption Rate (ML/K)", "Coverage", root))
+        self.mplContainers.append(MPLContainer(self.m_chord.m_notebookRef, "Chi Squared vs Prefactor", "Chi Squared Value", "Prefactor", root))
 
         for c in self.mplContainers:
-            self.m_notebook.add(c, text = c.m_title)
+            self.m_chord.m_notebookRef.add(c, text = c.m_title)
 
-        self.m_notebook.grid(row=0,column=0,sticky="nsew")
-
-    def initChordUI(self, parentAccordion):
-        self.m_chord = Chord(parentAccordion, self.m_notebook, title=self.m_title)
+    def initChordUI(self):
         self.m_chordFrame = self.m_chord.m_scrollable_frame
 
         # File selection

@@ -4,19 +4,17 @@ from DataControls.ControlElements import Chord, ProcessingStepControlBase # pyli
 from PlotsFrame import MPLContainer # pylint: disable=import-error
 
 class CoverageCalibrationControl(ProcessingStepControlBase):
-    def __init__(self, controller, root):
-        super().__init__("Coverage Calibration", controller)
+    def __init__(self, controller, root, accordion):
+        super().__init__("Coverage Calibration", controller, accordion)
 
-    def initNotebook(self, parent, root):
-        self.m_notebook = ttk.Notebook(parent)
-        self.mplContainers.append(MPLContainer(self.m_notebook, "Coverage", "Desorption Rate", "Temperature (K)", root))
+    def initNotebook(self, root):
+        self.mplContainers.append(MPLContainer(self.m_chord.m_notebookRef, "Coverage", "Desorption Rate", "Temperature (K)", root))
+
         for c in self.mplContainers:
-            self.m_notebook.add(c, text = c.m_title)
-        self.m_notebook.grid(row=0,column=0,sticky="nsew")
+            self.m_chord.m_notebookRef.add(c, text = c.m_title)
 
 
-    def initChordUI(self, parent):
-        self.m_chord = Chord(parent, self.m_notebook, title=self.m_title)
+    def initChordUI(self):
         self.m_chordFrame = self.m_chord.m_scrollable_frame
 
         self.m_Label = ttk.Label(self.m_chordFrame, text='Work in Progress')

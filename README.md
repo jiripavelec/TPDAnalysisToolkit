@@ -1,5 +1,5 @@
 # TPDAnalysisToolkit
-Python-based program for analysing TPD data.
+Python-based program for analysing TPD data. Currently in the alpha stage!
 
 #Installation for Windows:
 

@@ -91,8 +91,6 @@ class InvertDataControl(ProcessingStepControlBase):
                 currentEntry = float(self.m_tPrefactorStartEntry.get())
                 lastEntry = float(self.m_tPrefactorEndEntry.get())
                 incrementEntry = float(self.m_tPrefactorIncrementEntry.get())
-                # if((lastEntry - currentEntry)/incrementEntry > 20):
-                #     raise ValueError #ridiculous amount of data points
                 self.m_prefactors = []
                 while(currentEntry <= lastEntry):
                     self.m_prefactors.append("{:e}".format(currentEntry))
@@ -100,23 +98,10 @@ class InvertDataControl(ProcessingStepControlBase):
             else: #multiplicative range
                 currentEntry = float(self.m_tPrefactorStartEntry.get())
                 lastEntry = float(self.m_tPrefactorEndEntry.get())
-                # if(math.log10(lastEntry) - math.log10(currentEntry) > 20):
-                #     raise ValueError #ridiculous amount of data points
                 self.m_prefactors = []
                 while(currentEntry <= lastEntry):
                     self.m_prefactors.append("{:e}".format(currentEntry))
                     currentEntry *= 10.0 #increase by order of magnitude
-
-            # if( len(self.m_prefactors) == 1): #only one prefactor
-            #     self.m_parsedData.invertProcessedData(float(self.m_prefactors[0])) #do the calculations
-            # else: #try multiprocessing
-            #     cpu_count = multiprocessing.cpu_count()
-            #     if( cpu_count == 1): #single-core
-            #         for p in self.m_prefactors:
-            #             self.m_parsedData.invertProcessedData(float(p)) #do the calculations
-            #     else: #try using as many cores as there are prefactors, or at least as many cores as we have (minus one for UI thread)
-            #         with multiprocessing.Pool(min(cpu_count - 1,len(self.m_prefactors))) as p:
-            #             p.map(self.m_parsedData.invertProcessedData, [float(p) for p in self.m_prefactors])
             
             for p in self.m_prefactors:
                 self.m_parsedData.invertProcessedData(float(p)) #do the calculations

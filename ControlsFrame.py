@@ -43,13 +43,6 @@ class ControlsFrame(tk.Frame):
         self.m_accordion.append_chords(1,[c.m_chord for c in self.Controls])
         self.m_accordion.pack(side = tk.LEFT, fill=tk.BOTH, expand = True)
 
-    # def requestProcessedData(self):
-    #     return self.m_rawDataControl.getProcessedData()
-
-    # def registerControl(self, control):
-    #     # self.Controls[control.m_title] = control
-    #     self.Controls.append(control)
-
     def resetResizeTime(self):
         for c in self.Controls:
             c.setResizeTime()

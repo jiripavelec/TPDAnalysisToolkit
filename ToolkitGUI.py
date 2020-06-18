@@ -19,17 +19,9 @@ class MainFrame(tk.Frame):
 
         self.m_panedWindow = ttk.PanedWindow(self, orient=tk.HORIZONTAL)
         self.m_panedWindow.pack(side=tk.LEFT, fill = tk.BOTH, expand=True)
-        self.plotsFrame = PlotsFrame(self.m_panedWindow, bg ='white') #need to init this first, because the controls will request notebooks/plots in plotsframe
+        self.plotsFrame = PlotsFrame(self.m_panedWindow, bg ='white') #need to init this first, because the controls will request notebooks/plots inside plotsframe
         self.controlsFrame = ControlsFrame(self.m_panedWindow, root, self.plotsFrame, bg = 'white', relief='groove')
-
-        # self.plotsFrame = PlotsFrame(self, bg ='white')
-        # self.plotsFrame.place(relx = 0.25, rely = 0.0, relwidth = 0.75, relheight = 1.0, anchor = "nw", bordermode = tk.INSIDE)
-        # self.controlsFrame = ControlsFrame(self, bg = 'white', relief='groove')
-        # self.controlsFrame.place(relx = 0.0, rely = 0.0, relwidth = 0.25, relheight = 1.0, anchor = "nw", bordermode = tk.INSIDE)
-        # self.plotsFrame.pack(side = "right", fill = "both", expand = True)
-        # self.controlsFrame.pack(side = "left", fill = "y")
         
-        # self.controlsFrame.initChords(self.plotsFrame, root)
         self.m_panedWindow.add(self.controlsFrame)
         self.m_panedWindow.add(self.plotsFrame)
 
@@ -40,9 +32,7 @@ class MainFrame(tk.Frame):
         if(not isinstance(event.widget, tk.Tk)): # only care about main window (root) resizing
             return
         elif( (not (self.lastWidth == event.width)) or (not (self.lastHeight == event.height))):
-            # print('(' + str(self.lastWidth) + ',' + str(self.lastHeight) + ") to (" + str(event.width) + ',' + str(event.height) + ')')
             self.controlsFrame.resetResizeTime()
-            # self.leftFrame.Controls.m_notebook.resizeDateTime = datetime.now()
             self.lastWidth = event.width
             self.lastHeight = event.height
         #else we didnt resize as the dimensions have not changed

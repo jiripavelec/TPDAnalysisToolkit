@@ -7,18 +7,18 @@ from PlotsFrame import MPLContainer # pylint: disable=import-error
 
 #Chord BEGIN
 class Chord(ttk.Frame):
-    def __init__(self, parent, controlRef, title='', *args, **kwargs):
+    def __init__(self, parent, controller, title='', *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.title = title
         self.m_row = 0
-        self.controlRef = controlRef
+        self.m_controller = controller
         self.m_label = ""
 
         #creating scrollable content container here
         if sys.platform.startswith('win'):
-            self.m_canvas = tk.Canvas(self, bd=0, highlightthickness=0) #ececec only for mac, consider using OS type to switch
+            self.m_canvas = tk.Canvas(self, bd=0, highlightthickness=0)
         else:
-            self.m_canvas = tk.Canvas(self, bd=0, highlightthickness=0, bg = "#ececec")
+            self.m_canvas = tk.Canvas(self, bd=0, highlightthickness=0, bg = "#ececec") #ececec only for mac
         self.m_scrollbar = ttk.Scrollbar(self, orient="vertical", command=self.m_canvas.yview)
         self.m_scrollable_frame = ttk.Frame(self.m_canvas)
         self.m_scrollable_frame.bind(
@@ -37,7 +37,7 @@ class Chord(ttk.Frame):
         self.m_row = rowIndex
 
     def onClickedEvent(self):
-        self.controlRef.tkraise()
+        self.m_controller.tkraise()
     
     def getContentWidth(self):
         # return max([c.winfo_reqwidth() for c in self.m_scrollable_frame.winfo_children()])

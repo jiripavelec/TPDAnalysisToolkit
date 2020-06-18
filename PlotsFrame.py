@@ -228,6 +228,9 @@ class PlotsFrame(tk.Frame):
         self.grid_rowconfigure(0,weight=1)
         self.grid_columnconfigure(0,weight=1)
 
+    def registerNotebook(self, notebook, key):
+        self.m_notebooks[key] = notebook
+
     def raiseNotebook(self, key):
         for (k,v) in self.m_notebooks.items():
             if(k == key):

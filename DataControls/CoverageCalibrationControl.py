@@ -16,8 +16,8 @@ class CoverageCalibrationControl(ProcessingStepControlBase):
 
 
     def initChordUI(self, parent):
-        self.m_chordContainer = Chord(parent, self.m_notebook, title=self.m_title)
-        self.m_chord = self.m_chordContainer.m_scrollable_frame
+        self.m_chord = Chord(parent, self.m_notebook, title=self.m_title)
+        self.m_chordFrame = self.m_chord.m_scrollable_frame
 
-        self.m_Label = ttk.Label(self.m_chord, text='Work in Progress')
+        self.m_Label = ttk.Label(self.m_chordFrame, text='Work in Progress')
         self.m_Label.grid(row = 0, column = 0, columnspan = 4, sticky="nsew")

@@ -241,18 +241,18 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         self.m_notebook.grid(row=0,column=0,sticky="nsew")
 
     def initChordUI(self, parent):
-        self.m_chordContainer = Chord(parent, self.m_notebook, title=self.m_title)
-        self.m_chord = self.m_chordContainer.m_scrollable_frame
+        self.m_chord = Chord(parent, self.m_notebook, title=self.m_title)
+        self.m_chordFrame = self.m_chord.m_scrollable_frame
 
         # File selection
 
-        self.m_filesListBoxLabel = ttk.Label(self.m_chord, text='Input files:')
+        self.m_filesListBoxLabel = ttk.Label(self.m_chordFrame, text='Input files:')
         self.m_filesListBoxLabel.grid(row = 0, column = 0, columnspan = 2, sticky="nsw")
 
-        self.m_filesListBox = ScrolledListBox(self.m_chord, horizontallyScrollable=True)
+        self.m_filesListBox = ScrolledListBox(self.m_chordFrame, horizontallyScrollable=True)
         self.m_filesListBox.grid(row = 1, column = 0, columnspan = 4, sticky = "nsew")
 
-        self.m_fileButtonFrame = ttk.Frame(self.m_chord)
+        self.m_fileButtonFrame = ttk.Frame(self.m_chordFrame)
         self.m_fileButtonFrame.grid(row=2, column = 0, columnspan = 3, sticky = "nsew")
 
         self.m_selectFilesButton = ttk.Button(self.m_fileButtonFrame,text="Select Files",command = self.selectFiles)
@@ -266,81 +266,81 @@ class ProcessRawDataControl(ProcessingStepControlBase):
 
         # Options
 
-        self.m_optionsLabel = ttk.Label(self.m_chord, text="Processing Options:")#, compound = tk.CENTER)
+        self.m_optionsLabel = ttk.Label(self.m_chordFrame, text="Processing Options:")#, compound = tk.CENTER)
         self.m_optionsLabel.grid(row=3, column = 0, columnspan = 2, sticky = "nsw")
         
-        self.m_tCutStartLabel = ttk.Label(self.m_chord, text="Cut Data Start Temp.:")
+        self.m_tCutStartLabel = ttk.Label(self.m_chordFrame, text="Cut Data Start Temp.:")
         self.m_tCutStartLabel.grid(row=4, column = 1, sticky = "nse")
 
-        self.m_tCutStartEntry = EnhancedEntry(self.m_chord)
+        self.m_tCutStartEntry = EnhancedEntry(self.m_chordFrame)
         self.m_tCutStartEntry.grid(row=4, column = 2, sticky = "nsw")
 
-        self.m_tCutEndLabel = ttk.Label(self.m_chord, text="Cut Data End Temp.:")
+        self.m_tCutEndLabel = ttk.Label(self.m_chordFrame, text="Cut Data End Temp.:")
         self.m_tCutEndLabel.grid(row=5, column = 1, sticky = "nse")
 
-        self.m_tCutEndEntry = EnhancedEntry(self.m_chord)
+        self.m_tCutEndEntry = EnhancedEntry(self.m_chordFrame)
         self.m_tCutEndEntry.grid(row=5, column = 2, sticky = "nsw")
 
 
-        # self.m_tRampStartLabel = ttk.Label(self.m_chord, text="Ramp Start Temp.:")
+        # self.m_tRampStartLabel = ttk.Label(self.m_chordFrame, text="Ramp Start Temp.:")
         # self.m_tRampStartLabel.grid(row=6, column = 1, sticky = "nse")
 
-        # self.m_tRampStartEntry = EnhancedEntry(self.m_chord)
+        # self.m_tRampStartEntry = EnhancedEntry(self.m_chordFrame)
         # self.m_tRampStartEntry.grid(row=6, column = 2, sticky = "nsw")
 
-        # self.m_tRampEndLabel = ttk.Label(self.m_chord, text="Ramp End Temp.:")
+        # self.m_tRampEndLabel = ttk.Label(self.m_chordFrame, text="Ramp End Temp.:")
         # self.m_tRampEndLabel.grid(row=7, column = 1, sticky = "nse")
 
-        # self.m_tRampEndEntry = EnhancedEntry(self.m_chord)
+        # self.m_tRampEndEntry = EnhancedEntry(self.m_chordFrame)
         # self.m_tRampEndEntry.grid(row=7, column = 2, sticky = "nsw")
 
         # Checkbuttons + Comboboxes for options:
 
-        self.m_smoothTempCB = EnhancedCheckButton(self.m_chord, text="Smooth Temperature")
+        self.m_smoothTempCB = EnhancedCheckButton(self.m_chordFrame, text="Smooth Temperature")
         self.m_smoothTempCB.grid(row = 8, column = 1, sticky = "nsw")
         self.m_smoothTempCB.set(1)
         self.m_smoothTempCB.configure(state = tk.DISABLED)
 
-        self.m_smoothCountsCB = EnhancedCheckButton(self.m_chord, text="Smooth Counts/s")
+        self.m_smoothCountsCB = EnhancedCheckButton(self.m_chordFrame, text="Smooth Counts/s")
         self.m_smoothCountsCB.grid(row = 8, column = 2, sticky = "nsw")
 
-        self.m_normalizeCB = EnhancedCheckButton(self.m_chord, text = "Normalize to coverage of (select file):", command=self.toggleNormalizeCB)
+        self.m_normalizeCB = EnhancedCheckButton(self.m_chordFrame, text = "Normalize to coverage of (select file):", command=self.toggleNormalizeCB)
         self.m_normalizeCB.grid(row = 9, column = 1, sticky = "nsw")
 
-        self.m_removeBackgroundCB = EnhancedCheckButton(self.m_chord, text="Remove Background")
+        self.m_removeBackgroundCB = EnhancedCheckButton(self.m_chordFrame, text="Remove Background")
         self.m_removeBackgroundCB.grid(row = 9, column = 2, sticky = "nsw")
 
-        self.m_normSelection = ttk.Combobox(self.m_chord, state = tk.DISABLED)
+        self.m_normSelection = ttk.Combobox(self.m_chordFrame, state = tk.DISABLED)
         self.m_normSelection.grid(row=10, column=1, columnspan=2, sticky= "nsew")
 
-        self.m_subtractCB = EnhancedCheckButton(self.m_chord, text = "Subtract Spectrum (select file):", command=self.toggleSubtractCB, state = tk.DISABLED)
+        self.m_subtractCB = EnhancedCheckButton(self.m_chordFrame, text = "Subtract Spectrum (select file):", command=self.toggleSubtractCB, state = tk.DISABLED)
         self.m_subtractCB.grid(row = 11, column = 1, sticky = "nsw")
 
-        self.m_subtractSelection = ttk.Combobox(self.m_chord, state = tk.DISABLED)
+        self.m_subtractSelection = ttk.Combobox(self.m_chordFrame, state = tk.DISABLED)
         self.m_subtractSelection.grid(row=12, column=1, columnspan=2, sticky= "nsew")
 
         #Process Button
 
-        self.m_processButton = ttk.Button(self.m_chord, text = "Process Input", command = self.processInput)
+        self.m_processButton = ttk.Button(self.m_chordFrame, text = "Process Input", command = self.processInput)
         self.m_processButton.grid(row=13, column = 1, columnspan=2, sticky = "nsew")
 
         #Display options
 
-        self.m_displayOptionsLabel = ttk.Label(self.m_chord, text='Display Options:')
+        self.m_displayOptionsLabel = ttk.Label(self.m_chordFrame, text='Display Options:')
         self.m_displayOptionsLabel.grid(row = 14, column = 0, columnspan = 2, sticky="nsw")
 
-        self.m_toggleMarkersButton = ttk.Button(self.m_chord, text = "Toggle Markers", command = self.toggleMarkers)
+        self.m_toggleMarkersButton = ttk.Button(self.m_chordFrame, text = "Toggle Markers", command = self.toggleMarkers)
         self.m_toggleMarkersButton.grid(row=15, column = 1, columnspan=2, sticky = "nsew")
 
-        self.m_massDisplayOptions = DisplayOptionsFrame(self.m_chord, self.plotSelectedMasses)
+        self.m_massDisplayOptions = DisplayOptionsFrame(self.m_chordFrame, self.plotSelectedMasses)
         self.m_massDisplayOptions.grid(row = 16, column = 1, columnspan = 2, sticky = "nsw")
 
         # self.m_massDisplayOptions.m_availableMassesListBox
 
-        self.m_saveDataButton = ttk.Button(self.m_chord, text = "Save Processed Data", command = self.saveData)
+        self.m_saveDataButton = ttk.Button(self.m_chordFrame, text = "Save Processed Data", command = self.saveData)
         self.m_saveDataButton.grid(row=17, column = 1, columnspan=3, sticky = "nsew")
 
-        for child in self.m_chord.winfo_children():
+        for child in self.m_chordFrame.winfo_children():
             child.grid_configure(padx=3, pady=3)
 
         for child in self.m_fileButtonFrame.winfo_children():
@@ -349,7 +349,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         for child in self.m_massDisplayOptions.winfo_children():
             child.grid_configure(padx=3, pady=3)
 
-        self.m_chord.grid_columnconfigure(index=0, weight=1)
-        self.m_chord.grid_columnconfigure(index=1, weight=1)
-        self.m_chord.grid_columnconfigure(index=2, weight=1)
-        # self.m_chord.grid_columnconfigure(index=3, weight=1)
+        self.m_chordFrame.grid_columnconfigure(index=0, weight=1)
+        self.m_chordFrame.grid_columnconfigure(index=1, weight=1)
+        self.m_chordFrame.grid_columnconfigure(index=2, weight=1)
+        # self.m_chordFrame.grid_columnconfigure(index=3, weight=1)

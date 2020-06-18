@@ -213,65 +213,65 @@ class InvertDataControl(ProcessingStepControlBase):
         self.m_notebook.grid(row=0,column=0,sticky="nsew")
 
     def initChordUI(self, parentAccordion):
-        self.m_chordContainer = Chord(parentAccordion, self.m_notebook, title=self.m_title)
-        self.m_chord = self.m_chordContainer.m_scrollable_frame
+        self.m_chord = Chord(parentAccordion, self.m_notebook, title=self.m_title)
+        self.m_chordFrame = self.m_chord.m_scrollable_frame
 
         # File selection
 
-        self.m_inputLabel = ttk.Label(self.m_chord, text='Input file:')
+        self.m_inputLabel = ttk.Label(self.m_chordFrame, text='Input file:')
         self.m_inputLabel.grid(row = 0, column = 0, columnspan = 2, sticky="nsw")
 
-        self.m_fileNameLabel = ttk.Label(self.m_chord, text='No file selected')
+        self.m_fileNameLabel = ttk.Label(self.m_chordFrame, text='No file selected')
         self.m_fileNameLabel.grid(row = 1, column = 1, columnspan = 3, sticky="nsew")
 
-        self.m_selectButton = ttk.Button(self.m_chord,text="Select File",command = self.selectFile)
+        self.m_selectButton = ttk.Button(self.m_chordFrame,text="Select File",command = self.selectFile)
         self.m_selectButton.grid(row=2, column = 2, columnspan=1, sticky = "nse")
 
         #Options
 
-        self.m_optionsLabel = ttk.Label(self.m_chord, text="Inversion Options:")#, compound = tk.CENTER)
+        self.m_optionsLabel = ttk.Label(self.m_chordFrame, text="Inversion Options:")#, compound = tk.CENTER)
         self.m_optionsLabel.grid(row=3, column = 0, columnspan = 2, sticky = "nsw")
         
         #Radiobutton var
-        self.m_RBVariable = tk.IntVar(self.m_chord)
+        self.m_RBVariable = tk.IntVar(self.m_chordFrame)
         #Single Prefactor
 
-        self.m_singleRB = ttk.Radiobutton(self.m_chord, text ="Single Prefactor", variable = self.m_RBVariable,
+        self.m_singleRB = ttk.Radiobutton(self.m_chordFrame, text ="Single Prefactor", variable = self.m_RBVariable,
             value = 0, command = self.changeRB)
         self.m_singleRB.grid(row=4, column = 1, sticky = "nsw")
 
-        self.m_tPrefactorLabel = ttk.Label(self.m_chord, text="Prefactor Value:")
+        self.m_tPrefactorLabel = ttk.Label(self.m_chordFrame, text="Prefactor Value:")
         self.m_tPrefactorLabel.grid(row=5, column = 1, sticky = "nse")
 
-        self.m_tPrefactorEntry = EnhancedEntry(self.m_chord)
+        self.m_tPrefactorEntry = EnhancedEntry(self.m_chordFrame)
         self.m_tPrefactorEntry.grid(row=5, column = 2, sticky = "nsw")
 
         #Or Prefactor Range
 
-        self.m_linearRB = ttk.Radiobutton(self.m_chord, text ="Prefactor Range - Linear", variable = self.m_RBVariable,
+        self.m_linearRB = ttk.Radiobutton(self.m_chordFrame, text ="Prefactor Range - Linear", variable = self.m_RBVariable,
             value = 1, command = self.changeRB)
         self.m_linearRB.grid(row=6, column = 1, sticky = "nsw")
 
-        self.m_tPrefactorIncrementLabel = ttk.Label(self.m_chord, text="Increment:")
+        self.m_tPrefactorIncrementLabel = ttk.Label(self.m_chordFrame, text="Increment:")
         self.m_tPrefactorIncrementLabel.grid(row=7, column = 1, sticky = "nse")
 
-        self.m_tPrefactorIncrementEntry = EnhancedEntry(self.m_chord)
+        self.m_tPrefactorIncrementEntry = EnhancedEntry(self.m_chordFrame)
         self.m_tPrefactorIncrementEntry.grid(row=7, column = 2, sticky = "nsw")
 
-        self.m_multiplicativeRB = ttk.Radiobutton(self.m_chord, text ="Prefactor Range - Multiplicative (10x)", variable = self.m_RBVariable,
+        self.m_multiplicativeRB = ttk.Radiobutton(self.m_chordFrame, text ="Prefactor Range - Multiplicative (10x)", variable = self.m_RBVariable,
             value = 2, command = self.changeRB)
         self.m_multiplicativeRB.grid(row=8, column = 1, sticky = "nsw")
 
-        self.m_tPrefactorStartLabel = ttk.Label(self.m_chord, text="Lowest Prefactor:")
+        self.m_tPrefactorStartLabel = ttk.Label(self.m_chordFrame, text="Lowest Prefactor:")
         self.m_tPrefactorStartLabel.grid(row=9, column = 1, sticky = "nse")
 
-        self.m_tPrefactorStartEntry = EnhancedEntry(self.m_chord)
+        self.m_tPrefactorStartEntry = EnhancedEntry(self.m_chordFrame)
         self.m_tPrefactorStartEntry.grid(row=9, column = 2, sticky = "nsw")
 
-        self.m_tPrefactorEndLabel = ttk.Label(self.m_chord, text="Highest Prefactor:")
+        self.m_tPrefactorEndLabel = ttk.Label(self.m_chordFrame, text="Highest Prefactor:")
         self.m_tPrefactorEndLabel.grid(row=10, column = 1, sticky = "nse")
 
-        self.m_tPrefactorEndEntry = EnhancedEntry(self.m_chord)
+        self.m_tPrefactorEndEntry = EnhancedEntry(self.m_chordFrame)
         self.m_tPrefactorEndEntry.grid(row=10, column = 2, sticky = "nsw")
 
         #default values
@@ -284,36 +284,36 @@ class InvertDataControl(ProcessingStepControlBase):
 
         #Process Button
 
-        self.m_processButton = ttk.Button(self.m_chord, text = "Process Input", command = self.processInput)
+        self.m_processButton = ttk.Button(self.m_chordFrame, text = "Process Input", command = self.processInput)
         self.m_processButton.grid(row=11, column = 1, columnspan=2, sticky = "nsew")
 
-        # self.m_prbar = ttk.Progressbar(self.m_chord, orient ="horizontal", mode ="determinate", length = 50) #int(self.m_chord.winfo_width() / 2))
+        # self.m_prbar = ttk.Progressbar(self.m_chordFrame, orient ="horizontal", mode ="determinate", length = 50) #int(self.m_chordFrame.winfo_width() / 2))
         # self.m_prbar.grid(row = 12, column = 1, columnspan = 2, sticky="nsw")
         # self.m_prbar["value"] = 10  
 
         #Display options
 
-        self.m_displayOptionsLabel = ttk.Label(self.m_chord, text='Display Options:')
+        self.m_displayOptionsLabel = ttk.Label(self.m_chordFrame, text='Display Options:')
         self.m_displayOptionsLabel.grid(row = 12, column = 0, columnspan = 2, sticky="nsw")
 
-        self.m_toggleMarkersButton = ttk.Button(self.m_chord, text = "Toggle Markers", command = self.toggleMarkers)
+        self.m_toggleMarkersButton = ttk.Button(self.m_chordFrame, text = "Toggle Markers", command = self.toggleMarkers)
         self.m_toggleMarkersButton.grid(row=13, column = 1, columnspan=2, sticky = "nsew")
 
-        self.m_prefactorCBLabel = ttk.Label(self.m_chord, text='Select prefactor to display data for:')
+        self.m_prefactorCBLabel = ttk.Label(self.m_chordFrame, text='Select prefactor to display data for:')
         self.m_prefactorCBLabel.grid(row = 14, column = 1, columnspan = 2, sticky="nsw")
 
-        self.m_prefactorCB = ttk.Combobox(self.m_chord)
+        self.m_prefactorCB = ttk.Combobox(self.m_chordFrame)
         self.m_prefactorCB.bind("<<ComboboxSelected>>", self.plotDataForSelectedPrefactor) #binding to event because CB does not have 'command' param
         self.m_prefactorCB.grid(row = 15, column = 1, columnspan = 2, sticky = "nsew")
 
         #Save Button
 
-        self.m_saveDataButton = ttk.Button(self.m_chord, text = "Save Inverted Data", command = self.saveData)
+        self.m_saveDataButton = ttk.Button(self.m_chordFrame, text = "Save Inverted Data", command = self.saveData)
         self.m_saveDataButton.grid(row=16, column = 1, columnspan=2, sticky = "nsew")
 
-        for child in self.m_chord.winfo_children():
+        for child in self.m_chordFrame.winfo_children():
             child.grid_configure(padx=3, pady=3)
 
-        self.m_chord.grid_columnconfigure(index=0, weight=1)
-        self.m_chord.grid_columnconfigure(index=1, weight=1)
-        self.m_chord.grid_columnconfigure(index=2, weight=1)
+        self.m_chordFrame.grid_columnconfigure(index=0, weight=1)
+        self.m_chordFrame.grid_columnconfigure(index=1, weight=1)
+        self.m_chordFrame.grid_columnconfigure(index=2, weight=1)

@@ -70,7 +70,7 @@ class MPLContainer(tk.Frame):
             # self.canvas.get_tk_widget().pack_forget()
             # self.canvas.get_tk_widget().grid_forget()
             self.plotHidden = True
-        elif(self.plotHidden): #if we stopped resizing, unhide plot
+        elif(self.plotHidden and timeDelta.total_seconds()*1000 > 700): #if we stopped resizing, unhide plot
             # self.canvas.get_tk_widget().place_forget()
             self.m_figure.set_dpi(96)
             self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.OUTSIDE,height=self.winfo_height(),width=self.winfo_width())
@@ -117,7 +117,7 @@ class MPLContainer(tk.Frame):
         # self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.OUTSIDE,height=self.winfo_height(),width=self.winfo_width())
         self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.INSIDE,relheight = 1.0, relwidth = 1.0)
 
-        self.resizeAnimation = anim.FuncAnimation(self.m_figure, func=self.resizePlot, interval=400)#, blit = True)#interval in milliseconds
+        self.resizeAnimation = anim.FuncAnimation(self.m_figure, func=self.resizePlot, interval=150)#, blit = True)#interval in milliseconds
     
     def clearPlots(self):
         if(len(self.m_subplot.lines) > 0):

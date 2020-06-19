@@ -80,6 +80,7 @@ class MPLContainer(tk.Frame):
             # self.canvas.get_tk_widget().place_forget()
             self.m_figure.set_dpi(96)
             self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.OUTSIDE,height=self.winfo_height(),width=self.winfo_width())
+            # self.canvas.draw_idle()
             self.plotHidden = False
         #else do nothing
             
@@ -112,7 +113,8 @@ class MPLContainer(tk.Frame):
         
         #normally plt.show() now, but different for tk
         self.canvas = FigureCanvasTkAgg(self.m_figure,self)
-        self.canvas.draw()
+        # self.canvas.draw()
+        # self.canvas.draw_idle()
         # canvas.get_tk_widget().grid(row=0,column=0,sticky="nsew")
         # self.grid_rowconfigure(index=0,weight=1,minsize=self.winfo_height())
         # self.grid_columnconfigure(index=0,weight=1,minsize=self.winfo_width())
@@ -127,7 +129,7 @@ class MPLContainer(tk.Frame):
         self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.INSIDE,relheight = 1.0, relwidth = 1.0)
 
         # if not sys.platform.startswith('win'):
-        self.resizeAnimation = anim.FuncAnimation(self.m_figure, func=self.resizePlot, interval=300)#, blit = True)#interval in milliseconds
+        self.resizeAnimation = anim.FuncAnimation(self.m_figure, func=self.resizePlot, interval=300, cache_frame_data=False)#, blit = True)#interval in milliseconds
     
     def clearPlots(self):
         if(len(self.m_subplot.lines) > 0):
@@ -209,11 +211,15 @@ class MPLContainer(tk.Frame):
     def addPrimaryLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False):
         self.__addLinePlots(self.m_subplot, ndarrayData, labels, logXAxis, logYAxis)
         self.__autoScaleTopY()
+        # self.canvas.draw_idle()
+
 
     def addSecondaryLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False):
         if(not self.m_secondaryYAxisRequired):
             raise NameError #should use primary line plots, since secondary axis is not defined for this plot
         self.__addLinePlots(self.m_secondaryYAxis, ndarrayData, labels, logXAxis, logYAxis)
+        # self.canvas.draw_idle()
+
         
     def __autoScaleTopY(self):
         self.m_subplot.set_ylim(auto = True)

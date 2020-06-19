@@ -81,7 +81,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             self.m_normSelection.configure(state = tk.NORMAL)
 
     def toggleMarkers(self):
-        for c in self.m_plots:
+        for c in self.m_plots.values():
             c.toggleMarkers()
 
     def plotSelectedMasses(self):

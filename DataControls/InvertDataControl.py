@@ -167,7 +167,7 @@ class InvertDataControl(ProcessingStepControlBase):
             self.m_tPrefactorEndEntry.configure(state = 'normal')
 
     def toggleMarkers(self):
-        for c in self.m_plots:
+        for c in self.m_plots.values():
             c.toggleMarkers()
 
     def saveData(self):

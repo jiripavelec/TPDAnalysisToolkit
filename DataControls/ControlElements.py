@@ -1,5 +1,8 @@
 import tkinter as tk
 import tkinter.ttk as ttk
+from tkinter.filedialog import askdirectory, askopenfilenames, asksaveasfilename
+import os.path
+from os import path, chdir
 from datetime import datetime
 import sys
 from PlotsFrame import MPLContainer # pylint: disable=import-error
@@ -332,13 +335,82 @@ class ProcessingStepControlBase:
     def plotSelectedMasses(self):
         raise NotImplementedError()
 
-    def onNotebookTabChanged(self, event):
-        selected_tab = event.widget.select()
-        for c in event.widget.children:
-            if c is MPLContainer:
-                pass #c.hide or c.destroy, but if c is selected_tab, then show or create
+    # def onNotebookTabChanged(self, event):
+    #     selected_tab = event.widget.select()
+    #     for c in event.widget.children:
+    #         if c is MPLContainer:
+    #             pass #c.hide or c.destroy, but if c is selected_tab, then show or create
                 
-
 #ProcessingStepControlBase END
 
+#InputFileListBoxControl BEGIN
+class InputFileListBoxControl(ttk.Frame):
+    def __init__(self, parent, onUpdateSelection, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.onUpdateSelection = onUpdateSelection
+
+        self.m_filesListBoxLabel = ttk.Label(self, text='Input files:')
+        self.m_filesListBoxLabel.grid(row = 0, column = 0, columnspan = 2, sticky="nsw")
+
+        self.m_filesListBox = ScrolledListBox(self, horizontallyScrollable=True)
+        self.m_filesListBox.grid(row = 1, column = 0, columnspan = 4, sticky = "nsew")
+
+        self.m_fileButtonFrame = ttk.Frame(self)
+        self.m_fileButtonFrame.grid(row=2, column = 1, columnspan = 3, sticky = "nsew")
+
+        self.m_selectFilesButton = ttk.Button(self.m_fileButtonFrame,text="Select Files",command = self.selectFiles)
+        self.m_selectFilesButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
+
+        self.m_selectFilesButton = ttk.Button(self.m_fileButtonFrame,text="Select Directory",command = self.selectDir)
+        self.m_selectFilesButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
+
+        self.m_deselectButton = ttk.Button(self.m_fileButtonFrame,text="Remove Selected",command = self.deselectFiles)
+        self.m_deselectButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
+
+        self.grid_columnconfigure(index=0, weight=1)
+        self.grid_columnconfigure(index=1, weight=1)
+        self.grid_columnconfigure(index=2, weight=1)
+        self.grid_columnconfigure(index=3, weight=1)
+
+
+    def prepareFileSelections(self):
+        self.m_fileList = list()
+        self.m_filesListBox.clear()
+        for p in self.m_filePaths:
+            substrings = p.split('/')
+            fName = substrings[len(substrings) - 1]
+            self.m_fileList.insert(0,fName)
+
+        [self.m_filesListBox.insert(0, f) for f in self.m_fileList]
+        self.m_fileList.reverse()
+        self.onUpdateSelection(self.m_fileList)
+
+    def selectFiles(self):
+        buffer = list(askopenfilenames(defaultextension=".csv", filetypes=[('Comma-separated Values','*.csv'), ('All files','*.*')]))
+        if not (len(buffer) == 0):
+            self.m_filePaths = buffer.copy() #we don't want to use the same instance => .copy()
+            self.prepareFileSelections()
+
+    def selectDir(self):
+        dirPath = askdirectory(mustexist = True)
+        if not (len(dirPath) == 0):
+            self.m_filePaths.clear()
+            candidates = os.listdir(dirPath)
+            for candidate in candidates: #look at all paths in directory
+                if(os.path.isfile(dirPath + '/' + candidate) and candidate.endswith(".csv")): #filter out directories
+                    if(candidate.find("TPD") != -1): #look for "TPD" in filename to differentiate data from prep files
+                        self.m_filePaths.append(dirPath + '/' + candidate)
+            self.prepareFileSelections()                        
+
+    def deselectFiles(self):
+        indices = list(self.m_filesListBox.curselection())
+        indices.reverse()
+        for i in indices:
+            self.m_filesListBox.delete(i)
+            self.m_filePaths.pop(i)
+            self.m_fileList.pop(i)
+        self.onUpdateSelection(self.m_fileList)
+        
+
+#InputFileListBoxControl END
 

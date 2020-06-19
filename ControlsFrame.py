@@ -43,7 +43,18 @@ class ControlsFrame(tk.Frame):
         self.m_accordion.append_chords(1,[c.m_chord for c in self.Controls])
         self.m_accordion.pack(side = tk.LEFT, fill=tk.BOTH, expand = True)
 
+        self.setupChordWidths()
+
     def resetResizeTime(self):
         for c in self.Controls:
             c.setResizeTime()
+
+    def getMinWidth(self):
+        reqwidth = max([c.m_chord.getContentWidth() for c in self.Controls])
+        return reqwidth
+
+    def setupChordWidths(self):
+        reqwidth = max([c.m_chord.getContentWidth() for c in self.Controls])
+        for c in self.Controls:
+            c.m_chord.setContentWidth(reqwidth)
 #ControlsFrame END

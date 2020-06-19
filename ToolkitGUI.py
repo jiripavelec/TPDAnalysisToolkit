@@ -21,9 +21,11 @@ class MainFrame(tk.Frame):
         self.m_panedWindow.pack(side=tk.LEFT, fill = tk.BOTH, expand=True)
         self.plotsFrame = PlotsFrame(self.m_panedWindow, bg ='white') #need to init this first, because the controls will request notebooks/plots inside plotsframe
         self.controlsFrame = ControlsFrame(self.m_panedWindow, root, self.plotsFrame, bg = 'white', relief='groove')
-        
+
         self.m_panedWindow.add(self.controlsFrame)
         self.m_panedWindow.add(self.plotsFrame)
+
+        # self.m_panedWindow.paneconfigure(self.controlsFrame, minsize = self.controlsFrame.getMinWidth())
 
         self.lastWidth = self.winfo_width()
         self.lastHeight = self.winfo_height()

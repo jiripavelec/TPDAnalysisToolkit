@@ -48,8 +48,23 @@ class Chord(ttk.Frame):
     
     def getContentWidth(self):
         # return max([c.winfo_reqwidth() for c in self.m_scrollable_frame.winfo_children()])
-        return self.m_scrollable_frame.winfo_width()
+        return self.m_scrollable_frame.winfo_reqwidth() + self.m_scrollbar.winfo_reqwidth()
+    
+    def setContentWidth(self, width):
+        self.configure(width = width)
+        self.m_canvas.configure(width = width - self.m_scrollbar.winfo_reqwidth())
+        self.m_scrollable_frame.configure(width = width - self.m_scrollbar.winfo_reqwidth())
+    
 #Chord END
+
+#WrappedLabel BEGIN
+class WrappedLabel(ttk.Frame):
+    def __init__(self, parent, text, compound, width, bg, fg, bd, relief, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.m_label = tk.Label(self, text = text, compound=compound, bg=bg, fg=fg, bd=bd, relief=relief)
+        self.m_label.pack(side = tk.TOP, fill=tk.BOTH, expand = True)
+
+#WrappedLabel END
 
 #Accordion BEGIN
 #adapted from http://code.activestate.com/recipes/578911-accordion-widget-tkinter/
@@ -74,20 +89,24 @@ class Accordion(tk.Frame):
 
         self.update_idletasks()
         row = 0
-        # width = max([c.getContentWidth() for c in chords])
-        width = 55
+        #reqwidth = max([c.getContentWidth() for c in chords])
+        # width = 55
+        # self.configure(width = reqwidth)
 
         for c in chords:
             # i = tk.PhotoImage() # blank image to force Label to use pixel size
             c.m_label = tk.Label(self, text=c.m_title,
+            # c.m_label = WrappedLabel(self, text=c.m_title,
                         #   image=i,
                           compound='center',
-                          width=width,
+                        #   width=width,
+                        #   width=reqwidth,
                           bg=self.style['title_bg'],
                           fg=self.style['title_fg'],
                           bd=2, relief='groove')
             
             c.m_label.grid(row=row, column=0, sticky='ew')
+            # c.m_label.grid_propagate(0)
             # label.pack(side=tk.TOP, fill=tk.X, expand=False)
             c.grid(row=row+1, column=0, sticky='nsew')
             c.setRowIdx(row+1)
@@ -97,13 +116,16 @@ class Accordion(tk.Frame):
             row += 2
             
             c.m_label.bind('<Button-1>', lambda e,
+            # c.m_label.m_label.bind('<Button-1>', lambda e,
                        target=c, others=chords: self._click_handler(target,others))
             c.m_label.bind('<Enter>', lambda e,
                     #    label=label, i=i: label.config(bg=self.style['highlight']))
                        label=c.m_label: label.config(bg=self.style['highlight']))
+                    #    label=c.m_label: label.m_label.config(bg=self.style['highlight']))
             c.m_label.bind('<Leave>', lambda e,
                     #    label=label, i=i: label.config(bg=self.style['title_bg']))
                        label=c.m_label: label.config(bg=self.style['title_bg']))
+                    #    label=c.m_label: label.m_label.config(bg=self.style['title_bg']))
         
         self._click_handler(chords[startingChord],chords) # start with first chord open for debugging purposes
                        

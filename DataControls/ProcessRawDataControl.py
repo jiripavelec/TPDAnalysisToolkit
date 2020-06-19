@@ -333,7 +333,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         self.m_toggleMarkersButton.grid(row=15, column = 1, columnspan=2, sticky = "nsew")
 
         self.m_massDisplayOptions = DisplayOptionsFrame(self.m_chordFrame, self.plotSelectedMasses)
-        self.m_massDisplayOptions.grid(row = 16, column = 0, columnspan = 4, sticky = "nsw")
+        self.m_massDisplayOptions.grid(row = 16, column = 0, columnspan = 4, sticky = "nsew")
 
         # self.m_massDisplayOptions.m_availableMassesListBox
 

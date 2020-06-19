@@ -93,6 +93,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             return
 
         for d in self.m_parsedData:
+            self.m_plots["Raw Data vs. Temp."].addPrimaryLinePlots(d.getRawDataVSRawTemp(tempMasses),d.getLangmuirLabels(tempMasses))
             self.m_plots["Raw Data vs. Time"].addPrimaryLinePlots(d.getRawDataVSRawTime(tempMasses),d.getLangmuirLabels(tempMasses))
             self.m_plots["Raw Data vs. Time"].addSecondaryLinePlots(d.getRawTempVSRawTime())
             self.m_plots["Processed Data"].addPrimaryLinePlots(d.getProcessedData(tempMasses),d.getCoverageLabels(tempMasses))

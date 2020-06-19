@@ -90,8 +90,8 @@ class InvertDataControl(ProcessingStepControlBase):
             if(not self.m_parsedData.m_normalized):
                 return #need a normalized monolayer coverage for inversion + simulation to make sense
             # self.m_parsedData.clearInvertedData() #incase we are reusing the wrapper
-            for c in self.m_plots:
-                c.clearPlots()
+            # for c in self.m_plots:
+            #     c.clearPlots()
             if(self.m_RBVariable.get() == 0): #single prefactor
                 self.m_prefactors = ["{:e}".format(float(self.m_tPrefactorEntry.get()))]
             elif(self.m_RBVariable.get() == 1): #linear range

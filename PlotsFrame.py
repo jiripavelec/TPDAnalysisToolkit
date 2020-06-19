@@ -48,7 +48,7 @@ class CustomNavigationToolbar(NavigationToolbar2Tk):
 
 #MPLContainer BEGIN
 class MPLContainer(tk.Frame):
-    def __init__(self, parent, title, yAxisName, xAxisName, root, secondaryXAxis = False, secondaryXAxisName = "", secondaryYAxis = False, secondaryYAxisName = "", invertXAxis = False, *args, **kwargs):
+    def __init__(self, parent, title, yAxisName, xAxisName, root, secondaryYAxis = False, secondaryYAxisName = "", invertXAxis = False, *args, **kwargs):
         super().__init__(parent, bg="white", *args, **kwargs)
         self.m_title = title
         self.m_xAxisName = xAxisName
@@ -59,11 +59,6 @@ class MPLContainer(tk.Frame):
         if(secondaryYAxis and secondaryYAxisName == ""):
             raise ValueError #need a secondaryYAxisName!
         self.m_secondaryYAxisName = secondaryYAxisName
-
-        self.m_secondaryXAxisRequired = secondaryXAxis
-        if(secondaryXAxis and secondaryXAxisName == ""):
-            raise ValueError #need a secondaryYAxisName!
-        self.m_secondaryXAxisName = secondaryXAxisName
 
         self.m_invertXAxis = invertXAxis
         self.initUI(parent, root)
@@ -106,11 +101,6 @@ class MPLContainer(tk.Frame):
             self.m_secondaryYAxis.tick_params(direction="in")
             self.m_secondaryYAxis.margins(x= 0.0)
 
-        # if(self.m_secondaryYAxisRequired):
-        #     self.m_secondaryYAxis = self.m_subplot.twinx()
-        #     self.m_secondaryYAxis.set_ylabel(self.m_secondaryYAxisName)
-        #     self.m_secondaryYAxis.tick_params(direction="in")
-        
         #normally plt.show() now, but different for tk
         self.canvas = FigureCanvasTkAgg(self.m_figure,self)
         # self.canvas.draw()
@@ -198,7 +188,10 @@ class MPLContainer(tk.Frame):
             hl = sorted(zip(handles, labels),
                         key=operator.itemgetter(1))
             handles, labels = zip(*hl)
-            self.m_subplot.legend(handles, labels)
+            legend = self.m_subplot.legend(handles, labels)
+            if(self.m_secondaryYAxisRequired):
+                legend.remove()
+                self.m_secondaryYAxis.add_artist(legend)
 
         if (logXAxis):
             axes.set_xscale("log")
@@ -226,6 +219,12 @@ class MPLContainer(tk.Frame):
         if(self.m_subplot.get_ylim()[0] < 0.0):
             self.m_subplot.set_ylim(bottom=0, top = None)
 
+    def addSecondaryScaledXAxis(self, forwardFunc, reverseFunc):
+        self.m_secondaryScaledXAxis = self.m_subplot.secondary_xaxis("top", functions=(forwardFunc, reverseFunc))
+
+    def addSecondaryScaledYAxis(self, forwardFunc, reverseFunc):
+        self.m_secondaryScaledXAxis = self.m_subplot.secondary_yaxis("right", functions=(forwardFunc, reverseFunc))
+        
     # def setLegendCenterRight(self):
     #     self.m_subplot.get_legend().s
 

@@ -15,6 +15,15 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         super().__init__("Process TPD Data", controller, accordion)
         self.m_filePaths = []
         self.m_parsedData = []
+        # self.m_notebook.bind("<<NotebookTabChanged>>", self.onNotebookTabChanged)
+        # self.m_plots.append(MPLContainer(self.m_notebook, "Raw Data", "Desorption Rate", "Temperature (K)"))
+        self.m_plots["Raw Data vs. Temp."] = MPLContainer(self.m_chord.m_notebookRef, "Raw Data vs. Temp.", "Desorption Rate", "Time (ms)", root, secondaryYAxis=True,secondaryYAxisName="Temperature (K)")
+        self.m_plots["Raw Data vs. Time"] = MPLContainer(self.m_chord.m_notebookRef, "Raw Data vs. Time.", "Desorption Rate", "Time (ms)", root, secondaryYAxis=True,secondaryYAxisName="Temperature (K)")
+        self.m_plots["Processed Data"] = MPLContainer(self.m_chord.m_notebookRef, "Processed Data", "Desorption Rate", "Temperature (K)", root)
+        self.m_plots["Arrhenius Plot (Processed)"] = MPLContainer(self.m_chord.m_notebookRef, "Arrhenius Plot (Processed)", "ln(Desorption Rate)", "Reciprocal Temperature (1/K)", root, invertXAxis=True)
+        # self.m_plots["Temperature Ramp"] = MPLContainer(self.m_chord.m_notebookRef, "Temperature Ramp", "Temperature (K)", "Time (ms)", root)
+
+
 
     def prepareFileSelections(self):
         self.m_fileList = list()
@@ -72,11 +81,11 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             self.m_normSelection.configure(state = tk.NORMAL)
 
     def toggleMarkers(self):
-        for c in self.mplContainers:
+        for c in self.m_plots:
             c.toggleMarkers()
 
     def plotSelectedMasses(self):
-        for c in self.mplContainers:
+        for c in self.m_plots.values():
             c.clearPlots()
 
         tempMasses = self.m_massDisplayOptions.getMassesToDisplay()
@@ -84,13 +93,13 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             return
 
         for d in self.m_parsedData:
-            self.mplContainers[0].addPrimaryLinePlots(d.getRawDataVSRawTime(tempMasses),d.getLangmuirLabels(tempMasses))
-            self.mplContainers[0].addSecondaryLinePlots(d.getRawTempVSRawTime())
-            self.mplContainers[1].addPrimaryLinePlots(d.getProcessedData(tempMasses),d.getCoverageLabels(tempMasses))
-            self.mplContainers[2].addPrimaryLinePlots(d.getProcessedArrheniusData(tempMasses),d.getCoverageLabels(tempMasses))
-            self.mplContainers[3].addPrimaryLinePlots(d.getRawTempVSRawTime(), d.getCoverageLabels(tempMasses))
-        # self.mplContainers[0].setLegendCenterRight()
-        self.mplContainers[2].autoScaleLogY()
+            self.m_plots["Raw Data vs. Time"].addPrimaryLinePlots(d.getRawDataVSRawTime(tempMasses),d.getLangmuirLabels(tempMasses))
+            self.m_plots["Raw Data vs. Time"].addSecondaryLinePlots(d.getRawTempVSRawTime())
+            self.m_plots["Processed Data"].addPrimaryLinePlots(d.getProcessedData(tempMasses),d.getCoverageLabels(tempMasses))
+            self.m_plots["Arrhenius Plot (Processed)"].addPrimaryLinePlots(d.getProcessedArrheniusData(tempMasses),d.getCoverageLabels(tempMasses))
+            # self.m_plots[3].addPrimaryLinePlots(d.getRawTempVSRawTime(), d.getCoverageLabels(tempMasses))
+        # self.m_plots[0].setLegendCenterRight()
+        self.m_plots["Arrhenius Plot (Processed)"].autoScaleLogY()
 
     def checkInput(self):
         if(len(self.m_filePaths) == 0): #check for file selection
@@ -225,17 +234,6 @@ class ProcessRawDataControl(ProcessingStepControlBase):
                 np.savetxt(fileHandle, stringData, fmt="%s", delimiter=' ', header=headerString)
                 #then write float data (after transposing it)
                 np.savetxt(fileHandle, outputData.transpose(), delimiter=' ')
-
-    def initNotebook(self, root):
-        # self.m_notebook.bind("<<NotebookTabChanged>>", self.onNotebookTabChanged)
-        # self.mplContainers.append(MPLContainer(self.m_notebook, "Raw Data", "Desorption Rate", "Temperature (K)"))
-        self.mplContainers.append(MPLContainer(self.m_chord.m_notebookRef, "Raw Data", "Desorption Rate", "Time (ms)", root, secondaryYAxis=True,secondaryYAxisName="Temperature (K)"))
-        self.mplContainers.append(MPLContainer(self.m_chord.m_notebookRef, "Processed Data", "Desorption Rate", "Temperature (K)", root))
-        self.mplContainers.append(MPLContainer(self.m_chord.m_notebookRef, "Arrhenius Plot (Processed)", "ln(Desorption Rate)", "Reciprocal Temperature (1/K)", root, invertXAxis=True))
-        self.mplContainers.append(MPLContainer(self.m_chord.m_notebookRef, "Temperature Ramp", "Temperature (K)", "Time (ms)", root))
-
-        for c in self.mplContainers:
-            self.m_chord.m_notebookRef.add(c, text = c.m_title)
 
     def initChordUI(self):
         self.m_chordFrame = self.m_chord.m_scrollable_frame

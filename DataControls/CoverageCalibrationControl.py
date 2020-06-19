@@ -6,12 +6,8 @@ from PlotsFrame import MPLContainer # pylint: disable=import-error
 class CoverageCalibrationControl(ProcessingStepControlBase):
     def __init__(self, controller, root, accordion):
         super().__init__("Coverage Calibration", controller, accordion)
+        self.m_plots["Coverage"] = MPLContainer(self.m_chord.m_notebookRef, "Coverage", "Desorption Rate", "Temperature (K)", root)
 
-    def initNotebook(self, root):
-        self.mplContainers.append(MPLContainer(self.m_chord.m_notebookRef, "Coverage", "Desorption Rate", "Temperature (K)", root))
-
-        for c in self.mplContainers:
-            self.m_chord.m_notebookRef.add(c, text = c.m_title)
 
 
     def initChordUI(self):

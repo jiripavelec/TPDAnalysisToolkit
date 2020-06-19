@@ -302,7 +302,7 @@ class ProcessingStepControlBase:
         self.m_chord = Chord(accordion, controller, title)
         self.m_chordInitDone = False
         self.m_notebookInitDone = False
-        self.mplContainers = []
+        self.m_plots = {}
 
     #This is for the controls on the left side of the UI
     def initChordUI(self):
@@ -310,13 +310,14 @@ class ProcessingStepControlBase:
 
     #This is for the tabs with plots on the right side of the UI
     def initNotebook(self, root):
-        raise NotImplementedError()
+        for c in self.m_plots.values():
+            self.m_chord.m_notebookRef.add(c, text = c.m_title)
 
     #This is to reduce the update frequency of plot resizing to
     #a frequency lower than that of resize events from the main
     #window
     def setResizeTime(self):
-        for c in self.mplContainers:
+        for c in self.m_plots.values():
             c.resizeDateTime = datetime.now()
 
     def selectFiles(self):

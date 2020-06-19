@@ -100,7 +100,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             self.m_plots["Arrhenius Plot (Processed)"].addPrimaryLinePlots(d.getProcessedArrheniusData(tempMasses),d.getCoverageLabels(tempMasses))
             # self.m_plots[3].addPrimaryLinePlots(d.getRawTempVSRawTime(), d.getCoverageLabels(tempMasses))
         # self.m_plots[0].setLegendCenterRight()
-        self.m_plots["Arrhenius Plot (Processed)"].autoScaleLogY()
+        # self.m_plots["Arrhenius Plot (Processed)"].autoScaleTopY()
 
     def checkInput(self):
         if(len(self.m_filePaths) == 0): #check for file selection

@@ -95,6 +95,7 @@ class MPLContainer(tk.Frame):
         self.m_subplot.set_xlabel(self.m_xAxisName)
         self.m_subplot.set_ylabel(self.m_yAxisName)
         self.m_subplot.tick_params(direction="in")
+        self.m_subplot.margins(x = 0.0)
         if(self.m_invertXAxis):
             self.m_subplot.invert_xaxis()
 
@@ -102,6 +103,7 @@ class MPLContainer(tk.Frame):
             self.m_secondaryYAxis = self.m_subplot.twinx()
             self.m_secondaryYAxis.set_ylabel(self.m_secondaryYAxisName)
             self.m_secondaryYAxis.tick_params(direction="in")
+            self.m_secondaryYAxis.margins(x= 0.0)
 
         # if(self.m_secondaryYAxisRequired):
         #     self.m_secondaryYAxis = self.m_subplot.twinx()
@@ -206,13 +208,14 @@ class MPLContainer(tk.Frame):
 
     def addPrimaryLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False):
         self.__addLinePlots(self.m_subplot, ndarrayData, labels, logXAxis, logYAxis)
+        self.__autoScaleTopY()
 
     def addSecondaryLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False):
         if(not self.m_secondaryYAxisRequired):
             raise NameError #should use primary line plots, since secondary axis is not defined for this plot
         self.__addLinePlots(self.m_secondaryYAxis, ndarrayData, labels, logXAxis, logYAxis)
         
-    def autoScaleLogY(self):
+    def __autoScaleTopY(self):
         self.m_subplot.set_ylim(auto = True)
         if(self.m_subplot.get_ylim()[0] < 0.0):
             self.m_subplot.set_ylim(bottom=0, top = None)

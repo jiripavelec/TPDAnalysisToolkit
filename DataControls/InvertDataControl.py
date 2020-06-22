@@ -16,6 +16,13 @@ class InvertDataControl(ProcessingStepControlBase):
         self.m_prefactors = []
         self.m_inputFilePath = None
 
+        self.m_plots["Input Data"] = MPLContainer(self.m_chord.m_notebookRef, "Input Data", "Desorption Rate (arb. U.)", "Temperature (K)", root)
+        self.m_plots["Coverage vs. Temp."] = MPLContainer(self.m_chord.m_notebookRef, "Coverage vs. Temp.", "Coverage", "Temperature (K)", root)
+        self.m_plots["Energy vs. Coverage"] = MPLContainer(self.m_chord.m_notebookRef, "Energy vs. Coverage", "Energy (eV)", "Coverage", root)
+        self.m_plots["Sim. Coverage vs Temp."] = MPLContainer(self.m_chord.m_notebookRef, "Sim. Coverage vs Temp.", "Coverge (ML)", "Temperature (K)", root)
+        self.m_plots["Sim. Desorption Rate vs Coverage"] = MPLContainer(self.m_chord.m_notebookRef, "Sim. Desorption Rate vs Coverage", "Desorption Rate (ML/K)", "Coverage", root)
+        self.m_plots["Chi Squared vs Prefactor"] = MPLContainer(self.m_chord.m_notebookRef, "Chi Squared vs Prefactor", "Chi Squared Value", "Prefactor", root)
+
     def selectFile(self):
         buffer = askopenfilename(defaultextension=".pdat", filetypes=[('Processed Data','*.pdat'), ('All files','*.*')])
         if (not buffer == None): #we only want a new filepath if it is a valid path
@@ -83,8 +90,8 @@ class InvertDataControl(ProcessingStepControlBase):
             if(not self.m_parsedData.m_normalized):
                 return #need a normalized monolayer coverage for inversion + simulation to make sense
             # self.m_parsedData.clearInvertedData() #incase we are reusing the wrapper
-            for c in self.mplContainers:
-                c.clearPlots()
+            # for c in self.m_plots:
+            #     c.clearPlots()
             if(self.m_RBVariable.get() == 0): #single prefactor
                 self.m_prefactors = ["{:e}".format(float(self.m_tPrefactorEntry.get()))]
             elif(self.m_RBVariable.get() == 1): #linear range
@@ -110,8 +117,8 @@ class InvertDataControl(ProcessingStepControlBase):
             self.m_parsedData.evaluateData()
 
             #plot chi-squared value vs prefactor for all input coverages
-            self.mplContainers[5].clearPlots()
-            self.mplContainers[5].addPrimaryLinePlots(self.m_parsedData.getChiSquaredVSPrefactor(),self.m_parsedData.getCoverageLabels(),logXAxis = True)#, logYAxis = True)
+            self.m_plots["Chi Squared vs Prefactor"].clearPlots()
+            self.m_plots["Chi Squared vs Prefactor"].addPrimaryLinePlots(self.m_parsedData.getChiSquaredVSPrefactor(),self.m_parsedData.getCoverageLabels(),logXAxis = True)#, logYAxis = True)
 
             self.m_prefactorCB["values"] = self.m_prefactors
             self.plotDataForSelectedPrefactor()
@@ -126,22 +133,22 @@ class InvertDataControl(ProcessingStepControlBase):
                 selectedPrefactor = self.m_prefactorCB.get()
 
             #plot input data
-            self.mplContainers[0].clearPlots()
-            self.mplContainers[0].addPrimaryLinePlots(self.m_parsedData.getInputData(),self.m_parsedData.getCoverageLabels())
+            self.m_plots["Input Data"].clearPlots()
+            self.m_plots["Input Data"].addPrimaryLinePlots(self.m_parsedData.getInputData(),self.m_parsedData.getCoverageLabels())
             #plot coverage vs temperature from experimental data
-            self.mplContainers[1].clearPlots()
-            self.mplContainers[1].addPrimaryLinePlots(self.m_parsedData.getExpCoverageVSTemp(float(selectedPrefactor)),self.m_parsedData.getCoverageLabels())
+            self.m_plots["Coverage vs. Temp."].clearPlots()
+            self.m_plots["Coverage vs. Temp."].addPrimaryLinePlots(self.m_parsedData.getExpCoverageVSTemp(float(selectedPrefactor)),self.m_parsedData.getCoverageLabels())
             #plot desorption energy vs coverage from experimental data
-            self.mplContainers[2].clearPlots()
+            self.m_plots["Energy vs. Coverage"].clearPlots()
             for e,lbl in zip(self.m_parsedData.getDesEnergyVSCoverageList(float(selectedPrefactor)),self.m_parsedData.getCoverageLabels()):
-                self.mplContainers[2].addPrimaryLinePlots(e,lbl)
+                self.m_plots["Energy vs. Coverage"].addPrimaryLinePlots(e,lbl)
             #plot simulated coverage vs temperature
-            self.mplContainers[3].clearPlots()
-            # self.mplContainers[3].addLinePlots(self.m_parsedData.getExpDesorptionRateVSTemp())
-            self.mplContainers[3].addPrimaryLinePlots(self.m_parsedData.getSimCoverageVSTemp(float(selectedPrefactor)),self.m_parsedData.getCoverageLabels())
+            self.m_plots["Sim. Coverage vs Temp."].clearPlots()
+            # self.m_plots[3].addLinePlots(self.m_parsedData.getExpDesorptionRateVSTemp())
+            self.m_plots["Sim. Coverage vs Temp."].addPrimaryLinePlots(self.m_parsedData.getSimCoverageVSTemp(float(selectedPrefactor)),self.m_parsedData.getCoverageLabels())
             #plot simulated desorption rate vs temperature
-            self.mplContainers[4].clearPlots()
-            self.mplContainers[4].addPrimaryLinePlots(self.m_parsedData.getSimDesRateVSTemp(float(selectedPrefactor)),self.m_parsedData.getCoverageLabels())  
+            self.m_plots["Sim. Desorption Rate vs Coverage"].clearPlots()
+            self.m_plots["Sim. Desorption Rate vs Coverage"].addPrimaryLinePlots(self.m_parsedData.getSimDesRateVSTemp(float(selectedPrefactor)),self.m_parsedData.getCoverageLabels())  
 
     def changeRB(self):
         self.m_tPrefactorEntry.configure(state = 'disabled')
@@ -160,7 +167,7 @@ class InvertDataControl(ProcessingStepControlBase):
             self.m_tPrefactorEndEntry.configure(state = 'normal')
 
     def toggleMarkers(self):
-        for c in self.mplContainers:
+        for c in self.m_plots.values():
             c.toggleMarkers()
 
     def saveData(self):
@@ -182,17 +189,7 @@ class InvertDataControl(ProcessingStepControlBase):
         outputFilePath = outputFilePath + '/' + fileName
         self.m_parsedData.saveInvertedDataToFile(outputFilePath)
 
-    def initNotebook(self, root):
 
-        self.mplContainers.append(MPLContainer(self.m_chord.m_notebookRef, "Input Data", "Desorption Rate (arb. U.)", "Temperature (K)", root))
-        self.mplContainers.append(MPLContainer(self.m_chord.m_notebookRef, "Coverage vs. Temperature", "Coverage", "Temperature (K)", root))
-        self.mplContainers.append(MPLContainer(self.m_chord.m_notebookRef, "Energy vs. Coverage", "Energy (eV)", "Coverage", root))
-        self.mplContainers.append(MPLContainer(self.m_chord.m_notebookRef, "Simulated Coverage vs Temperature", "Coverge (ML)", "Temperature (K)", root))
-        self.mplContainers.append(MPLContainer(self.m_chord.m_notebookRef, "Simulated Desorption Rate vs Coverage", "Desorption Rate (ML/K)", "Coverage", root))
-        self.mplContainers.append(MPLContainer(self.m_chord.m_notebookRef, "Chi Squared vs Prefactor", "Chi Squared Value", "Prefactor", root))
-
-        for c in self.mplContainers:
-            self.m_chord.m_notebookRef.add(c, text = c.m_title)
 
     def initChordUI(self):
         self.m_chordFrame = self.m_chord.m_scrollable_frame

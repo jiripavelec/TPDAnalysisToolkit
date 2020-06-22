@@ -54,10 +54,12 @@ class MPLContainer(tk.Frame):
         self.m_xAxisName = xAxisName
         self.m_yAxisName = yAxisName
         self.m_usingMarkers = False
+
         self.m_secondaryYAxisRequired = secondaryYAxis
         if(secondaryYAxis and secondaryYAxisName == ""):
             raise ValueError #need a secondaryYAxisName!
         self.m_secondaryYAxisName = secondaryYAxisName
+
         self.m_invertXAxis = invertXAxis
         self.initUI(parent, root)
 
@@ -73,6 +75,7 @@ class MPLContainer(tk.Frame):
             # self.canvas.get_tk_widget().place_forget()
             self.m_figure.set_dpi(96)
             self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.OUTSIDE,height=self.winfo_height(),width=self.winfo_width())
+            # self.canvas.draw_idle()
             self.plotHidden = False
         #else do nothing
             
@@ -88,6 +91,7 @@ class MPLContainer(tk.Frame):
         self.m_subplot.set_xlabel(self.m_xAxisName)
         self.m_subplot.set_ylabel(self.m_yAxisName)
         self.m_subplot.tick_params(direction="in")
+        self.m_subplot.margins(x = 0.0)
         if(self.m_invertXAxis):
             self.m_subplot.invert_xaxis()
 
@@ -95,10 +99,12 @@ class MPLContainer(tk.Frame):
             self.m_secondaryYAxis = self.m_subplot.twinx()
             self.m_secondaryYAxis.set_ylabel(self.m_secondaryYAxisName)
             self.m_secondaryYAxis.tick_params(direction="in")
-        
+            self.m_secondaryYAxis.margins(x= 0.0)
+
         #normally plt.show() now, but different for tk
         self.canvas = FigureCanvasTkAgg(self.m_figure,self)
-        self.canvas.draw()
+        # self.canvas.draw()
+        # self.canvas.draw_idle()
         # canvas.get_tk_widget().grid(row=0,column=0,sticky="nsew")
         # self.grid_rowconfigure(index=0,weight=1,minsize=self.winfo_height())
         # self.grid_columnconfigure(index=0,weight=1,minsize=self.winfo_width())
@@ -113,7 +119,7 @@ class MPLContainer(tk.Frame):
         self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.INSIDE,relheight = 1.0, relwidth = 1.0)
 
         # if not sys.platform.startswith('win'):
-        self.resizeAnimation = anim.FuncAnimation(self.m_figure, func=self.resizePlot, interval=300)#, blit = True)#interval in milliseconds
+        self.resizeAnimation = anim.FuncAnimation(self.m_figure, func=self.resizePlot, interval=300, cache_frame_data=False)#, blit = True)#interval in milliseconds
     
     def clearPlots(self):
         if(len(self.m_subplot.lines) > 0):
@@ -182,7 +188,10 @@ class MPLContainer(tk.Frame):
             hl = sorted(zip(handles, labels),
                         key=operator.itemgetter(1))
             handles, labels = zip(*hl)
-            self.m_subplot.legend(handles, labels)
+            legend = self.m_subplot.legend(handles, labels)
+            if(self.m_secondaryYAxisRequired):
+                legend.remove()
+                self.m_secondaryYAxis.add_artist(legend)
 
         if (logXAxis):
             axes.set_xscale("log")
@@ -194,17 +203,28 @@ class MPLContainer(tk.Frame):
 
     def addPrimaryLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False):
         self.__addLinePlots(self.m_subplot, ndarrayData, labels, logXAxis, logYAxis)
+        self.__autoScaleTopY()
+        # self.canvas.draw_idle()
+
 
     def addSecondaryLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False):
         if(not self.m_secondaryYAxisRequired):
             raise NameError #should use primary line plots, since secondary axis is not defined for this plot
         self.__addLinePlots(self.m_secondaryYAxis, ndarrayData, labels, logXAxis, logYAxis)
+        # self.canvas.draw_idle()
+
         
-    def autoScaleLogY(self):
+    def __autoScaleTopY(self):
         self.m_subplot.set_ylim(auto = True)
         if(self.m_subplot.get_ylim()[0] < 0.0):
             self.m_subplot.set_ylim(bottom=0, top = None)
 
+    def addSecondaryScaledXAxis(self, forwardFunc, reverseFunc):
+        self.m_secondaryScaledXAxis = self.m_subplot.secondary_xaxis("top", functions=(forwardFunc, reverseFunc))
+
+    def addSecondaryScaledYAxis(self, forwardFunc, reverseFunc):
+        self.m_secondaryScaledXAxis = self.m_subplot.secondary_yaxis("right", functions=(forwardFunc, reverseFunc))
+        
     # def setLegendCenterRight(self):
     #     self.m_subplot.get_legend().s
 

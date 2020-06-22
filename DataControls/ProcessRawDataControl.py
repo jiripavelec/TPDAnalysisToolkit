@@ -2,7 +2,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from datetime import datetime
 from PlotsFrame import MPLContainer # pylint: disable=import-error
-from DataControls.ControlElements import Chord, ScrolledListBox, EnhancedCheckButton, ProcessingStepControlBase, DisplayOptionsFrame, EnhancedEntry #ui elements # pylint: disable=import-error
+from DataControls.ControlElements import Chord, ScrolledListBox, EnhancedCheckButton, ProcessingStepControlBase, DisplayOptionsFrame, EnhancedEntry, InputFileListBoxControl #ui elements # pylint: disable=import-error
 from tkinter.filedialog import askdirectory, askopenfilenames, asksaveasfilename 
 from DataModels.RawDataWrapper import RawDataWrapper # pylint: disable=import-error
 import numpy as np
@@ -15,46 +15,57 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         super().__init__("Process TPD Data", controller, accordion)
         self.m_filePaths = []
         self.m_parsedData = []
+        # self.m_notebook.bind("<<NotebookTabChanged>>", self.onNotebookTabChanged)
+        # self.m_plots.append(MPLContainer(self.m_notebook, "Raw Data", "Desorption Rate", "Temperature (K)"))
+        self.m_plots["Raw Data vs. Temp."] = MPLContainer(self.m_chord.m_notebookRef, "Raw Data vs. Temp.", "Desorption Rate", "Time (ms)", root, secondaryYAxis=True,secondaryYAxisName="Temperature (K)")
+        self.m_plots["Raw Data vs. Time"] = MPLContainer(self.m_chord.m_notebookRef, "Raw Data vs. Time.", "Desorption Rate", "Time (ms)", root, secondaryYAxis=True,secondaryYAxisName="Temperature (K)")
+        self.m_plots["Processed Data"] = MPLContainer(self.m_chord.m_notebookRef, "Processed Data", "Desorption Rate", "Temperature (K)", root)
+        self.m_plots["Arrhenius Plot (Processed)"] = MPLContainer(self.m_chord.m_notebookRef, "Arrhenius Plot (Processed)", "ln(Desorption Rate)", "Reciprocal Temperature (1/K)", root, invertXAxis=True)
+        # self.m_plots["Temperature Ramp"] = MPLContainer(self.m_chord.m_notebookRef, "Temperature Ramp", "Temperature (K)", "Time (ms)", root)
 
-    def prepareFileSelections(self):
-        self.m_fileList = list()
-        self.m_filesListBox.clear()
-        for p in self.m_filePaths:
-            substrings = p.split('/')
-            fName = substrings[len(substrings) - 1]
-            self.m_fileList.insert(0,fName)
+    def onUpdateFileList(self, fileList):
+        self.m_subtractSelection["values"] = fileList
+        self.m_normSelection["values"] = fileList
 
-        [self.m_filesListBox.insert(0, f) for f in self.m_fileList]
-        self.m_fileList.reverse()
-        self.m_subtractSelection["values"] = self.m_fileList
-        self.m_normSelection["values"] = self.m_fileList
+    # def prepareFileSelections(self):
+    #     self.m_fileList = list()
+    #     self.m_filesListBox.clear()
+    #     for p in self.m_filePaths:
+    #         substrings = p.split('/')
+    #         fName = substrings[len(substrings) - 1]
+    #         self.m_fileList.insert(0,fName)
 
-    def selectFiles(self):
-        buffer = list(askopenfilenames(defaultextension=".csv", filetypes=[('Comma-separated Values','*.csv'), ('All files','*.*')]))
-        if not (len(buffer) == 0):
-            self.m_filePaths = buffer.copy() #we don't want to use the same instance => .copy()
-            self.prepareFileSelections()
+    #     [self.m_filesListBox.insert(0, f) for f in self.m_fileList]
+    #     self.m_fileList.reverse()
+    #     self.m_subtractSelection["values"] = self.m_fileList
+    #     self.m_normSelection["values"] = self.m_fileList
 
-    def selectDir(self):
-        dirPath = askdirectory(mustexist = True)
-        if not (len(dirPath) == 0):
-            self.m_filePaths.clear()
-            candidates = os.listdir(dirPath)
-            for candidate in candidates: #look at all paths in directory
-                if(os.path.isfile(dirPath + '/' + candidate) and candidate.endswith(".csv")): #filter out directories
-                    if(candidate.find("TPD") != -1): #look for "TPD" ini filename to differentiate data from prep files
-                        self.m_filePaths.append(dirPath + '/' + candidate)
-            self.prepareFileSelections()                        
+    # def selectFiles(self):
+    #     buffer = list(askopenfilenames(defaultextension=".csv", filetypes=[('Comma-separated Values','*.csv'), ('All files','*.*')]))
+    #     if not (len(buffer) == 0):
+    #         self.m_filePaths = buffer.copy() #we don't want to use the same instance => .copy()
+    #         self.prepareFileSelections()
 
-    def deselectFiles(self):
-        indices = list(self.m_filesListBox.curselection())
-        indices.reverse()
-        for i in indices:
-            self.m_filesListBox.delete(i)
-            self.m_filePaths.pop(i)
-            self.m_fileList.pop(i)
-        self.m_subtractSelection["values"] = self.m_fileList
-        self.m_normSelection["values"] = self.m_fileList
+    # def selectDir(self):
+    #     dirPath = askdirectory(mustexist = True)
+    #     if not (len(dirPath) == 0):
+    #         self.m_filePaths.clear()
+    #         candidates = os.listdir(dirPath)
+    #         for candidate in candidates: #look at all paths in directory
+    #             if(os.path.isfile(dirPath + '/' + candidate) and candidate.endswith(".csv")): #filter out directories
+    #                 if(candidate.find("TPD") != -1): #look for "TPD" ini filename to differentiate data from prep files
+    #                     self.m_filePaths.append(dirPath + '/' + candidate)
+    #         self.prepareFileSelections()                        
+
+    # def deselectFiles(self):
+    #     indices = list(self.m_filesListBox.curselection())
+    #     indices.reverse()
+    #     for i in indices:
+    #         self.m_filesListBox.delete(i)
+    #         self.m_filePaths.pop(i)
+    #         self.m_fileList.pop(i)
+    #     self.m_subtractSelection["values"] = self.m_fileList
+    #     self.m_normSelection["values"] = self.m_fileList
 
     def toggleSubtractCB(self):
         if(self.m_subtractCB.instate(['!selected'])):
@@ -72,11 +83,11 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             self.m_normSelection.configure(state = tk.NORMAL)
 
     def toggleMarkers(self):
-        for c in self.mplContainers:
+        for c in self.m_plots.values():
             c.toggleMarkers()
 
     def plotSelectedMasses(self):
-        for c in self.mplContainers:
+        for c in self.m_plots.values():
             c.clearPlots()
 
         tempMasses = self.m_massDisplayOptions.getMassesToDisplay()
@@ -84,16 +95,17 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             return
 
         for d in self.m_parsedData:
-            self.mplContainers[0].addPrimaryLinePlots(d.getRawDataVSRawTime(tempMasses),d.getLangmuirLabels(tempMasses))
-            self.mplContainers[0].addSecondaryLinePlots(d.getRawTempVSRawTime())
-            self.mplContainers[1].addPrimaryLinePlots(d.getProcessedData(tempMasses),d.getCoverageLabels(tempMasses))
-            self.mplContainers[2].addPrimaryLinePlots(d.getProcessedArrheniusData(tempMasses),d.getCoverageLabels(tempMasses))
-            self.mplContainers[3].addPrimaryLinePlots(d.getRawTempVSRawTime(), d.getCoverageLabels(tempMasses))
-        # self.mplContainers[0].setLegendCenterRight()
-        self.mplContainers[2].autoScaleLogY()
+            self.m_plots["Raw Data vs. Temp."].addPrimaryLinePlots(d.getRawDataVSRawTemp(tempMasses),d.getLangmuirLabels(tempMasses))
+            self.m_plots["Raw Data vs. Time"].addPrimaryLinePlots(d.getRawDataVSRawTime(tempMasses),d.getLangmuirLabels(tempMasses))
+            self.m_plots["Raw Data vs. Time"].addSecondaryLinePlots(d.getRawTempVSRawTime())
+            self.m_plots["Processed Data"].addPrimaryLinePlots(d.getProcessedData(tempMasses),d.getCoverageLabels(tempMasses))
+            self.m_plots["Arrhenius Plot (Processed)"].addPrimaryLinePlots(d.getProcessedArrheniusData(tempMasses),d.getCoverageLabels(tempMasses))
+            # self.m_plots[3].addPrimaryLinePlots(d.getRawTempVSRawTime(), d.getCoverageLabels(tempMasses))
+        # self.m_plots[0].setLegendCenterRight()
+        # self.m_plots["Arrhenius Plot (Processed)"].autoScaleTopY()
 
     def checkInput(self):
-        if(len(self.m_filePaths) == 0): #check for file selection
+        if(len(self.m_fileSelectionControl.m_filePaths) == 0): #check for file selection
             tk.messagebox.showerror("Input Files", "Please select at least one file to process.")
             return False
 
@@ -127,7 +139,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         if(not self.checkInput()): return False
         self.m_parsedData = []
         #TODO: check input, maybe highlight missing entries!
-        for f in self.m_filePaths:
+        for f in self.m_fileSelectionControl.m_filePaths:
             wrapper = RawDataWrapper(f)
             wrapper.parseRawDataFile()
             self.m_parsedData.append(wrapper)
@@ -165,10 +177,10 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         sortedFilePathsBuffer = []
         for i in range(len(indexMapBuffer)):
             sortedParsedDataBuffer.append(self.m_parsedData[indexMapBuffer[i][0]])
-            sortedFilePathsBuffer.append(self.m_filePaths[indexMapBuffer[i][0]])
-        self.m_filePaths = sortedFilePathsBuffer #reference-copy
+            sortedFilePathsBuffer.append(self.m_fileSelectionControl.m_filePaths[indexMapBuffer[i][0]])
+        self.m_fileSelectionControl.m_filePaths = sortedFilePathsBuffer #reference-copy
         self.m_parsedData = sortedParsedDataBuffer #reference-copy
-        self.prepareFileSelections()
+        self.m_fileSelectionControl.onUpdateSelection()
 
         self.m_massDisplayOptions.resetMasses(self.m_parsedData)
         self.plotSelectedMasses()
@@ -226,39 +238,31 @@ class ProcessRawDataControl(ProcessingStepControlBase):
                 #then write float data (after transposing it)
                 np.savetxt(fileHandle, outputData.transpose(), delimiter=' ')
 
-    def initNotebook(self, root):
-        # self.m_notebook.bind("<<NotebookTabChanged>>", self.onNotebookTabChanged)
-        # self.mplContainers.append(MPLContainer(self.m_notebook, "Raw Data", "Desorption Rate", "Temperature (K)"))
-        self.mplContainers.append(MPLContainer(self.m_chord.m_notebookRef, "Raw Data", "Desorption Rate", "Time (ms)", root, secondaryYAxis=True,secondaryYAxisName="Temperature (K)"))
-        self.mplContainers.append(MPLContainer(self.m_chord.m_notebookRef, "Processed Data", "Desorption Rate", "Temperature (K)", root))
-        self.mplContainers.append(MPLContainer(self.m_chord.m_notebookRef, "Arrhenius Plot (Processed)", "ln(Desorption Rate)", "Reciprocal Temperature (1/K)", root, invertXAxis=True))
-        self.mplContainers.append(MPLContainer(self.m_chord.m_notebookRef, "Temperature Ramp", "Temperature (K)", "Time (ms)", root))
-
-        for c in self.mplContainers:
-            self.m_chord.m_notebookRef.add(c, text = c.m_title)
-
     def initChordUI(self):
         self.m_chordFrame = self.m_chord.m_scrollable_frame
 
         # File selection
 
-        self.m_filesListBoxLabel = ttk.Label(self.m_chordFrame, text='Input files:')
-        self.m_filesListBoxLabel.grid(row = 0, column = 0, columnspan = 2, sticky="nsw")
+        self.m_fileSelectionControl = InputFileListBoxControl(self.m_chordFrame, self.onUpdateFileList)
+        self.m_fileSelectionControl.grid(row=0, column=0, columnspan=4, sticky = "nsew")
 
-        self.m_filesListBox = ScrolledListBox(self.m_chordFrame, horizontallyScrollable=True)
-        self.m_filesListBox.grid(row = 1, column = 0, columnspan = 4, sticky = "nsew")
+        # self.m_filesListBoxLabel = ttk.Label(self.m_chordFrame, text='Input files:')
+        # self.m_filesListBoxLabel.grid(row = 0, column = 0, columnspan = 2, sticky="nsw")
 
-        self.m_fileButtonFrame = ttk.Frame(self.m_chordFrame)
-        self.m_fileButtonFrame.grid(row=2, column = 0, columnspan = 3, sticky = "nsew")
+        # self.m_filesListBox = ScrolledListBox(self.m_chordFrame, horizontallyScrollable=True)
+        # self.m_filesListBox.grid(row = 1, column = 0, columnspan = 4, sticky = "nsew")
 
-        self.m_selectFilesButton = ttk.Button(self.m_fileButtonFrame,text="Select Files",command = self.selectFiles)
-        self.m_selectFilesButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
+        # self.m_fileButtonFrame = ttk.Frame(self.m_chordFrame)
+        # self.m_fileButtonFrame.grid(row=2, column = 0, columnspan = 3, sticky = "nsew")
 
-        self.m_selectFilesButton = ttk.Button(self.m_fileButtonFrame,text="Select Directory",command = self.selectDir)
-        self.m_selectFilesButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
+        # self.m_selectFilesButton = ttk.Button(self.m_fileButtonFrame,text="Select Files",command = self.selectFiles)
+        # self.m_selectFilesButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
 
-        self.m_deselectButton = ttk.Button(self.m_fileButtonFrame,text="Remove Selected",command = self.deselectFiles)
-        self.m_deselectButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
+        # self.m_selectFilesButton = ttk.Button(self.m_fileButtonFrame,text="Select Directory",command = self.selectDir)
+        # self.m_selectFilesButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
+
+        # self.m_deselectButton = ttk.Button(self.m_fileButtonFrame,text="Remove Selected",command = self.deselectFiles)
+        # self.m_deselectButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
 
         # Options
 
@@ -329,23 +333,23 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         self.m_toggleMarkersButton.grid(row=15, column = 1, columnspan=2, sticky = "nsew")
 
         self.m_massDisplayOptions = DisplayOptionsFrame(self.m_chordFrame, self.plotSelectedMasses)
-        self.m_massDisplayOptions.grid(row = 16, column = 1, columnspan = 2, sticky = "nsw")
+        self.m_massDisplayOptions.grid(row = 16, column = 0, columnspan = 4, sticky = "nsew")
 
         # self.m_massDisplayOptions.m_availableMassesListBox
 
         self.m_saveDataButton = ttk.Button(self.m_chordFrame, text = "Save Processed Data", command = self.saveData)
         self.m_saveDataButton.grid(row=17, column = 1, columnspan=3, sticky = "nsew")
 
-        for child in self.m_chordFrame.winfo_children():
-            child.grid_configure(padx=3, pady=3)
+        # for child in self.m_chordFrame.winfo_children():
+        #     child.grid_configure(padx=3, pady=3)
 
-        for child in self.m_fileButtonFrame.winfo_children():
-            child.pack_configure(padx=3, pady=3)
+        # for child in self.m_fileButtonFrame.winfo_children():
+        #     child.pack_configure(padx=3, pady=3)
 
-        for child in self.m_massDisplayOptions.winfo_children():
-            child.grid_configure(padx=3, pady=3)
+        # for child in self.m_massDisplayOptions.winfo_children():
+        #     child.grid_configure(padx=3, pady=3)
 
         self.m_chordFrame.grid_columnconfigure(index=0, weight=1)
         self.m_chordFrame.grid_columnconfigure(index=1, weight=1)
         self.m_chordFrame.grid_columnconfigure(index=2, weight=1)
-        # self.m_chordFrame.grid_columnconfigure(index=3, weight=1)
+        self.m_chordFrame.grid_columnconfigure(index=3, weight=1)

@@ -2,6 +2,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import operator
 import sys
+import pyexpat #this is necessary because pyinstaller somehow does not import it, even as a hidden-import
 
 from datetime import datetime
 import matplotlib as mpl

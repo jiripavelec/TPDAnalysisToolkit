@@ -180,7 +180,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             sortedFilePathsBuffer.append(self.m_fileSelectionControl.m_filePaths[indexMapBuffer[i][0]])
         self.m_fileSelectionControl.m_filePaths = sortedFilePathsBuffer #reference-copy
         self.m_parsedData = sortedParsedDataBuffer #reference-copy
-        self.m_fileSelectionControl.onUpdateSelection()
+        self.m_fileSelectionControl.onUpdateSelection(self.m_fileSelectionControl.m_fileList)
 
         self.m_massDisplayOptions.resetMasses(self.m_parsedData)
         self.plotSelectedMasses()

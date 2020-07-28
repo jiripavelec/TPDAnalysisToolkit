@@ -1,1 +1,1 @@
-pyinstaller --paths "C:\Repos\TPD\venv\Lib\site-packages" ToolkitGUI.py --hidden-import pyi_rth_pkgres --hidden-import pyexpat --hidden-import distutils --hidden-import pkg_resources --hidden-import pkg_resources.py2_warn --hidden-import pyimod03_importers.py --onedir --noconfirm
+pyinstaller --paths "C:\Repos\TPD\venv\Lib\site-packages" ToolkitGUI.py --hidden-import pyi_rth_pkgres --hidden-import xml.parsers.pyexpat --hidden-import distutils --hidden-import pkg_resources --hidden-import pkg_resources.py2_warn --hidden-import pyimod03_importers.py --onedir --noconfirm

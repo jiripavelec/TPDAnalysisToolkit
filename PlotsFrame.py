@@ -49,12 +49,13 @@ class CustomNavigationToolbar(NavigationToolbar2Tk):
 
 #MPLContainer BEGIN
 class MPLContainer(tk.Frame):
-    def __init__(self, parent, title, yAxisName, xAxisName, root, secondaryYAxis = False, secondaryYAxisName = "", invertXAxis = False, *args, **kwargs):
+    def __init__(self, parent, title, yAxisName, xAxisName, root, secondaryYAxis = False, secondaryYAxisName = "", invertXAxis = False, legendLoc = 0, *args, **kwargs):
         super().__init__(parent, bg="white", *args, **kwargs)
         self.m_title = title
         self.m_xAxisName = xAxisName
         self.m_yAxisName = yAxisName
         self.m_usingMarkers = False
+        self.m_legendLoc = legendLoc
 
         self.m_secondaryYAxisRequired = secondaryYAxis
         if(secondaryYAxis and secondaryYAxisName == ""):
@@ -189,10 +190,10 @@ class MPLContainer(tk.Frame):
             hl = sorted(zip(handles, labels),
                         key=operator.itemgetter(1))
             handles, labels = zip(*hl)
-            legend = self.m_subplot.legend(handles, labels)
-            if(self.m_secondaryYAxisRequired):
-                legend.remove()
-                self.m_secondaryYAxis.add_artist(legend)
+            legend = self.m_subplot.legend(handles, labels, loc=self.m_legendLoc)
+            # if(self.m_secondaryYAxisRequired):
+            #     legend.remove()
+            #     self.m_secondaryYAxis.add_artist(legend)
 
         if (logXAxis):
             axes.set_xscale("log")

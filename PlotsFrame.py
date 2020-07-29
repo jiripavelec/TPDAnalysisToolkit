@@ -93,6 +93,7 @@ class MPLContainer(tk.Frame):
         self.m_subplot.set_xlabel(self.m_xAxisName)
         self.m_subplot.set_ylabel(self.m_yAxisName)
         self.m_subplot.tick_params(direction="in")
+        self.m_subplot.grid(linestyle=':')
         self.m_subplot.margins(x = 0.0)
         if(self.m_invertXAxis):
             self.m_subplot.invert_xaxis()

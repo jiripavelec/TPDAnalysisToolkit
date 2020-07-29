@@ -7,7 +7,8 @@ from os import listdir
 from os.path import isfile, join
 import multiprocessing
 import sys
-import xml.parsers.expat
+import cProfile, pstats, io
+from pstats import SortKey
 
 class MainFrame(tk.Frame):
     def __init__(self, root):#, parent, controller):
@@ -46,7 +47,15 @@ def main():
     main = MainFrame(root)
     # if not sys.platform.startswith('win'):
     root.bind('<Configure>',main.resetResizeTime)
+    # pr = cProfile.Profile()
+    # pr.enable()
     root.mainloop()
+    # pr.disable()
+    # s = io.StringIO()
+    # sortby = SortKey.CUMULATIVE
+    # ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+    # ps.print_stats()
+    # print(s.getvalue())
 
 if __name__ == '__main__':
     if sys.platform.startswith('win'):

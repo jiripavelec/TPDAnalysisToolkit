@@ -37,13 +37,13 @@ class CustomNavigationToolbar(NavigationToolbar2Tk):
         raise NotImplementedError
 
     def save_figure(self):
-        previousSize = self.m_figureRef.get_size_inches()
-        previousDPI = self.m_figureRef.get_dpi()
-        self.m_figureRef.set_dpi(300) #print quality temporarily
-        self.m_figureRef.set_size_inches(w=13.0/2.54, h=8.0/2.54)#13cm by 8cm
+        # previousSize = self.m_figureRef.get_size_inches()
+        # previousDPI = self.m_figureRef.get_dpi()
+        # self.m_figureRef.set_dpi(300) #print quality temporarily
+        # self.m_figureRef.set_size_inches(w=13.0/2.54, h=8.0/2.54)#13cm by 8cm
         super().save_figure()
-        self.m_figureRef.set_size_inches(previousSize)
-        self.m_figureRef.set_dpi(previousDPI) #print quality temporarily
+        # self.m_figureRef.set_size_inches(previousSize)
+        # self.m_figureRef.set_dpi(previousDPI) #print quality temporarily
 
 #Custom MPL Navigation Toolbar END
 

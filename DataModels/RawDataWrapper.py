@@ -17,12 +17,14 @@ class RawDataWrapper():
         self.m_parsedCoverage = "No coverage in filename!"
         self.m_parsedCoverageAvailable = False
         self.m_coverages = {}
+        self.m_parsedExperimentNumber = "No experiment number!"
 
     def parseRawDataFile(self):
         if(self.m_dataParsed):
             return
 
         substrings = self.m_fileName.split(' ')
+        self.m_parsedExperimentNumber = substrings[0] #first substring should always be number
         for s in substrings:
             if (s[-1] == 'L'):
                 try:
@@ -166,14 +168,14 @@ class RawDataWrapper():
         result = []
         for m in desiredMasses:
             if self.m_coveragesNormalized:
-                result.append("M" + m + ' {:04.2f} ML'.format(self.m_coverages[m]))
+                result.append("M" + m + ' {:04.2f} ML'.format(self.m_coverages[m]) + " #" + self.m_parsedExperimentNumber)
             else:
-                result.append("M" + m + " " + self.m_parsedCoverage)
+                result.append("M" + m + " " + self.m_parsedCoverage + " #" + self.m_parsedExperimentNumber)
                 # result.append("M" + m + ' {:f} Counts'.format(self.m_coverages[m]))
         return result
 
     def getLangmuirLabels(self, desiredMasses):
         result = []
         for m in desiredMasses:
-            result.append("M" + m + " " + self.m_parsedCoverage)
+            result.append("M" + m + " " + self.m_parsedCoverage + " #" + self.m_parsedExperimentNumber)
         return result

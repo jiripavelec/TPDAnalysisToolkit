@@ -5,4 +5,4 @@ Python-based program for analysing TPD data. Currently in the alpha stage!
 A python 3.x.x distribution. See https://www.python.org/downloads/
 
 # Installation
-Download the source code and run ToolkitGUI.py
+Download the code and run ToolkitGUI.py

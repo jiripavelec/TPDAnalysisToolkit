@@ -1,1 +1,1 @@
-pyinstaller --paths "C:\GitRepos\TPD Toolkit\TPDAnalysisToolkit\venv\Lib\site-packages" ToolkitGUI.py --hidden-import pkg_resources.py2_warn
+pyinstaller ToolkitGUI.py --hidden-import pyi_rth_pkgres --hidden-import xml.parsers.pyexpat --hidden-import distutils --hidden-import pkg_resources --hidden-import pkg_resources.py2_warn --hidden-import pyimod03_importers.py --onedir --noconfirm

@@ -51,6 +51,7 @@ def main():
     # pr.enable()
     root.mainloop()
     # pr.disable()
+    # pr.dump_stats("output.prof")
     # s = io.StringIO()
     # sortby = SortKey.CUMULATIVE
     # ps = pstats.Stats(pr, stream=s).sort_stats(sortby)

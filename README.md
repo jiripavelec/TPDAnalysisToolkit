@@ -1,10 +1,8 @@
 # TPDAnalysisToolkit
 Python-based program for analysing TPD data. Currently in the alpha stage!
 
-#Installation for Windows:
+# Prerequisites
+A python 3.x.x distribution. See https://www.python.org/downloads/
 
-Download dist/ToolkitGUI folder and run ToolkitGUI.exe
-
-#Installation for Mac:
-
-WIP
+# Installation
+Download the source code and run ToolkitGUI.py

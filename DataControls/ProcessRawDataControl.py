@@ -170,7 +170,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         indexMapBuffer = [] #index i will contain tuple of (oldIndex,coverage) sorted by coverage
         for i in range(len(self.m_parsedData)):
             indexMapBuffer.append((i,self.m_parsedData[i].getParsedCoverageAsFloat())) #sorting input files by coverage
-        indexMapBuffer.sort(reverse = True, key = lambda a : a[1])#sort, such that old index and coverage are preserved
+        indexMapBuffer.sort(reverse = False, key = lambda a : a[1])#sort, such that old index and coverage are preserved
 
         #buffers for different ordering
         sortedParsedDataBuffer = [] 
@@ -180,7 +180,8 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             sortedFilePathsBuffer.append(self.m_fileSelectionControl.m_filePaths[indexMapBuffer[i][0]])
         self.m_fileSelectionControl.m_filePaths = sortedFilePathsBuffer #reference-copy
         self.m_parsedData = sortedParsedDataBuffer #reference-copy
-        self.m_fileSelectionControl.onUpdateSelection(self.m_fileSelectionControl.m_fileList)
+        self.m_fileSelectionControl.prepareFileSelections()
+        # self.m_fileSelectionControl.onUpdateSelection(self.m_fileSelectionControl.m_fileList)
 
         self.m_massDisplayOptions.resetMasses(self.m_parsedData)
         self.plotSelectedMasses()

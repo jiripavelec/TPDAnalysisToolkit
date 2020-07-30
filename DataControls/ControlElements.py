@@ -370,6 +370,7 @@ class InputFileListBoxControl(ttk.Frame):
     def __init__(self, parent, onUpdateSelection, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.onUpdateSelection = onUpdateSelection
+        self.m_filePaths = list()
 
         self.m_filesListBoxLabel = ttk.Label(self, text='Input files:')
         self.m_filesListBoxLabel.grid(row = 0, column = 0, columnspan = 2, sticky="nsw")
@@ -410,7 +411,11 @@ class InputFileListBoxControl(ttk.Frame):
     def selectFiles(self):
         buffer = list(askopenfilenames(defaultextension=".csv", filetypes=[('Comma-separated Values','*.csv'), ('All files','*.*')]))
         if not (len(buffer) == 0):
-            self.m_filePaths = buffer.copy() #we don't want to use the same instance => .copy()
+            # self.m_filePaths = buffer.copy() #we don't want to use the same instance => .copy()
+            # self.m_filePaths.extend(buffer)
+            for p in buffer:
+                if p not in self.m_filePaths:
+                    self.m_filePaths.append(p) 
             self.prepareFileSelections()
 
     def selectDir(self):

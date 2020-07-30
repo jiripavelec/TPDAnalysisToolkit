@@ -48,6 +48,9 @@ class CustomNavigationToolbar(NavigationToolbar2Tk):
 #Custom MPL Navigation Toolbar END
 
 #MPLContainer BEGIN
+# resizeFuncCounter = 0 #debug
+# lastFuncCounterOutputTime = datetime.now() #debug
+
 class MPLContainer(tk.Frame):
     def __init__(self, parent, title, yAxisName, xAxisName, root, secondaryYAxis = False, secondaryYAxisName = "", invertXAxis = False, legendLoc = 0, *args, **kwargs):
         super().__init__(parent, bg="white", *args, **kwargs)
@@ -56,6 +59,7 @@ class MPLContainer(tk.Frame):
         self.m_yAxisName = yAxisName
         self.m_usingMarkers = False
         self.m_legendLoc = legendLoc
+        root.registerResizeCallback(self.resizePlot)
 
         self.m_secondaryYAxisRequired = secondaryYAxis
         if(secondaryYAxis and secondaryYAxisName == ""):
@@ -65,9 +69,20 @@ class MPLContainer(tk.Frame):
         self.m_invertXAxis = invertXAxis
         self.initUI(parent, root)
 
-    def resizePlot(self, *args, **kwargs):
-        now = datetime.now()
-        timeDelta = now - self.resizeDateTime #get timedelta since last resize event
+    def resizePlot(self, timeDelta, *args, **kwargs):
+        #resizeFuncCounter related things are for debug output
+        # global resizeFuncCounter
+        # global lastFuncCounterOutputTime
+        # resizeFuncCounter = resizeFuncCounter + 1
+        # now = datetime.now()
+        
+        # outputTimeDelta = now - lastFuncCounterOutputTime
+        # if(outputTimeDelta.total_seconds()*1000 > 1000):
+        #     print(str(resizeFuncCounter/(outputTimeDelta.total_seconds())) + "resizeFunc calls last second")
+        #     resizeFuncCounter = 0
+        #     lastFuncCounterOutputTime = datetime.now()
+
+        # timeDelta = now - self.resizeDateTime #get timedelta since last resize event
         if(not self.plotHidden and timeDelta.total_seconds()*1000 < 700): #hide the plot if we just started resizing
             # self.canvas.begin_updates()
             self.canvas.get_tk_widget().place_forget()
@@ -106,7 +121,7 @@ class MPLContainer(tk.Frame):
 
         #normally plt.show() now, but different for tk
         self.canvas = FigureCanvasTkAgg(self.m_figure,self)
-        # self.canvas.draw()
+        self.canvas.draw()
         # self.canvas.draw_idle()
         # canvas.get_tk_widget().grid(row=0,column=0,sticky="nsew")
         # self.grid_rowconfigure(index=0,weight=1,minsize=self.winfo_height())
@@ -122,7 +137,7 @@ class MPLContainer(tk.Frame):
         self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.INSIDE,relheight = 1.0, relwidth = 1.0)
 
         # if not sys.platform.startswith('win'):
-        self.resizeAnimation = anim.FuncAnimation(self.m_figure, func=self.resizePlot, interval=300, cache_frame_data=False)#, blit = True)#interval in milliseconds
+        # self.resizeAnimation = anim.FuncAnimation(self.m_figure, func=self.resizePlot, interval=300, cache_frame_data=False)#, blit = True)#interval in milliseconds
     
     def clearPlots(self):
         if(len(self.m_subplot.lines) > 0):

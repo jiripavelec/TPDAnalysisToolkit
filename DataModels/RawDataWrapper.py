@@ -116,7 +116,7 @@ class RawDataWrapper():
         self.m_interpolatedTemp = np.arange(tCutStart, tCutEnd, tStep) #generate equidistantly spaced range of temperature points
         self.m_reciprocalTemp = np.reciprocal(self.m_interpolatedTemp)
         # self.m_interpolatedTime = np.interp(self.m_interpolatedTemp, self.m_correctedTemp[tRampStartIndex:tRampEndIndex], self.m_parsedRawData[0,tRampStartIndex:tRampEndIndex])
-        print(tRampStartIndex, tRampEndIndex)
+        # print(tRampStartIndex, tRampEndIndex)
 
 
         for m in self.getMassList(): #for each mass

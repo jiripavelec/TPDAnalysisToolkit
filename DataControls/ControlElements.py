@@ -337,6 +337,7 @@ class ProcessingStepControlBase:
     def initNotebook(self, root):
         for c in self.m_plots.values():
             self.m_chord.m_notebookRef.add(c, text = c.m_title)
+            self.m_chord.m_notebookRef.bind("<<NotebookTabChanged>>", self.onNotebookTabChanged)
 
     #This is to reduce the update frequency of plot resizing to
     #a frequency lower than that of resize events from the main
@@ -357,11 +358,10 @@ class ProcessingStepControlBase:
     def plotSelectedMasses(self):
         raise NotImplementedError()
 
-    # def onNotebookTabChanged(self, event):
-    #     selected_tab = event.widget.select()
-    #     for c in event.widget.children:
-    #         if c is MPLContainer:
-    #             pass #c.hide or c.destroy, but if c is selected_tab, then show or create
+    def onNotebookTabChanged(self, event):
+        # selected_tab = event.widget.select()
+        for p in self.m_plots.values():
+            p.unhideIfNecessary()
                 
 #ProcessingStepControlBase END
 

@@ -95,7 +95,16 @@ class MPLContainer(tk.Frame):
             # self.canvas.draw_idle()
             self.plotHidden = False
         #else do nothing
-            
+    
+    def unhideIfNecessary(self):
+        if(self.plotHidden): #if we stopped resizing, unhide plot
+            # self.canvas.get_tk_widget().place_forget()
+            self.m_figure.set_dpi(96)
+            self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.OUTSIDE,height=self.winfo_height(),width=self.winfo_width())
+            # self.canvas.draw_idle()
+            self.plotHidden = False
+        self.canvas.draw()
+        
 
     def initUI(self, parent, root):
         self.pack(side=tk.TOP, fill = tk.BOTH, expand=True)

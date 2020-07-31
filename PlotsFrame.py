@@ -250,7 +250,7 @@ class MPLContainer(tk.Frame):
     def __autoScaleTopY(self):
         self.m_subplot.set_ylim(auto = True)
         if(self.m_subplot.get_ylim()[0] < 0.0):
-            self.m_subplot.set_ylim(bottom=0, top = None)
+            self.m_subplot.set_ylim(bottom=0)#, top = None)
 
     def addSecondaryScaledXAxis(self, forwardFunc, reverseFunc):
         self.m_secondaryScaledXAxis = self.m_subplot.secondary_xaxis("top", functions=(forwardFunc, reverseFunc))

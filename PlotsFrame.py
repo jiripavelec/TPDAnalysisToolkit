@@ -158,6 +158,7 @@ class MPLContainer(tk.Frame):
                 for i in range(len(self.m_secondaryYAxis.lines)-1,-1,-1):
                     line = self.m_secondaryYAxis.lines.pop(i)
                     del line
+        self.canvas.draw()
 
     def __switchToMarkers(self, axes):
         for child in axes.get_children():
@@ -169,6 +170,7 @@ class MPLContainer(tk.Frame):
         self.__switchToMarkers(self.m_subplot)
         if(self.m_secondaryYAxisRequired):
             self.__switchToMarkers(self.m_secondaryYAxis)
+        self.canvas.draw()
 
     def __switchToLines(self, axes):
         for child in axes.get_children():
@@ -180,6 +182,7 @@ class MPLContainer(tk.Frame):
         self.__switchToLines(self.m_subplot)
         if(self.m_secondaryYAxisRequired):
             self.__switchToLines(self.m_secondaryYAxis)
+        self.canvas.draw()
 
     def toggleMarkers(self):
         if(self.m_usingMarkers):
@@ -188,6 +191,7 @@ class MPLContainer(tk.Frame):
         else:
             self.switchToMarkers()
             self.m_usingMarkers = True
+        self.canvas.draw()
 
     def __addLinePlots(self, axes, ndarrayData, labels, logXAxis, logYAxis, pLineWidth = 1):
         if ndarrayData.ndim >= 2:
@@ -231,6 +235,7 @@ class MPLContainer(tk.Frame):
     def addPrimaryLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False):
         self.__addLinePlots(self.m_subplot, ndarrayData, labels, logXAxis, logYAxis)
         self.__autoScaleTopY()
+        self.canvas.draw()
         # self.canvas.draw_idle()
 
 
@@ -238,6 +243,7 @@ class MPLContainer(tk.Frame):
         if(not self.m_secondaryYAxisRequired):
             raise NameError #should use primary line plots, since secondary axis is not defined for this plot
         self.__addLinePlots(self.m_secondaryYAxis, ndarrayData, labels, logXAxis, logYAxis)
+        self.canvas.draw()
         # self.canvas.draw_idle()
 
         
@@ -248,9 +254,11 @@ class MPLContainer(tk.Frame):
 
     def addSecondaryScaledXAxis(self, forwardFunc, reverseFunc):
         self.m_secondaryScaledXAxis = self.m_subplot.secondary_xaxis("top", functions=(forwardFunc, reverseFunc))
+        self.canvas.draw()
 
     def addSecondaryScaledYAxis(self, forwardFunc, reverseFunc):
         self.m_secondaryScaledXAxis = self.m_subplot.secondary_yaxis("right", functions=(forwardFunc, reverseFunc))
+        self.canvas.draw()
         
     # def setLegendCenterRight(self):
     #     self.m_subplot.get_legend().s

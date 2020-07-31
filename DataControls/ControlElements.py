@@ -359,9 +359,10 @@ class ProcessingStepControlBase:
         raise NotImplementedError()
 
     def onNotebookTabChanged(self, event):
-        # selected_tab = event.widget.select()
-        for p in self.m_plots.values():
-            p.explicitRefresh()
+        selected_tab = event.widget.select()
+        event.widget.children[selected_tab.split('.')[-1]].explicitRefresh()
+        # for p in self.m_plots.values():
+        #     p.explicitRefresh()
                 
 #ProcessingStepControlBase END
 

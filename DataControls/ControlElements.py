@@ -42,6 +42,10 @@ class Chord(ttk.Frame):
 
     def onClickedEvent(self):
         self.m_controller.raiseNotebook(self.m_title)
+        tabName = self.m_notebookRef.select()
+        if tabName:
+            plot = self.m_notebookRef.nametowidget(tabName)
+            plot.explicitRefresh()
 
     def hideNotebook(self):
         self.m_controller.hideNotebook(self.m_title)

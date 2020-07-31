@@ -100,10 +100,10 @@ class MPLContainer(tk.Frame):
         #else do nothing
     
     def explicitRefresh(self):
+        self.canvas.draw()
         if(not self.plotHidden):
             self.hidePlot()
         self.showPlot()
-        # self.canvas.draw()
         
 
     def initUI(self, parent, root):

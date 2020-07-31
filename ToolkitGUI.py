@@ -36,7 +36,7 @@ class ExtendedRoot(tk.Tk):
         elif(timeDelta.total_seconds()*1000 > 700 and not self.m_resizeHandledTwice): #every 300ms call the callbacks
             self.allCallbacks(timeDelta)
             self.m_resizeHandledTwice = True
-        self.after(300,self.resizeAnimation)
+        self.after(350,self.resizeAnimation)
 
     def resetResizeTime(self, event):
         if(not isinstance(event.widget, tk.Tk)): # only care about main window (root) resizing
@@ -89,7 +89,7 @@ def main():
     root.bind('<Configure>',root.resetResizeTime)
     # pr = cProfile.Profile()
     # pr.enable()
-    root.after(300,root.resizeAnimation)
+    root.after(500,root.resizeAnimation)
     root.mainloop()
     # pr.disable()
     # pr.dump_stats("output.prof")

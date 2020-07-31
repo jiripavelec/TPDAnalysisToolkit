@@ -361,7 +361,7 @@ class ProcessingStepControlBase:
     def onNotebookTabChanged(self, event):
         # selected_tab = event.widget.select()
         for p in self.m_plots.values():
-            p.unhideIfNecessary()
+            p.explicitRefresh()
                 
 #ProcessingStepControlBase END
 

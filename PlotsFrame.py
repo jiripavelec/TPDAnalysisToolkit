@@ -69,6 +69,16 @@ class MPLContainer(tk.Frame):
         self.m_invertXAxis = invertXAxis
         self.initUI(parent, root)
 
+    def hidePlot(self):
+        self.canvas.get_tk_widget().place_forget()
+        self.m_figure.set_dpi(4)#setting figure to lowest dpi possible while hidden, because matplotlib tkagg backend keeps updating figure on resize, even while hidden :(
+        self.plotHidden = True
+
+    def showPlot(self):
+            self.m_figure.set_dpi(96)
+            self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.OUTSIDE,height=self.winfo_height(),width=self.winfo_width())
+            self.plotHidden = False
+
     def resizePlot(self, timeDelta, *args, **kwargs):
         #resizeFuncCounter related things are for debug output
         # global resizeFuncCounter
@@ -84,26 +94,16 @@ class MPLContainer(tk.Frame):
 
         # timeDelta = now - self.resizeDateTime #get timedelta since last resize event
         if(not self.plotHidden and timeDelta.total_seconds()*1000 < 700): #hide the plot if we just started resizing
-            # self.canvas.begin_updates()
-            self.canvas.get_tk_widget().place_forget()
-            self.m_figure.set_dpi(4)#setting figure to lowest dpi possible while hidden, because matplotlib tkagg backend keeps updating figure on resize, even while hidden :(
-            self.plotHidden = True
+            self.hidePlot()
         elif(self.plotHidden and timeDelta.total_seconds()*1000 > 700): #if we stopped resizing, unhide plot
-            # self.canvas.get_tk_widget().place_forget()
-            self.m_figure.set_dpi(96)
-            self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.OUTSIDE,height=self.winfo_height(),width=self.winfo_width())
-            # self.canvas.draw_idle()
-            self.plotHidden = False
+            self.showPlot()
         #else do nothing
     
-    def unhideIfNecessary(self):
-        if(self.plotHidden): #if we stopped resizing, unhide plot
-            # self.canvas.get_tk_widget().place_forget()
-            self.m_figure.set_dpi(96)
-            self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.OUTSIDE,height=self.winfo_height(),width=self.winfo_width())
-            # self.canvas.draw_idle()
-            self.plotHidden = False
-        self.canvas.draw()
+    def explicitRefresh(self):
+        if(not self.plotHidden):
+            self.hidePlot()
+        self.showPlot()
+        # self.canvas.draw()
         
 
     def initUI(self, parent, root):

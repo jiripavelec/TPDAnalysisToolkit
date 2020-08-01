@@ -1,5 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
+import numpy as np
 import operator
 import sys
 import pyexpat #this is necessary because pyinstaller somehow does not import it, even as a hidden-import
@@ -18,7 +19,7 @@ class CustomNavigationToolbar(NavigationToolbar2Tk):
     def __init__(self, pFigureCanvasTKAgg, parent, root, *args, **kwargs):
         self.m_root = root
         self.toolitems = (
-        ('Home', 'Reset original view', 'home', 'home'),
+        ('Home', 'Reset original view', 'home', 'home_extended'),
         ('Back', 'Back to  previous view', 'back', 'back'),
         ('Forward', 'Forward to next view', 'forward', 'forward'),
         (None, None, None, None),
@@ -30,6 +31,7 @@ class CustomNavigationToolbar(NavigationToolbar2Tk):
       )
         super().__init__(pFigureCanvasTKAgg, parent, *args, **kwargs)
         self.m_figureRef = pFigureCanvasTKAgg.figure
+        self.m_containerRef = parent
 
     def advanced_settings(self):
         self.m_window = tk.Toplevel(self.m_root)
@@ -44,6 +46,11 @@ class CustomNavigationToolbar(NavigationToolbar2Tk):
         super().save_figure()
         # self.m_figureRef.set_size_inches(previousSize)
         # self.m_figureRef.set_dpi(previousDPI) #print quality temporarily
+
+    def home_extended(self):
+        super().home()
+        # self.m_containerRef.autoRescale()
+
 
 #Custom MPL Navigation Toolbar END
 
@@ -158,7 +165,7 @@ class MPLContainer(tk.Frame):
                 for i in range(len(self.m_secondaryYAxis.lines)-1,-1,-1):
                     line = self.m_secondaryYAxis.lines.pop(i)
                     del line
-        self.canvas.draw()
+        self.canvas.draw_idle()
 
     def __switchToMarkers(self, axes):
         for child in axes.get_children():
@@ -170,7 +177,7 @@ class MPLContainer(tk.Frame):
         self.__switchToMarkers(self.m_subplot)
         if(self.m_secondaryYAxisRequired):
             self.__switchToMarkers(self.m_secondaryYAxis)
-        self.canvas.draw()
+        self.canvas.draw_idle()
 
     def __switchToLines(self, axes):
         for child in axes.get_children():
@@ -182,7 +189,7 @@ class MPLContainer(tk.Frame):
         self.__switchToLines(self.m_subplot)
         if(self.m_secondaryYAxisRequired):
             self.__switchToLines(self.m_secondaryYAxis)
-        self.canvas.draw()
+        self.canvas.draw_idle()
 
     def toggleMarkers(self):
         if(self.m_usingMarkers):
@@ -191,10 +198,15 @@ class MPLContainer(tk.Frame):
         else:
             self.switchToMarkers()
             self.m_usingMarkers = True
-        self.canvas.draw()
+        self.canvas.draw_idle()
 
     def __addLinePlots(self, axes, ndarrayData, labels, logXAxis, logYAxis, pLineWidth = 1):
         if ndarrayData.ndim >= 2:
+            #min_y = 0 # don't care about this because it is always supposed to be zero
+            max_y = 0
+            # min_x = 0
+            max_x = 0
+
             for i in range(1,ndarrayData.shape[0]):
                 if (type(labels) is str):
                     axes.plot(ndarrayData[0,:],ndarrayData[i,:], label = labels, linewidth=pLineWidth)
@@ -202,6 +214,17 @@ class MPLContainer(tk.Frame):
                     axes.plot(ndarrayData[0,:],ndarrayData[i,:], label = labels[i-1], linewidth=pLineWidth)
                 else:
                     axes.plot(ndarrayData[0,:],ndarrayData[i,:], linewidth=pLineWidth)
+                local_max_y = np.amax(ndarrayData[i,:])
+                # local_min_x = np.amin(ndarrayData[0,:])
+                local_max_x = np.amax(ndarrayData[0,:])
+                if(local_max_y > max_y):
+                    max_y = local_max_y
+                if(local_max_x > max_x):
+                    max_x = local_max_x
+                # if(local_min_x > max_x):
+                #     max_x = local_max_x
+            axes.set_xbound(0, max_x)#, top = None)
+            axes.set_ybound(0, max_y)#, top = None)
 
         if(self.m_usingMarkers):
             self.switchToMarkers() #because we plot with lines by default when adding or subtracting lines
@@ -230,12 +253,12 @@ class MPLContainer(tk.Frame):
             axes.set_yscale("log")
             # axes.set_ylim(bottom=0)
 
-        axes.relim()
+        # axes.relim()
 
     def addPrimaryLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False):
         self.__addLinePlots(self.m_subplot, ndarrayData, labels, logXAxis, logYAxis)
-        self.__autoScaleTopY()
-        self.canvas.draw()
+        # self.__autoScaleTopY()
+        self.canvas.draw_idle()
         # self.canvas.draw_idle()
 
 
@@ -243,7 +266,7 @@ class MPLContainer(tk.Frame):
         if(not self.m_secondaryYAxisRequired):
             raise NameError #should use primary line plots, since secondary axis is not defined for this plot
         self.__addLinePlots(self.m_secondaryYAxis, ndarrayData, labels, logXAxis, logYAxis)
-        self.canvas.draw()
+        self.canvas.draw_idle()
         # self.canvas.draw_idle()
 
         
@@ -251,14 +274,22 @@ class MPLContainer(tk.Frame):
         self.m_subplot.set_ylim(auto = True)
         if(self.m_subplot.get_ylim()[0] < 0.0):
             self.m_subplot.set_ylim(bottom=0)#, top = None)
+        self.m_subplot.relim()
+
+    def autoRescale(self):
+        self.__autoScaleTopY()
+        self.m_subplot.set_xlim(auto = True)
+        # self.m_subplot.autoscale(enable = True, axis = 'both', tight = True)
+        self.m_subplot.relim()
+        self.canvas.draw_idle()
 
     def addSecondaryScaledXAxis(self, forwardFunc, reverseFunc):
         self.m_secondaryScaledXAxis = self.m_subplot.secondary_xaxis("top", functions=(forwardFunc, reverseFunc))
-        self.canvas.draw()
+        self.canvas.draw_idle()
 
     def addSecondaryScaledYAxis(self, forwardFunc, reverseFunc):
         self.m_secondaryScaledXAxis = self.m_subplot.secondary_yaxis("right", functions=(forwardFunc, reverseFunc))
-        self.canvas.draw()
+        self.canvas.draw_idle()
         
     # def setLegendCenterRight(self):
     #     self.m_subplot.get_legend().s

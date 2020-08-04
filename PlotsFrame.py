@@ -1,6 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 import numpy as np
+import math
 import operator
 import sys
 import pyexpat #this is necessary because pyinstaller somehow does not import it, even as a hidden-import
@@ -66,8 +67,10 @@ class MPLContainer(tk.Frame):
         self.m_yAxisName = yAxisName
         self.m_usingMarkers = False
         self.m_legendLoc = legendLoc
-        self.m_maxX = 0
-        self.m_maxY = 0
+        self.m_primaryMaxX = 0
+        self.m_primaryMaxY = 0
+        self.m_secondaryMaxX = 0
+        self.m_secondaryMaxY = 0
         root.registerResizeCallback(self.resizePlot)
 
         self.m_secondaryYAxisRequired = secondaryYAxis
@@ -167,8 +170,10 @@ class MPLContainer(tk.Frame):
                 for i in range(len(self.m_secondaryYAxis.lines)-1,-1,-1):
                     line = self.m_secondaryYAxis.lines.pop(i)
                     del line
-        self.m_maxX = 0
-        self.m_maxY = 0
+        self.m_primaryMaxX = 0
+        self.m_primaryMaxY = 0
+        self.m_secondaryMaxX = 0
+        self.m_secondaryMaxY = 0
         self.canvas.draw_idle()
 
     def __switchToMarkers(self, axes):
@@ -204,9 +209,25 @@ class MPLContainer(tk.Frame):
             self.m_usingMarkers = True
         self.canvas.draw_idle()
 
-    def __addLinePlots(self, axes, ndarrayData, labels, logXAxis, logYAxis, pLineWidth = 1):
+    def __setMaxBounds(self, axes, ndarrayData, maxX, maxY):
         if ndarrayData.ndim >= 2:
+            for i in range(1,ndarrayData.shape[0]):
+                local_max_y = np.amax(ndarrayData[i,:])
+                local_max_x = ndarrayData[0,-1]
+                if(local_max_y > maxY):
+                    maxY = local_max_y
+                if(local_max_x > maxX):
+                    maxX = local_max_x
+        return maxX,maxY
+            # axes.set_xbound(0, maxX)#, top = None)
+            # axes.set_ybound(0, maxY)#, top = None)
 
+    def __addLinePlots(self, axes, ndarrayData, labels, logXAxis, logYAxis, pLineWidth = 1):
+        maxX = 0
+        maxY = 0
+        minX = 0
+
+        if ndarrayData.ndim >= 2:
             for i in range(1,ndarrayData.shape[0]):
                 if (type(labels) is str):
                     axes.plot(ndarrayData[0,:],ndarrayData[i,:], label = labels, linewidth=pLineWidth)
@@ -214,18 +235,15 @@ class MPLContainer(tk.Frame):
                     axes.plot(ndarrayData[0,:],ndarrayData[i,:], label = labels[i-1], linewidth=pLineWidth)
                 else:
                     axes.plot(ndarrayData[0,:],ndarrayData[i,:], linewidth=pLineWidth)
-                local_max_y = np.amax(ndarrayData[i,:])
-                # local_min_x = np.amin(ndarrayData[0,:])
-                # local_max_x = np.amax(ndarrayData[0,:])
-                local_max_x = ndarrayData[0,-1]
-                if(local_max_y > self.m_maxY):
-                    self.m_maxY = local_max_y
-                if(local_max_x > self.m_maxX):
-                    self.m_maxX = local_max_x
-                # if(local_min_x > max_x):
-                #     max_x = local_max_x
-            axes.set_xbound(0, self.m_maxX)#, top = None)
-            axes.set_ybound(0, self.m_maxY)#, top = None)
+            for l in axes.lines:
+                l_maxX = np.amax(l.get_xdata())
+                l_minX = np.amin(l.get_xdata())
+                l_maxY = 1.1*np.amax(l.get_ydata())
+                maxX = np.amax((maxX,l_maxX))
+                maxY = np.amax((maxY,l_maxY))
+                minX = np.amax((minX,l_minX))
+            axes.set_xbound(minX, maxX)#, top = None)
+            axes.set_ybound(0, maxY)#, top = None)
 
         if(self.m_usingMarkers):
             self.switchToMarkers() #because we plot with lines by default when adding or subtracting lines
@@ -250,9 +268,10 @@ class MPLContainer(tk.Frame):
 
         if (logXAxis):
             axes.set_xscale("log")
+            axes.set_xbound(0, math.log(maxX))#, top = None)
         if (logYAxis):
             axes.set_yscale("log")
-            # axes.set_ylim(bottom=0)
+            axes.set_ybound(0, math.log(maxY))#, top = None)
 
         # axes.relim()
 

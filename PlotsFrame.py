@@ -66,6 +66,8 @@ class MPLContainer(tk.Frame):
         self.m_yAxisName = yAxisName
         self.m_usingMarkers = False
         self.m_legendLoc = legendLoc
+        self.m_maxX = 0
+        self.m_maxY = 0
         root.registerResizeCallback(self.resizePlot)
 
         self.m_secondaryYAxisRequired = secondaryYAxis
@@ -165,6 +167,8 @@ class MPLContainer(tk.Frame):
                 for i in range(len(self.m_secondaryYAxis.lines)-1,-1,-1):
                     line = self.m_secondaryYAxis.lines.pop(i)
                     del line
+        self.m_maxX = 0
+        self.m_maxY = 0
         self.canvas.draw_idle()
 
     def __switchToMarkers(self, axes):
@@ -202,10 +206,6 @@ class MPLContainer(tk.Frame):
 
     def __addLinePlots(self, axes, ndarrayData, labels, logXAxis, logYAxis, pLineWidth = 1):
         if ndarrayData.ndim >= 2:
-            #min_y = 0 # don't care about this because it is always supposed to be zero
-            max_y = 0
-            # min_x = 0
-            max_x = 0
 
             for i in range(1,ndarrayData.shape[0]):
                 if (type(labels) is str):
@@ -216,15 +216,16 @@ class MPLContainer(tk.Frame):
                     axes.plot(ndarrayData[0,:],ndarrayData[i,:], linewidth=pLineWidth)
                 local_max_y = np.amax(ndarrayData[i,:])
                 # local_min_x = np.amin(ndarrayData[0,:])
-                local_max_x = np.amax(ndarrayData[0,:])
-                if(local_max_y > max_y):
-                    max_y = local_max_y
-                if(local_max_x > max_x):
-                    max_x = local_max_x
+                # local_max_x = np.amax(ndarrayData[0,:])
+                local_max_x = ndarrayData[0,-1]
+                if(local_max_y > self.m_maxY):
+                    self.m_maxY = local_max_y
+                if(local_max_x > self.m_maxX):
+                    self.m_maxX = local_max_x
                 # if(local_min_x > max_x):
                 #     max_x = local_max_x
-            axes.set_xbound(0, max_x)#, top = None)
-            axes.set_ybound(0, max_y)#, top = None)
+            axes.set_xbound(0, self.m_maxX)#, top = None)
+            axes.set_ybound(0, self.m_maxY)#, top = None)
 
         if(self.m_usingMarkers):
             self.switchToMarkers() #because we plot with lines by default when adding or subtracting lines

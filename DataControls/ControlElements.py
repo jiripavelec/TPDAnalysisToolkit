@@ -386,20 +386,30 @@ class InputFileListBoxControl(ttk.Frame):
         self.m_fileButtonFrame = ttk.Frame(self)
         self.m_fileButtonFrame.grid(row=2, column = 1, columnspan = 3, sticky = "nsew")
 
-        self.m_selectFilesButton = ttk.Button(self.m_fileButtonFrame,text="Select Files",command = self.selectFiles)
+        self.m_selectFilesButton = ttk.Button(self.m_fileButtonFrame,text="Add Files",command = self.selectFiles)
         self.m_selectFilesButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
 
-        self.m_selectFilesButton = ttk.Button(self.m_fileButtonFrame,text="Select Directory",command = self.selectDir)
+        self.m_selectFilesButton = ttk.Button(self.m_fileButtonFrame,text="Add Directory",command = self.selectDir)
         self.m_selectFilesButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
 
         self.m_deselectButton = ttk.Button(self.m_fileButtonFrame,text="Remove Selected",command = self.deselectFiles)
         self.m_deselectButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
+
+        self.m_filterButton = ttk.Button(self.m_fileButtonFrame,text="Filter for \"TPD\"",command = self.filterForTPD)
+        self.m_filterButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
 
         self.grid_columnconfigure(index=0, weight=1)
         self.grid_columnconfigure(index=1, weight=1)
         self.grid_columnconfigure(index=2, weight=1)
         self.grid_columnconfigure(index=3, weight=1)
 
+    def filterForTPD(self):
+        previousPaths = self.m_filePaths.copy()
+        self.m_filePaths.clear()
+        for candidate in previousPaths: #look at all paths
+            if(candidate.split('/')[-1].find("TPD") != -1): #look for "TPD" in filename to differentiate data from prep files
+                self.m_filePaths.append(candidate)
+        self.prepareFileSelections()                        
 
     def prepareFileSelections(self):
         self.m_fileList = list()
@@ -416,8 +426,6 @@ class InputFileListBoxControl(ttk.Frame):
     def selectFiles(self):
         buffer = list(askopenfilenames(defaultextension=".csv", filetypes=[('Comma-separated Values','*.csv'), ('All files','*.*')]))
         if not (len(buffer) == 0):
-            # self.m_filePaths = buffer.copy() #we don't want to use the same instance => .copy()
-            # self.m_filePaths.extend(buffer)
             for p in buffer:
                 if p not in self.m_filePaths:
                     self.m_filePaths.append(p) 
@@ -430,9 +438,8 @@ class InputFileListBoxControl(ttk.Frame):
             candidates = os.listdir(dirPath)
             for candidate in candidates: #look at all paths in directory
                 if(os.path.isfile(dirPath + '/' + candidate) and candidate.endswith(".csv")): #filter out directories
-                    if(candidate.find("TPD") != -1): #look for "TPD" in filename to differentiate data from prep files
-                        self.m_filePaths.append(dirPath + '/' + candidate)
-            self.prepareFileSelections()                        
+                    self.m_filePaths.append(dirPath + '/' + candidate)
+            self.filterForTPD()
 
     def deselectFiles(self):
         indices = list(self.m_filesListBox.curselection())

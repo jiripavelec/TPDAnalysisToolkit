@@ -108,32 +108,45 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         if(len(self.m_fileSelectionControl.m_filePaths) == 0): #check for file selection
             tk.messagebox.showerror("Input Files", "Please select at least one file to process.")
             return False
+        return True
 
+    def tryReadStartCutEntry(self):
+        if(self.m_tCutStartEntry.get() == ''):
+            return False
         try:
             int(self.m_tCutStartEntry.get())
         except ValueError:
             tk.messagebox.showerror("Cut Data Start Temp", "Please enter an integer for the temperature at which to start cutting data.")
             return False
+        return True
 
+    def tryReadStopCutEntry(self):
+        if(self.m_tCutEndEntry.get() == ''):
+            return False
         try:
             int(self.m_tCutEndEntry.get())
         except ValueError:
             tk.messagebox.showerror("Cut Data End Temp", "Please enter an integer for the temperature at which to stop cutting data.")
             return False
-
-        # try: #check for tCutStart
-        #     int(self.m_tRampStartEntry.get())
-        # except ValueError:
-        #     tk.messagebox.showerror("Ramp Start Temp", "Please enter an integer for a temperature slightly beyond the start of the linear temperature ramp.")
-        #     return False
-
-        # try: #check for tCutEnd
-        #     int(self.m_tRampEndEntry.get())
-        # except ValueError:
-        #     tk.messagebox.showerror("Remp End Temp", "Please enter an integer for a temperature slightly before the end of the linear temperature ramp.")
-        #     return False
-        
         return True
+
+    def prepareStartStopCutValues(self):
+        t_Minima = [d.getRawTempMin() for d in self.m_parsedData]
+        minStartCut = int(np.amin(t_Minima))
+        if(minStartCut == 0):
+            minStartCut = 1 #otherwise arrhenius plot will have 1/T -> 1/0 -> Inf value which causes bounds error
+        t_Maxima = [d.getRawTempMax() for d in self.m_parsedData]
+        maxStopCut = int(np.amax(t_Maxima))
+        if(self.tryReadStartCutEntry()):
+            if(minStartCut > int(self.m_tCutStartEntry.get())):
+                self.m_tCutStartEntry.set(str(minStartCut))
+        else:
+            self.m_tCutStartEntry.set(str(minStartCut))
+        if(self.tryReadStopCutEntry()):
+            if(maxStopCut < int(self.m_tCutEndEntry.get())):
+                self.m_tCutEndEntry.set(str(maxStopCut))
+        else:
+                self.m_tCutEndEntry.set(str(maxStopCut))
 
     def processInput(self):
         if(not self.checkInput()): return False
@@ -143,6 +156,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             wrapper = RawDataWrapper(f)
             wrapper.parseRawDataFile()
             self.m_parsedData.append(wrapper)
+            self.prepareStartStopCutValues()
             wrapper.processParsedData(0,0,
                                         int(self.m_tCutStartEntry.get()),
                                         int(self.m_tCutEndEntry.get()),

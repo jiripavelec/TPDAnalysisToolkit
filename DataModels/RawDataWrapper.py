@@ -52,6 +52,12 @@ class RawDataWrapper():
         self.m_dataParsed = True
         # del temp #free memory, or at least suggest it to the garbage collector
 
+    def getRawTempMin(self):
+        return np.amin(self.m_parsedRawData[(self.m_listOfColumns.index('temperature')),:])
+
+    def getRawTempMax(self):
+        return np.amax(self.m_parsedRawData[(self.m_listOfColumns.index('temperature')),:])
+
     def getRawDataVSRawTemp(self, desiredMasses):
         result = np.array(self.m_parsedRawData[(self.m_listOfColumns.index('temperature')),:])
         for i in self.massListToIndices(desiredMasses):

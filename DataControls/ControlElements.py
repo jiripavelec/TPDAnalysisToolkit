@@ -224,6 +224,9 @@ class EnhancedEntry(ttk.Entry):
     def get(self):
         return self.m_backingVariable.get()
 
+    def set(self, *args, **kwargs):
+        self.m_backingVariable.set(*args,**kwargs)
+
     def setBackingVar(self, value):
         self.m_backingVariable.set(value)
 

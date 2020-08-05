@@ -50,7 +50,6 @@ class CustomNavigationToolbar(NavigationToolbar2Tk):
 
     def home_extended(self):
         super().home()
-        # self.m_containerRef.autoRescale()
 
 
 #Custom MPL Navigation Toolbar END
@@ -92,19 +91,6 @@ class MPLContainer(tk.Frame):
             self.plotHidden = False
 
     def resizePlot(self, timeDelta, *args, **kwargs):
-        #resizeFuncCounter related things are for debug output
-        # global resizeFuncCounter
-        # global lastFuncCounterOutputTime
-        # resizeFuncCounter = resizeFuncCounter + 1
-        # now = datetime.now()
-        
-        # outputTimeDelta = now - lastFuncCounterOutputTime
-        # if(outputTimeDelta.total_seconds()*1000 > 1000):
-        #     print(str(resizeFuncCounter/(outputTimeDelta.total_seconds())) + "resizeFunc calls last second")
-        #     resizeFuncCounter = 0
-        #     lastFuncCounterOutputTime = datetime.now()
-
-        # timeDelta = now - self.resizeDateTime #get timedelta since last resize event
         if(not self.plotHidden and timeDelta.total_seconds()*1000 < 700): #hide the plot if we just started resizing
             self.hidePlot()
         elif(self.plotHidden and timeDelta.total_seconds()*1000 > 700): #if we stopped resizing, unhide plot
@@ -156,9 +142,6 @@ class MPLContainer(tk.Frame):
         # self.canvas.get_tk_widget().pack(side=tk.TOP,fill=tk.BOTH,expand=True)
         # self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.OUTSIDE,height=self.winfo_height(),width=self.winfo_width())
         self.canvas.get_tk_widget().place(anchor="nw",bordermode=tk.INSIDE,relheight = 1.0, relwidth = 1.0)
-
-        # if not sys.platform.startswith('win'):
-        # self.resizeAnimation = anim.FuncAnimation(self.m_figure, func=self.resizePlot, interval=300, cache_frame_data=False)#, blit = True)#interval in milliseconds
     
     def clearPlots(self):
         if(len(self.m_subplot.lines) > 0):
@@ -209,19 +192,6 @@ class MPLContainer(tk.Frame):
             self.m_usingMarkers = True
         self.canvas.draw_idle()
 
-    def __setMaxBounds(self, axes, ndarrayData, maxX, maxY):
-        if ndarrayData.ndim >= 2:
-            for i in range(1,ndarrayData.shape[0]):
-                local_max_y = np.amax(ndarrayData[i,:])
-                local_max_x = ndarrayData[0,-1]
-                if(local_max_y > maxY):
-                    maxY = local_max_y
-                if(local_max_x > maxX):
-                    maxX = local_max_x
-        return maxX,maxY
-            # axes.set_xbound(0, maxX)#, top = None)
-            # axes.set_ybound(0, maxY)#, top = None)
-
     def __addLinePlots(self, axes, ndarrayData, labels, logXAxis, logYAxis, pLineWidth = 1):
         maxX = 0
         maxY = 0
@@ -262,9 +232,6 @@ class MPLContainer(tk.Frame):
                         key=operator.itemgetter(1))
             handles, labels = zip(*hl)
             legend = self.m_subplot.legend(handles, labels, loc=self.m_legendLoc)
-            # if(self.m_secondaryYAxisRequired):
-            #     legend.remove()
-            #     self.m_secondaryYAxis.add_artist(legend)
 
         if (logXAxis):
             axes.set_xscale("log")
@@ -277,9 +244,7 @@ class MPLContainer(tk.Frame):
 
     def addPrimaryLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False):
         self.__addLinePlots(self.m_subplot, ndarrayData, labels, logXAxis, logYAxis)
-        # self.__autoScaleTopY()
         self.canvas.draw_idle()
-        # self.canvas.draw_idle()
 
 
     def addSecondaryLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False):
@@ -287,7 +252,6 @@ class MPLContainer(tk.Frame):
             raise NameError #should use primary line plots, since secondary axis is not defined for this plot
         self.__addLinePlots(self.m_secondaryYAxis, ndarrayData, labels, logXAxis, logYAxis)
         self.canvas.draw_idle()
-        # self.canvas.draw_idle()
 
         
     def __autoScaleTopY(self):
@@ -295,13 +259,6 @@ class MPLContainer(tk.Frame):
         if(self.m_subplot.get_ylim()[0] < 0.0):
             self.m_subplot.set_ylim(bottom=0)#, top = None)
         self.m_subplot.relim()
-
-    def autoRescale(self):
-        self.__autoScaleTopY()
-        self.m_subplot.set_xlim(auto = True)
-        # self.m_subplot.autoscale(enable = True, axis = 'both', tight = True)
-        self.m_subplot.relim()
-        self.canvas.draw_idle()
 
     def addSecondaryScaledXAxis(self, forwardFunc, reverseFunc):
         self.m_secondaryScaledXAxis = self.m_subplot.secondary_xaxis("top", functions=(forwardFunc, reverseFunc))

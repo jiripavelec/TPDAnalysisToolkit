@@ -5,7 +5,7 @@ import os.path
 from os import path, chdir
 from datetime import datetime
 import sys
-from PlotsFrame import MPLContainer # pylint: disable=import-error
+# from PlotsFrame import MPLContainer # pylint: disable=import-error
 
 
 #Chord BEGIN

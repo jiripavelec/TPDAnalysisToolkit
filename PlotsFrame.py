@@ -4,7 +4,7 @@ import numpy as np
 import math
 import operator
 import sys
-import pyexpat #this is necessary because pyinstaller somehow does not import it, even as a hidden-import
+import DataControls.ControlElements as DCCE
 
 from datetime import datetime
 import matplotlib as mpl
@@ -34,10 +34,110 @@ class CustomNavigationToolbar(NavigationToolbar2Tk):
         self.m_figureRef = pFigureCanvasTKAgg.figure
         self.m_containerRef = parent
 
+    def inputCheckFloatEntry(self, entry):
+        if(entry.get() == ''):
+            return False
+        try:
+            float(entry.get())
+        except ValueError:
+            tk.messagebox.showerror("Advanced Settings Error", "Please make sure all inputs are parseable as floats (i.e. decimal numbers).")
+            return False
+        return True
+
+    def set_advanced_settings(self):
+        self.inputCheckFloatEntry(self.m_yMaxBoundEntry)
+        pYMax = float(self.m_yMaxBoundEntry.get())
+        self.inputCheckFloatEntry(self.m_yMinBoundEntry)
+        pYMin = float(self.m_yMinBoundEntry.get())
+        self.m_containerRef.getPrimaryAxes().set_ybound(pYMin, pYMax)
+
+        self.inputCheckFloatEntry(self.m_xMaxBoundEntry)
+        pXMax = float(self.m_xMaxBoundEntry.get())
+        self.inputCheckFloatEntry(self.m_xMinBoundEntry)
+        pXMin = float(self.m_xMinBoundEntry.get())
+        self.m_containerRef.getPrimaryAxes().set_xbound(pXMin, pXMax)
+
+        self.m_containerRef.m_subplot.grid(linestyle=':')
+
+        if(self.m_containerRef.m_secondaryYAxisRequired):
+            self.inputCheckFloatEntry(self.m_secondYMaxBoundEntry)
+            sYMax = float(self.m_secondYMaxBoundEntry.get())
+            self.inputCheckFloatEntry(self.m_secondYMinBoundEntry)
+            sYMin = float(self.m_secondYMinBoundEntry.get())
+            self.m_containerRef.getSecondaryAxes().set_ybound(sYMin, sYMax)
+
+        #TODO: get DPI settings working with tkinter canvas -> currently reverting after a few seconds
+        # self.inputCheckFloatEntry(self.m_DPIEntry)
+        # newDPI = float(self.m_DPIEntry.get())
+        # self.m_figureRef.set_dpi(newDPI)
+
+        # self.m_containerRef.m_subplot.relim()
+        self.m_containerRef.canvas.draw_idle()
+
     def advanced_settings(self):
         self.m_window = tk.Toplevel(self.m_root)
+        self.m_window.title("Advanced Figure Options")
+        if not sys.platform.startswith('win'):
+            self.m_window.configure(bg = "#ececec") #ececec only for mac
         
-        raise NotImplementedError
+        self.m_yMaxBoundLabel = ttk.Label(self.m_window, text="Primary Max Y Bound")
+        self.m_yMaxBoundLabel.grid(row = 0, column = 0, sticky = "nsw")
+
+        self.m_yMaxBoundEntry = DCCE.EnhancedEntry(self.m_window)
+        self.m_yMaxBoundEntry.grid(row = 0, column = 1, sticky= "nsew")
+        self.m_yMaxBoundEntry.set(self.m_containerRef.getPrimaryAxes().get_ybound()[1])
+
+        self.m_yMinBoundLabel = ttk.Label(self.m_window, text="Primary Min Y Bound")
+        self.m_yMinBoundLabel.grid(row = 1, column = 0, sticky = "nsw")
+
+        self.m_yMinBoundEntry = DCCE.EnhancedEntry(self.m_window)
+        self.m_yMinBoundEntry.grid(row = 1, column = 1, sticky= "nsew")
+        self.m_yMinBoundEntry.set(self.m_containerRef.getPrimaryAxes().get_ybound()[0])
+
+        self.m_xMaxBoundLabel = ttk.Label(self.m_window, text="Primary Max X Bound")
+        self.m_xMaxBoundLabel.grid(row = 2, column = 0, sticky = "nsw")
+
+        self.m_xMaxBoundEntry = DCCE.EnhancedEntry(self.m_window)
+        self.m_xMaxBoundEntry.grid(row = 2, column = 1, sticky= "nsew")
+        self.m_xMaxBoundEntry.set(self.m_containerRef.getPrimaryAxes().get_xbound()[1])
+
+        self.m_xMinBoundLabel = ttk.Label(self.m_window, text="Primary Min X Bound")
+        self.m_xMinBoundLabel.grid(row = 3, column = 0, sticky = "nsw")
+
+        self.m_xMinBoundEntry = DCCE.EnhancedEntry(self.m_window)
+        self.m_xMinBoundEntry.grid(row = 3, column = 1, sticky= "nsew")
+        self.m_xMinBoundEntry.set(self.m_containerRef.getPrimaryAxes().get_xbound()[0])
+
+        self.m_DPILabel = ttk.Label(self.m_window, text="Figure DPI")
+        self.m_DPILabel.grid(row = 4, column = 0, sticky = "nsw")
+
+        self.m_DPIEntry = DCCE.EnhancedEntry(self.m_window)
+        self.m_DPIEntry.grid(row = 4, column = 1, sticky= "nsew")
+        self.m_DPIEntry.set(self.m_figureRef.get_dpi())
+
+        if(self.m_containerRef.m_secondaryYAxisRequired):
+            self.m_secondYMaxBoundLabel = ttk.Label(self.m_window, text="Secondary Max Y Bound")
+            self.m_secondYMaxBoundLabel.grid(row = 5, column = 0, sticky = "nsw")
+
+            self.m_secondYMaxBoundEntry = DCCE.EnhancedEntry(self.m_window)
+            self.m_secondYMaxBoundEntry.grid(row = 5, column = 1, sticky= "nsew")
+            self.m_secondYMaxBoundEntry.set(self.m_containerRef.getSecondaryAxes().get_ybound()[1])
+
+            self.m_secondYMinBoundLabel = ttk.Label(self.m_window, text="Secondary Min Y Bound")
+            self.m_secondYMinBoundLabel.grid(row = 6, column = 0, sticky = "nsw")
+
+            self.m_secondYMinBoundEntry = DCCE.EnhancedEntry(self.m_window)
+            self.m_secondYMinBoundEntry.grid(row = 6, column = 1, sticky= "nsew")
+            self.m_secondYMinBoundEntry.set(self.m_containerRef.getSecondaryAxes().get_ybound()[0])
+
+            self.m_buttonRowIndex = 7
+        else:
+            self.m_buttonRowIndex = 5
+
+        self.m_setButton = ttk.Button(self.m_window, text = "Set Values", command = self.set_advanced_settings)
+        self.m_setButton.grid(row = self.m_buttonRowIndex, columnspan = 2, sticky = "ns")
+
+        # raise NotImplementedError
 
     def save_figure(self):
         # previousSize = self.m_figureRef.get_size_inches()
@@ -66,10 +166,10 @@ class MPLContainer(tk.Frame):
         self.m_yAxisName = yAxisName
         self.m_usingMarkers = False
         self.m_legendLoc = legendLoc
-        self.m_primaryMaxX = 0
-        self.m_primaryMaxY = 0
-        self.m_secondaryMaxX = 0
-        self.m_secondaryMaxY = 0
+        # self.m_primaryMaxX = 0
+        # self.m_primaryMaxY = 0
+        # self.m_secondaryMaxX = 0
+        # self.m_secondaryMaxY = 0
         root.registerResizeCallback(self.resizePlot)
 
         self.m_secondaryYAxisRequired = secondaryYAxis
@@ -153,10 +253,6 @@ class MPLContainer(tk.Frame):
                 for i in range(len(self.m_secondaryYAxis.lines)-1,-1,-1):
                     line = self.m_secondaryYAxis.lines.pop(i)
                     del line
-        self.m_primaryMaxX = 0
-        self.m_primaryMaxY = 0
-        self.m_secondaryMaxX = 0
-        self.m_secondaryMaxY = 0
         self.canvas.draw_idle()
 
     def __switchToMarkers(self, axes):
@@ -214,6 +310,8 @@ class MPLContainer(tk.Frame):
                 minX = np.amax((minX,l_minX))
             axes.set_xbound(minX, maxX)#, top = None)
             axes.set_ybound(0, maxY)#, top = None)
+            self.m_subplot.grid(linestyle=':')
+
 
         if(self.m_usingMarkers):
             self.switchToMarkers() #because we plot with lines by default when adding or subtracting lines
@@ -240,7 +338,7 @@ class MPLContainer(tk.Frame):
             axes.set_yscale("log")
             axes.set_ybound(0, math.log(maxY))#, top = None)
 
-        # axes.relim()
+        axes.relim()
 
     def addPrimaryLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False):
         self.__addLinePlots(self.m_subplot, ndarrayData, labels, logXAxis, logYAxis)
@@ -254,11 +352,11 @@ class MPLContainer(tk.Frame):
         self.canvas.draw_idle()
 
         
-    def __autoScaleTopY(self):
-        self.m_subplot.set_ylim(auto = True)
-        if(self.m_subplot.get_ylim()[0] < 0.0):
-            self.m_subplot.set_ylim(bottom=0)#, top = None)
-        self.m_subplot.relim()
+    # def __autoScaleTopY(self):
+    #     self.m_subplot.set_ylim(auto = True)
+    #     if(self.m_subplot.get_ylim()[0] < 0.0):
+    #         self.m_subplot.set_ylim(bottom=0)#, top = None)
+    #     self.m_subplot.relim()
 
     def addSecondaryScaledXAxis(self, forwardFunc, reverseFunc):
         self.m_secondaryScaledXAxis = self.m_subplot.secondary_xaxis("top", functions=(forwardFunc, reverseFunc))
@@ -267,7 +365,13 @@ class MPLContainer(tk.Frame):
     def addSecondaryScaledYAxis(self, forwardFunc, reverseFunc):
         self.m_secondaryScaledXAxis = self.m_subplot.secondary_yaxis("right", functions=(forwardFunc, reverseFunc))
         self.canvas.draw_idle()
-        
+    
+    def getPrimaryAxes(self):
+        return self.m_subplot
+
+    def getSecondaryAxes(self):
+        return self.m_secondaryYAxis
+
     # def setLegendCenterRight(self):
     #     self.m_subplot.get_legend().s
 

@@ -79,7 +79,13 @@ class RawDataWrapper():
         return self.m_listOfColumns[2:] #first two columns are "ms" and "temperature"
 
     def massListToIndices(self, massList):
-        return [self.m_listOfColumns.index(m) for m in massList]
+        result = list()
+        for m in massList:
+            try:
+                result.append(self.m_listOfColumns.index(m))
+            except ValueError:
+                continue
+        return result#[self.m_listOfColumns.index(m) for m in massList]
 
     def smooth_running_average(self, x, N): #running average
         cumsum = np.cumsum(np.insert(x, 0, 0))
@@ -157,14 +163,16 @@ class RawDataWrapper():
     def getProcessedData(self, desiredMasses):
         result = self.m_interpolatedTemp
         for m in desiredMasses:
-            result = np.vstack((result, self.m_interpolatedData[m]))
+            if m in self.m_listOfColumns:
+                result = np.vstack((result, self.m_interpolatedData[m]))
         # return np.concatenate((self.m_correctedTemp,self.m_parsedRawData[self.m_listOfColumns.index('temperature')+1:,:]))
         return result
 
     def getProcessedArrheniusData(self, desiredMasses):
         result = self.m_reciprocalTemp
         for m in desiredMasses:
-            result = np.vstack((result, self.m_logInterpolatedData[m]))
+            if m in self.m_listOfColumns:
+                result = np.vstack((result, self.m_logInterpolatedData[m]))
         return result
 
     def getParsedCoverageAsFloat(self):
@@ -173,15 +181,17 @@ class RawDataWrapper():
     def getCoverageLabels(self, desiredMasses):
         result = []
         for m in desiredMasses:
-            if self.m_coveragesNormalized:
-                result.append("M" + m + ' {:04.2f} ML'.format(self.m_coverages[m]) + " #" + self.m_parsedExperimentNumber)
-            else:
-                result.append("M" + m + " " + self.m_parsedCoverage + " #" + self.m_parsedExperimentNumber)
-                # result.append("M" + m + ' {:f} Counts'.format(self.m_coverages[m]))
+            if m in self.m_listOfColumns:
+                if self.m_coveragesNormalized:
+                    result.append("M" + m + ' {:04.2f} ML'.format(self.m_coverages[m]) + " #" + self.m_parsedExperimentNumber)
+                else:
+                    result.append("M" + m + " " + self.m_parsedCoverage + " #" + self.m_parsedExperimentNumber)
+                    # result.append("M" + m + ' {:f} Counts'.format(self.m_coverages[m]))
         return result
 
     def getLangmuirLabels(self, desiredMasses):
         result = []
         for m in desiredMasses:
-            result.append("M" + m + " " + self.m_parsedCoverage + " #" + self.m_parsedExperimentNumber)
+            if m in self.m_listOfColumns:
+                result.append("M" + m + " " + self.m_parsedCoverage + " #" + self.m_parsedExperimentNumber)
         return result

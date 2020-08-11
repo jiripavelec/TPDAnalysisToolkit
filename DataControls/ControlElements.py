@@ -284,7 +284,8 @@ class DisplayOptionsFrame(ttk.Frame):
             if (len(self.m_availableMassList) == 0 and rawDataWrappers.index(w) == 0): #set masses 
                 self.m_availableMassList = w.getMassList()
             else: #get intersection of masses
-                self.m_availableMassList = list(set(w.getMassList()) & set(self.m_availableMassList))
+                # self.m_availableMassList = list(set(w.getMassList()) & set(self.m_availableMassList))
+                self.m_availableMassList = list(set(w.getMassList()).union(set(self.m_availableMassList)))
 
         # self.m_displayedMassesListBox.insert(0,self.m_availableMassList[0])
         # for m in self.m_availableMassList[1:]:

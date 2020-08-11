@@ -241,24 +241,26 @@ class DisplayOptionsFrame(ttk.Frame):
         self.m_onUpdate = onUpdateEventCommand
 
     def initUI(self):
+        self.m_showIntersectionOfMassesCheckBox = EnhancedCheckButton(self, text="Only show masses available across all files")
+        self.m_showIntersectionOfMassesCheckBox.grid(row = 0, column = 0, columnspan = 2, sticky="nsw")
 
         self.m_availableMassesLabel = ttk.Label(self, text='Available Masses:')
-        self.m_availableMassesLabel.grid(row = 0, column = 0, sticky="nsw")
+        self.m_availableMassesLabel.grid(row = 1, column = 0, sticky="nsw")
 
         self.m_availableMassesListBox = ScrolledListBox(self)
-        self.m_availableMassesListBox.grid(row = 1, column = 0, sticky = "nsew")
+        self.m_availableMassesListBox.grid(row = 2, column = 0, sticky = "nsew")
 
         self.m_displayButton = ttk.Button(self,text="Diplay Selected >>", state = tk.DISABLED, command=self.showSelectedMasses)
-        self.m_displayButton.grid(row = 2, column = 0, sticky = "nsew")
+        self.m_displayButton.grid(row = 3, column = 0, sticky = "nsew")
 
         self.m_displayedMassesLabel = ttk.Label(self, text='Displayed Masses:')
-        self.m_displayedMassesLabel.grid(row = 0, column = 1, sticky="nsw")
+        self.m_displayedMassesLabel.grid(row = 1, column = 1, sticky="nsw")
 
         self.m_displayedMassesListBox = ScrolledListBox(self)
-        self.m_displayedMassesListBox.grid(row = 1, column = 1, sticky = "nsew")
+        self.m_displayedMassesListBox.grid(row = 2, column = 1, sticky = "nsew")
 
         self.m_hideButton = ttk.Button(self,text="<< Hide Selected", state = tk.DISABLED, command=self.hideSelectedMasses)
-        self.m_hideButton.grid(row = 2, column = 1, sticky = "nsew")
+        self.m_hideButton.grid(row = 3, column = 1, sticky = "nsew")
 
         self.grid_columnconfigure(index=0, weight=1)
         self.grid_columnconfigure(index=1, weight=1)
@@ -283,9 +285,11 @@ class DisplayOptionsFrame(ttk.Frame):
         for w in rawDataWrappers:
             if (len(self.m_availableMassList) == 0 and rawDataWrappers.index(w) == 0): #set masses 
                 self.m_availableMassList = w.getMassList()
-            else: #get intersection of masses
-                # self.m_availableMassList = list(set(w.getMassList()) & set(self.m_availableMassList))
-                self.m_availableMassList = list(set(w.getMassList()).union(set(self.m_availableMassList)))
+            else:
+                if(self.m_showIntersectionOfMassesCheckBox.instate(['!selected'])): #get intersection of masses
+                    self.m_availableMassList = list(set(w.getMassList()).union(set(self.m_availableMassList)))
+                else: #get union of masses
+                    self.m_availableMassList = list(set(w.getMassList()) & set(self.m_availableMassList))
 
         # self.m_displayedMassesListBox.insert(0,self.m_availableMassList[0])
         # for m in self.m_availableMassList[1:]:

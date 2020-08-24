@@ -4,7 +4,7 @@ from DataControls.ControlElements import Chord, ProcessingStepControlBase #ui el
 
 class RedheadAnalysisControl(ProcessingStepControlBase):
     def __init__(self, controller, root, accordion):
-        super().__init__("Redhead Analysis (To Be Done)", controller, accordion)
+        super().__init__("Redhead Analysis (WIP)", controller, accordion)
 
     def initNotebook(self,  root):
         pass

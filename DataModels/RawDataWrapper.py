@@ -168,7 +168,14 @@ class RawDataWrapper():
         # return np.concatenate((self.m_correctedTemp,self.m_parsedRawData[self.m_listOfColumns.index('temperature')+1:,:]))
         return result
 
-    def getProcessedArrheniusData(self, desiredMasses):
+    def getProcessedLNData(self, desiredMasses): #ln(desorption rate) vs temperature
+        result = self.m_interpolatedTemp
+        for m in desiredMasses:
+            if m in self.m_listOfColumns:
+                result = np.vstack((result, self.m_logInterpolatedData[m]))
+        return result
+
+    def getProcessedArrheniusData(self, desiredMasses):  #ln(desorption rate) vs 1/temperature
         result = self.m_reciprocalTemp
         for m in desiredMasses:
             if m in self.m_listOfColumns:

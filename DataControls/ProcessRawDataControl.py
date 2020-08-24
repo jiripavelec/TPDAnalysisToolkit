@@ -20,6 +20,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         self.m_plots["Raw Data vs. Temp."] = MPLContainer(self.m_chord.m_notebookRef, "Raw Data vs. Temp.", "Desorption Rate", "Temperature (K)", root)
         self.m_plots["Raw Data vs. Time"] = MPLContainer(self.m_chord.m_notebookRef, "Raw Data vs. Time.", "Desorption Rate", "Time (ms)", root, secondaryYAxis=True,secondaryYAxisName="Temperature (K)", legendLoc='center right')
         self.m_plots["Processed Data"] = MPLContainer(self.m_chord.m_notebookRef, "Processed Data", "Desorption Rate", "Temperature (K)", root)
+        self.m_plots["Log Plot (Processed)"] = MPLContainer(self.m_chord.m_notebookRef, "Log Plot (Processed)", "ln(Desorption Rate)", "Temperature (K)", root)
         self.m_plots["Arrhenius Plot (Processed)"] = MPLContainer(self.m_chord.m_notebookRef, "Arrhenius Plot (Processed)", "ln(Desorption Rate)", "Reciprocal Temperature (1/K)", root, invertXAxis=True)
         # self.m_plots["Temperature Ramp"] = MPLContainer(self.m_chord.m_notebookRef, "Temperature Ramp", "Temperature (K)", "Time (ms)", root)
 
@@ -99,6 +100,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
             self.m_plots["Raw Data vs. Time"].addPrimaryLinePlots(d.getRawDataVSRawTime(tempMasses),d.getLangmuirLabels(tempMasses))
             self.m_plots["Raw Data vs. Time"].addSecondaryLinePlots(d.getRawTempVSRawTime())
             self.m_plots["Processed Data"].addPrimaryLinePlots(d.getProcessedData(tempMasses),d.getCoverageLabels(tempMasses))
+            self.m_plots["Log Plot (Processed)"].addPrimaryLinePlots(d.getProcessedLNData(tempMasses),d.getCoverageLabels(tempMasses))
             self.m_plots["Arrhenius Plot (Processed)"].addPrimaryLinePlots(d.getProcessedArrheniusData(tempMasses),d.getCoverageLabels(tempMasses))
             # self.m_plots[3].addPrimaryLinePlots(d.getRawTempVSRawTime(), d.getCoverageLabels(tempMasses))
         # self.m_plots[0].setLegendCenterRight()

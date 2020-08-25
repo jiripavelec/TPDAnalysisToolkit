@@ -268,23 +268,6 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         self.m_fileSelectionControl = InputFileListBoxControl(self.m_chordFrame, self.onUpdateFileList)
         self.m_fileSelectionControl.grid(row=0, column=0, columnspan=4, sticky = "nsew")
 
-        # self.m_filesListBoxLabel = ttk.Label(self.m_chordFrame, text='Input files:')
-        # self.m_filesListBoxLabel.grid(row = 0, column = 0, columnspan = 2, sticky="nsw")
-
-        # self.m_filesListBox = ScrolledListBox(self.m_chordFrame, horizontallyScrollable=True)
-        # self.m_filesListBox.grid(row = 1, column = 0, columnspan = 4, sticky = "nsew")
-
-        # self.m_fileButtonFrame = ttk.Frame(self.m_chordFrame)
-        # self.m_fileButtonFrame.grid(row=2, column = 0, columnspan = 3, sticky = "nsew")
-
-        # self.m_selectFilesButton = ttk.Button(self.m_fileButtonFrame,text="Select Files",command = self.selectFiles)
-        # self.m_selectFilesButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
-
-        # self.m_selectFilesButton = ttk.Button(self.m_fileButtonFrame,text="Select Directory",command = self.selectDir)
-        # self.m_selectFilesButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
-
-        # self.m_deselectButton = ttk.Button(self.m_fileButtonFrame,text="Remove Selected",command = self.deselectFiles)
-        # self.m_deselectButton.pack(side=tk.RIGHT, fill = tk.X, expand = False)
 
         # Options
 

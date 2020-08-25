@@ -14,7 +14,7 @@ class InvertDataControl(ProcessingStepControlBase):
         super().__init__("Inversion Analysis", controller, accordion)
         self.m_parsedData = None
         self.m_prefactors = []
-        self.m_inputFilePath = None
+        # self.m_inputFilePath = None
 
         self.m_plots["Input Data"] = MPLContainer(self.m_chord.m_notebookRef, "Input Data", "Desorption Rate (arb. U.)", "Temperature (K)", root)
         self.m_plots["Coverage vs. Temp."] = MPLContainer(self.m_chord.m_notebookRef, "Coverage vs. Temp.", "Coverage", "Temperature (K)", root)
@@ -22,14 +22,6 @@ class InvertDataControl(ProcessingStepControlBase):
         self.m_plots["Sim. Coverage vs Temp."] = MPLContainer(self.m_chord.m_notebookRef, "Sim. Coverage vs Temp.", "Coverge (ML)", "Temperature (K)", root)
         self.m_plots["Sim. Desorption Rate vs Coverage"] = MPLContainer(self.m_chord.m_notebookRef, "Sim. Desorption Rate vs Coverage", "Desorption Rate (ML/K)", "Coverage", root)
         self.m_plots["Chi Squared vs Prefactor"] = MPLContainer(self.m_chord.m_notebookRef, "Chi Squared vs Prefactor", "Chi Squared Value", "Prefactor", root)
-
-    # def selectFile(self):
-    #     buffer = askopenfilename(defaultextension=".pdat", filetypes=[('Processed Data','*.pdat'), ('All files','*.*')])
-    #     if (not buffer == None): #we only want a new filepath if it is a valid path
-    #         self.m_inputFilePath = buffer
-    #         substrings = self.m_inputFilePath.split('/')
-    #         self.m_inputFileName = substrings[len(substrings) - 1]
-    #         self.m_fileNameLabel.configure(text = self.m_inputFileName)
 
     def checkInput(self):
         # if(self.m_inputFilePath == None): #check for file selection
@@ -83,8 +75,6 @@ class InvertDataControl(ProcessingStepControlBase):
         if(not self.checkInput()): return
         self.m_invertedData = None
         
-        # if (not self.m_inputFilePath == None):
-        #     self.m_parsedData = ProcessedDataWrapper(self.m_inputFilePath)
         self.m_parsedData = ProcessedDataWrapper(self.m_fileSelectionControl.m_inputFilePath)
         if(not self.m_parsedData.parseProcessedDataFile()):
             tk.messagebox.showerror("Input File", "Please use an input file with normalized coverages!")
@@ -197,15 +187,6 @@ class InvertDataControl(ProcessingStepControlBase):
         self.m_chordFrame = self.m_chord.m_scrollable_frame
 
         # File selection
-
-        # self.m_inputLabel = ttk.Label(self.m_chordFrame, text='Input file:')
-        # self.m_inputLabel.grid(row = 0, column = 0, columnspan = 2, sticky="nsw")
-
-        # self.m_fileNameLabel = ttk.Label(self.m_chordFrame, text='No file selected')
-        # self.m_fileNameLabel.grid(row = 1, column = 1, columnspan = 3, sticky="nsew")
-
-        # self.m_selectButton = ttk.Button(self.m_chordFrame,text="Select File",command = self.selectFile)
-        # self.m_selectButton.grid(row=2, column = 2, columnspan=1, sticky = "nse")
         self.m_fileSelectionControl = SingleInputFileSelectionControl(self.m_chordFrame)
         self.m_fileSelectionControl.grid(row=0, column = 0, columnspan = 4, sticky = "nsew")
 

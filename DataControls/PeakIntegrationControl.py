@@ -15,6 +15,7 @@ class PeakIntegrationControl(ProcessingStepControlBase):
         self.m_parsedData = ProcessedDataWrapper(self.m_fileSelectionControl.m_inputFilePath)
         self.m_parsedData.parseProcessedDataFile()
         self.m_spectrumCB["values"] = self.m_parsedData.m_includedFiles
+        self.m_spectrumCB.current(0)
 
     def onSpectrumSelected(self):
         pass
@@ -36,7 +37,7 @@ class PeakIntegrationControl(ProcessingStepControlBase):
         self.m_spectrumSelectionLabel.grid(row = 1, column = 0, columnspan = 2, sticky="nsw")
 
         self.m_spectrumCB = ttk.Combobox(self.m_chordFrame)
-        # self.m_prefactorCB.bind("<<ComboboxSelected>>", self.plotDataForSelectedPrefactor) #binding to event because CB does not have 'command' param
+        # self.m_spectrumCB.bind("<<ComboboxSelected>>", self.plotDataForSelectedPrefactor) #binding to event because CB does not have 'command' param
         self.m_spectrumCB.grid(row = 2, column = 0, columnspan = 3, sticky = "nsew")
         
         # self.m_spectrumSelectionLabel = ttk.Label(self.m_chordFrame, text='Select Mass Spectrum for Integration:')

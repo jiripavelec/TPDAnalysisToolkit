@@ -325,9 +325,9 @@ class DisplayOptionsFrame(ttk.Frame):
 
 #EnhancedComboBox BEGIN
 class EnhancedComboBox(ttk.Combobox):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args,**kwargs)
-
+    def __init__(self, textState = 'readonly', *args, **kwargs):
+        self.m_backingVariable = tk.StringVar()
+        super().__init__(textvariable = self.m_backingVariable, state = textState, *args,**kwargs)
     
 #EnhancedComboBox END
 

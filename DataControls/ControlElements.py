@@ -1,6 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
-from tkinter.filedialog import askdirectory, askopenfilenames, asksaveasfilename
+from tkinter.filedialog import askdirectory, askopenfilenames, asksaveasfilename, askopenfilename
 import os.path
 from os import path, chdir
 from datetime import datetime
@@ -461,3 +461,25 @@ class InputFileListBoxControl(ttk.Frame):
 
 #InputFileListBoxControl END
 
+#SingleInputFileSelectionControl BEGIN
+class SingleInputFileSelectionControl(ttk.Frame):
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+
+        self.m_inputLabel = ttk.Label(self, text='Input file:')
+        self.m_inputLabel.grid(row = 0, column = 0, columnspan = 2, sticky="nsw")
+
+        self.m_fileNameLabel = ttk.Label(self, text='No file selected')
+        self.m_fileNameLabel.grid(row = 1, column = 1, columnspan = 3, sticky="nsew")
+
+        self.m_selectButton = ttk.Button(self,text="Select File",command = self.selectFile)
+        self.m_selectButton.grid(row=2, column = 2, columnspan=1, sticky = "nse")
+
+    def selectFile(self):
+        buffer = askopenfilename(defaultextension=".pdat", filetypes=[('Processed Data','*.pdat'), ('All files','*.*')])
+        if (not buffer == None): #we only want a new filepath if it is a valid path
+            self.m_inputFilePath = buffer
+            substrings = self.m_inputFilePath.split('/')
+            self.m_inputFileName = substrings[len(substrings) - 1]
+            self.m_fileNameLabel.configure(text = self.m_inputFileName)
+#SingleInputFileSelectionControl END

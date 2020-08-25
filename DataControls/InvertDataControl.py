@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from PlotsFrame import MPLContainer # pylint: disable=import-error
-from DataControls.ControlElements import Chord, ScrolledListBox, EnhancedCheckButton, ProcessingStepControlBase, EnhancedEntry, DisplayOptionsFrame #ui element # pylint: disable=import-error
+from DataControls.ControlElements import Chord, ScrolledListBox, EnhancedCheckButton, ProcessingStepControlBase, EnhancedEntry, DisplayOptionsFrame, SingleInputFileSelectionControl #ui element # pylint: disable=import-error
 from tkinter.filedialog import askopenfilename
 from DataModels.ProcessedDataWrapper import ProcessedDataWrapper # pylint: disable=import-error
 from tkinter.filedialog import asksaveasfilename
@@ -23,16 +23,17 @@ class InvertDataControl(ProcessingStepControlBase):
         self.m_plots["Sim. Desorption Rate vs Coverage"] = MPLContainer(self.m_chord.m_notebookRef, "Sim. Desorption Rate vs Coverage", "Desorption Rate (ML/K)", "Coverage", root)
         self.m_plots["Chi Squared vs Prefactor"] = MPLContainer(self.m_chord.m_notebookRef, "Chi Squared vs Prefactor", "Chi Squared Value", "Prefactor", root)
 
-    def selectFile(self):
-        buffer = askopenfilename(defaultextension=".pdat", filetypes=[('Processed Data','*.pdat'), ('All files','*.*')])
-        if (not buffer == None): #we only want a new filepath if it is a valid path
-            self.m_inputFilePath = buffer
-            substrings = self.m_inputFilePath.split('/')
-            self.m_inputFileName = substrings[len(substrings) - 1]
-            self.m_fileNameLabel.configure(text = self.m_inputFileName)
+    # def selectFile(self):
+    #     buffer = askopenfilename(defaultextension=".pdat", filetypes=[('Processed Data','*.pdat'), ('All files','*.*')])
+    #     if (not buffer == None): #we only want a new filepath if it is a valid path
+    #         self.m_inputFilePath = buffer
+    #         substrings = self.m_inputFilePath.split('/')
+    #         self.m_inputFileName = substrings[len(substrings) - 1]
+    #         self.m_fileNameLabel.configure(text = self.m_inputFileName)
 
     def checkInput(self):
-        if(self.m_inputFilePath == None): #check for file selection
+        # if(self.m_inputFilePath == None): #check for file selection
+        if(self.m_fileSelectionControl.m_inputFilePath == None):
             tk.messagebox.showerror("Input File", "Please select a preprocssed file on which to perform the inversion analysis.")
             return False
 
@@ -82,46 +83,47 @@ class InvertDataControl(ProcessingStepControlBase):
         if(not self.checkInput()): return
         self.m_invertedData = None
         
-        if (not self.m_inputFilePath == None):
-            self.m_parsedData = ProcessedDataWrapper(self.m_inputFilePath)
-            if(not self.m_parsedData.parseProcessedDataFile()):
-                tk.messagebox.showerror("Input File", "Please use an input file with normalized coverages!")
-                return
-            if(not self.m_parsedData.m_normalized):
-                return #need a normalized monolayer coverage for inversion + simulation to make sense
-            # self.m_parsedData.clearInvertedData() #incase we are reusing the wrapper
-            # for c in self.m_plots:
-            #     c.clearPlots()
-            if(self.m_RBVariable.get() == 0): #single prefactor
-                self.m_prefactors = ["{:e}".format(float(self.m_tPrefactorEntry.get()))]
-            elif(self.m_RBVariable.get() == 1): #linear range
-                currentEntry = float(self.m_tPrefactorStartEntry.get())
-                lastEntry = float(self.m_tPrefactorEndEntry.get())
-                incrementEntry = float(self.m_tPrefactorIncrementEntry.get())
-                self.m_prefactors = []
-                while(currentEntry <= lastEntry):
-                    self.m_prefactors.append("{:e}".format(currentEntry))
-                    currentEntry += incrementEntry #increase by order of magnitude
-            else: #multiplicative range
-                currentEntry = float(self.m_tPrefactorStartEntry.get())
-                lastEntry = float(self.m_tPrefactorEndEntry.get())
-                self.m_prefactors = []
-                while(currentEntry <= lastEntry):
-                    self.m_prefactors.append("{:e}".format(currentEntry))
-                    currentEntry *= 10.0 #increase by order of magnitude
-            
-            for p in self.m_prefactors:
-                self.m_parsedData.invertProcessedData(float(p)) #do the calculations
+        # if (not self.m_inputFilePath == None):
+        #     self.m_parsedData = ProcessedDataWrapper(self.m_inputFilePath)
+        self.m_parsedData = ProcessedDataWrapper(self.m_fileSelectionControl.m_inputFilePath)
+        if(not self.m_parsedData.parseProcessedDataFile()):
+            tk.messagebox.showerror("Input File", "Please use an input file with normalized coverages!")
+            return
+        if(not self.m_parsedData.m_normalized):
+            return #need a normalized monolayer coverage for inversion + simulation to make sense
+        # self.m_parsedData.clearInvertedData() #incase we are reusing the wrapper
+        # for c in self.m_plots:
+        #     c.clearPlots()
+        if(self.m_RBVariable.get() == 0): #single prefactor
+            self.m_prefactors = ["{:e}".format(float(self.m_tPrefactorEntry.get()))]
+        elif(self.m_RBVariable.get() == 1): #linear range
+            currentEntry = float(self.m_tPrefactorStartEntry.get())
+            lastEntry = float(self.m_tPrefactorEndEntry.get())
+            incrementEntry = float(self.m_tPrefactorIncrementEntry.get())
+            self.m_prefactors = []
+            while(currentEntry <= lastEntry):
+                self.m_prefactors.append("{:e}".format(currentEntry))
+                currentEntry += incrementEntry #increase by order of magnitude
+        else: #multiplicative range
+            currentEntry = float(self.m_tPrefactorStartEntry.get())
+            lastEntry = float(self.m_tPrefactorEndEntry.get())
+            self.m_prefactors = []
+            while(currentEntry <= lastEntry):
+                self.m_prefactors.append("{:e}".format(currentEntry))
+                currentEntry *= 10.0 #increase by order of magnitude
+        
+        for p in self.m_prefactors:
+            self.m_parsedData.invertProcessedData(float(p)) #do the calculations
 
-            self.m_parsedData.simulateCoveragesFromInvertedData()
-            self.m_parsedData.evaluateData()
+        self.m_parsedData.simulateCoveragesFromInvertedData()
+        self.m_parsedData.evaluateData()
 
-            #plot chi-squared value vs prefactor for all input coverages
-            self.m_plots["Chi Squared vs Prefactor"].clearPlots()
-            self.m_plots["Chi Squared vs Prefactor"].addPrimaryLinePlots(self.m_parsedData.getChiSquaredVSPrefactor(),self.m_parsedData.getCoverageLabels(),logXAxis = True)#, logYAxis = True)
+        #plot chi-squared value vs prefactor for all input coverages
+        self.m_plots["Chi Squared vs Prefactor"].clearPlots()
+        self.m_plots["Chi Squared vs Prefactor"].addPrimaryLinePlots(self.m_parsedData.getChiSquaredVSPrefactor(),self.m_parsedData.getCoverageLabels(),logXAxis = True)#, logYAxis = True)
 
-            self.m_prefactorCB["values"] = self.m_prefactors
-            self.plotDataForSelectedPrefactor()
+        self.m_prefactorCB["values"] = self.m_prefactors
+        self.plotDataForSelectedPrefactor()
             
     def plotDataForSelectedPrefactor(self,*args,**kwargs):
         if(len(self.m_prefactors) == 0):
@@ -196,14 +198,16 @@ class InvertDataControl(ProcessingStepControlBase):
 
         # File selection
 
-        self.m_inputLabel = ttk.Label(self.m_chordFrame, text='Input file:')
-        self.m_inputLabel.grid(row = 0, column = 0, columnspan = 2, sticky="nsw")
+        # self.m_inputLabel = ttk.Label(self.m_chordFrame, text='Input file:')
+        # self.m_inputLabel.grid(row = 0, column = 0, columnspan = 2, sticky="nsw")
 
-        self.m_fileNameLabel = ttk.Label(self.m_chordFrame, text='No file selected')
-        self.m_fileNameLabel.grid(row = 1, column = 1, columnspan = 3, sticky="nsew")
+        # self.m_fileNameLabel = ttk.Label(self.m_chordFrame, text='No file selected')
+        # self.m_fileNameLabel.grid(row = 1, column = 1, columnspan = 3, sticky="nsew")
 
-        self.m_selectButton = ttk.Button(self.m_chordFrame,text="Select File",command = self.selectFile)
-        self.m_selectButton.grid(row=2, column = 2, columnspan=1, sticky = "nse")
+        # self.m_selectButton = ttk.Button(self.m_chordFrame,text="Select File",command = self.selectFile)
+        # self.m_selectButton.grid(row=2, column = 2, columnspan=1, sticky = "nse")
+        self.m_fileSelectionControl = SingleInputFileSelectionControl(self.m_chordFrame)
+        self.m_fileSelectionControl.grid(row=0, column = 0, columnspan = 4, sticky = "nsew")
 
         #Options
 

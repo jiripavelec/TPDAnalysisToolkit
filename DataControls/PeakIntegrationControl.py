@@ -13,7 +13,7 @@ class PeakIntegrationControl(ProcessingStepControlBase):
 
     def onFileSelected(self):
         self.m_parsedData = ProcessedDataWrapper(self.m_fileSelectionControl.m_inputFilePath)
-        self.m_spectrumSelectionLabel = self.m_parsedData.
+        # self.m_spectrumSelectionLabel = self.m_parsedData.
 
     def onSpectrumSelected(self):
         pass

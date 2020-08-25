@@ -34,7 +34,7 @@ class InvertDataControl(ProcessingStepControlBase):
     def checkInput(self):
         # if(self.m_inputFilePath == None): #check for file selection
         if(self.m_fileSelectionControl.m_inputFilePath == None):
-            tk.messagebox.showerror("Input File", "Please select a preprocssed file on which to perform the inversion analysis.")
+            tk.messagebox.showerror("Input File", "Please select a preprocessed file on which to perform the inversion analysis.")
             return False
 
         if(self.m_RBVariable.get() == 0): #single prefactor

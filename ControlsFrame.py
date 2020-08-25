@@ -5,6 +5,7 @@ from DataControls.CoverageCalibrationControl import CoverageCalibrationControl
 from DataControls.ProcessRawDataControl import ProcessRawDataControl
 from DataControls.InvertDataControl import InvertDataControl
 from DataControls.RedheadAnalysisControl import RedheadAnalysisControl
+from DataControls.PeakIntegrationControl import PeakIntegrationControl
 
 #ControlsFrame BEGIN
 class ControlsFrame(tk.Frame):
@@ -31,6 +32,10 @@ class ControlsFrame(tk.Frame):
         #For redhead analysis
         self.m_redheadAnalysisControl = RedheadAnalysisControl(plotsFrame, root, self.m_accordion)
         self.Controls.append(self.m_redheadAnalysisControl)
+
+        #For peak integration
+        self.m_peakIntegrationControl = PeakIntegrationControl(plotsFrame, root, self.m_accordion)
+        self.Controls.append(self.m_peakIntegrationControl)
 
         #separator for easier displaying
         self.m_separator = ttk.Separator(self)

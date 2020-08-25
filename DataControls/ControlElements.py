@@ -463,7 +463,7 @@ class InputFileListBoxControl(ttk.Frame):
 
 #SingleInputFileSelectionControl BEGIN
 class SingleInputFileSelectionControl(ttk.Frame):
-    def __init__(self, parent, defaultextension= ".pdat", filetypes = [('Processed Data','*.pdat'), ('All files','*.*')],*args, **kwargs):
+    def __init__(self, parent, onSelect = None, defaultextension= ".pdat", filetypes = [('Processed Data','*.pdat'), ('All files','*.*')],*args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
         self.m_inputLabel = ttk.Label(self, text='Input file:')
@@ -478,6 +478,8 @@ class SingleInputFileSelectionControl(ttk.Frame):
         self.m_fileTypes = filetypes
         self.m_defaultExtension = defaultextension
 
+        self.m_onSelect = onSelect
+
     def selectFile(self):
         buffer = askopenfilename(defaultextension= self.m_defaultExtension, filetypes= self.m_fileTypes)
         if (not buffer == None): #we only want a new filepath if it is a valid path
@@ -485,4 +487,6 @@ class SingleInputFileSelectionControl(ttk.Frame):
             substrings = self.m_inputFilePath.split('/')
             self.m_inputFileName = substrings[len(substrings) - 1]
             self.m_fileNameLabel.configure(text = self.m_inputFileName)
+            if(self.m_onSelect != None):
+                self.m_onSelect()
 #SingleInputFileSelectionControl END

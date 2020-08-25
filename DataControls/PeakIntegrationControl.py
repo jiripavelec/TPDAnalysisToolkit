@@ -13,7 +13,8 @@ class PeakIntegrationControl(ProcessingStepControlBase):
 
     def onFileSelected(self):
         self.m_parsedData = ProcessedDataWrapper(self.m_fileSelectionControl.m_inputFilePath)
-        # self.m_spectrumSelectionLabel = self.m_parsedData.
+        self.m_parsedData.parseProcessedDataFile()
+        self.m_spectrumCB["values"] = self.m_parsedData.m_includedFiles
 
     def onSpectrumSelected(self):
         pass
@@ -26,7 +27,7 @@ class PeakIntegrationControl(ProcessingStepControlBase):
 
         # File selection
 
-        self.m_fileSelectionControl = SingleInputFileSelectionControl(self.m_chordFrame)
+        self.m_fileSelectionControl = SingleInputFileSelectionControl(self.m_chordFrame, onSelect=self.onFileSelected)
         self.m_fileSelectionControl.grid(row=0, column = 0, columnspan = 4, sticky = "nsew")
 
         # Spectrum selection

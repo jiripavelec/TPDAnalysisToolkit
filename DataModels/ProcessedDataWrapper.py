@@ -31,7 +31,7 @@ class ProcessedDataWrapper():
 
         for i in range(3, headerLength-2):
             includedFileNameBuffer = np.loadtxt(self.m_filePath, dtype=str, skiprows=i, max_rows = 1, comments= None)
-            self.m_includedFiles.append(includedFileNameBuffer[2:])#ignore '# ' before line
+            self.m_includedFiles.append(' '.join(includedFileNameBuffer[2:]))#ignore '# ' before line
 
         firstTwoLines = np.loadtxt(self.m_filePath, dtype=str, max_rows=2)
         self.m_listOfColumns = firstTwoLines[0,:]

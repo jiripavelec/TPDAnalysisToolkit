@@ -351,7 +351,10 @@ class MPLContainer(tk.Frame):
         self.__addLinePlots(self.m_secondaryYAxis, ndarrayData, labels, logXAxis, logYAxis)
         self.canvas.draw_idle()
 
-        
+    def addVerticalLine(self, xValue):
+        self.m_subplot.axvline(xValue, linestyle="-.", color="r")
+        self.canvas.draw_idle()
+
     # def __autoScaleTopY(self):
     #     self.m_subplot.set_ylim(auto = True)
     #     if(self.m_subplot.get_ylim()[0] < 0.0):

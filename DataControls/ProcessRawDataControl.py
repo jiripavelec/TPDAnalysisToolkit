@@ -106,6 +106,11 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         # self.m_plots[0].setLegendCenterRight()
         # self.m_plots["Arrhenius Plot (Processed)"].autoScaleTopY()
 
+        #if(showTempBounds)
+        # self.m_plots["Raw Data vs. Temp."].addVerticalLine(float(self.m_tCutStartEntry.get()))
+        # self.m_plots["Raw Data vs. Temp."].addVerticalLine(float(self.m_tCutEndEntry.get()))
+
+
     def checkInput(self):
         if(len(self.m_fileSelectionControl.m_filePaths) == 0): #check for file selection
             tk.messagebox.showerror("Input Files", "Please select at least one file to process.")

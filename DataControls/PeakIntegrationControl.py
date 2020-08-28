@@ -17,13 +17,18 @@ class PeakIntegrationControl(ProcessingStepControlBase):
         self.m_spectrumCB["values"] = self.m_parsedData.m_includedFiles
         # self.m_spectrumCB.current(0)
 
+    def plotBounds(self):
+        self.m_plots["Processed Data"].removeVerticalLines()
+        self.m_plots["Processed Data"].addVerticalLine(float(self.m_tCutEndEntry.get()))
+        self.m_plots["Processed Data"].addVerticalLine(float(self.m_tCutStartEntry.get()))
+
     def plotSelectedSpectrum(self):
         targetData = self.m_parsedData.fileNameToExpDesorptionRateVSTemp(self.m_spectrumCB.get())
         targetLabel = self.m_parsedData.fileNameToCoverageLabel(self.m_spectrumCB.get())
         self.m_plots["Processed Data"].clearPlots()
         self.m_plots["Processed Data"].addPrimaryLinePlots(targetData,targetLabel)
-        self.m_plots["Processed Data"].addVerticalLine(float(self.m_tCutEndEntry.get()))
-        self.m_plots["Processed Data"].addVerticalLine(float(self.m_tCutStartEntry.get()))
+        self.plotBounds()
+        
 
     def onSpectrumSelected(self, *args, **kwargs):
         if(self.m_parsedData != None):
@@ -68,6 +73,13 @@ class PeakIntegrationControl(ProcessingStepControlBase):
     def onBoundsChanged(self):
         self.checkIntegrationBounds()
 
+    def processInput(self):
+        self.checkIntegrationBounds()
+        t2 = float(self.m_tCutEndEntry.get())
+        t1 = float(self.m_tCutStartEntry.get())
+        result = self.m_parsedData.integrateDesorptionRate(t1,t2,self.m_spectrumCB.get())
+        self.m_resultValueLabel.configure(text = str(result))
+
     def initChordUI(self):
         self.m_chordFrame = self.m_chord.m_scrollable_frame
 
@@ -110,10 +122,20 @@ class PeakIntegrationControl(ProcessingStepControlBase):
         self.m_tCutEndEntry = EnhancedEntry(self.m_chordFrame)
         self.m_tCutEndEntry.grid(row=7, column = 2, sticky = "nsw")
 
+        self.m_resultTitleLabel = ttk.Label(self.m_chordFrame, text="Integration Result:")
+        self.m_resultTitleLabel.grid(row=8, column = 1, sticky = "nse")
+
+        self.m_resultValueLabel = ttk.Label(self.m_chordFrame, text="N/A")
+        self.m_resultValueLabel.grid(row=8, column = 2, sticky = "nsw")
+
         # Display Options
 
-        self.m_showBoundsCB = EnhancedCheckButton(self.m_chordFrame, text="Show Temp. Bounds")
+        # self.m_showBoundsCB = EnhancedCheckButton(self.m_chordFrame, text="Show Temp. Bounds")
 
+        #Process Button
+
+        self.m_processButton = ttk.Button(self.m_chordFrame, text = "Integrate", command = self.processInput)
+        self.m_processButton.grid(row=9, column = 0, columnspan=4, sticky = "nsew")
 
 
 

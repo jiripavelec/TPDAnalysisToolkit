@@ -170,6 +170,7 @@ class MPLContainer(tk.Frame):
         # self.m_primaryMaxY = 0
         # self.m_secondaryMaxX = 0
         # self.m_secondaryMaxY = 0
+        self.m_verticalLines = list()
         root.registerResizeCallback(self.resizePlot)
 
         self.m_secondaryYAxisRequired = secondaryYAxis
@@ -352,8 +353,15 @@ class MPLContainer(tk.Frame):
         self.canvas.draw_idle()
 
     def addVerticalLine(self, xValue):
-        self.m_subplot.axvline(xValue, linestyle="-.", color="r")
+        self.m_verticalLines.append(self.m_subplot.axvline(xValue, linestyle="-.", color="r"))
         self.canvas.draw_idle()
+
+    def removeVerticalLines(self):
+        if(len(self.m_verticalLines) == 0):
+            return
+        for l in self.m_verticalLines:
+            l.remove() #this function removes the actor from the matplotlib plot, not the list
+        self.m_verticalLines.clear()
 
     # def __autoScaleTopY(self):
     #     self.m_subplot.set_ylim(auto = True)

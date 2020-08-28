@@ -249,6 +249,10 @@ class MPLContainer(tk.Frame):
             for i in range(len(self.m_subplot.lines)-1,-1,-1):
                 line = self.m_subplot.lines.pop(i)
                 del line
+        if(len(self.m_subplot.patches) > 0):
+            for i in range(len(self.m_subplot.patches)-1,-1,-1):
+                line = self.m_subplot.patches.pop(i)
+                del line
         if(self.m_secondaryYAxisRequired):
             if(len(self.m_secondaryYAxis.lines) > 0):
                 for i in range(len(self.m_secondaryYAxis.lines)-1,-1,-1):
@@ -289,7 +293,7 @@ class MPLContainer(tk.Frame):
             self.m_usingMarkers = True
         self.canvas.draw_idle()
 
-    def __addLinePlots(self, axes, ndarrayData, labels, logXAxis, logYAxis, pLineWidth = 1):
+    def __addLinePlots(self, axes, ndarrayData, labels, logXAxis, logYAxis, color, pLineWidth = 1):
         maxX = 0
         maxY = 0
         minX = 0
@@ -297,11 +301,11 @@ class MPLContainer(tk.Frame):
         if ndarrayData.ndim >= 2:
             for i in range(1,ndarrayData.shape[0]):
                 if (type(labels) is str):
-                    axes.plot(ndarrayData[0,:],ndarrayData[i,:], label = labels, linewidth=pLineWidth)
+                    axes.plot(ndarrayData[0,:],ndarrayData[i,:], label = labels, linewidth=pLineWidth, color = color)
                 elif(labels != None):
-                    axes.plot(ndarrayData[0,:],ndarrayData[i,:], label = labels[i-1], linewidth=pLineWidth)
+                    axes.plot(ndarrayData[0,:],ndarrayData[i,:], label = labels[i-1], linewidth=pLineWidth, color = color)
                 else:
-                    axes.plot(ndarrayData[0,:],ndarrayData[i,:], linewidth=pLineWidth)
+                    axes.plot(ndarrayData[0,:],ndarrayData[i,:], linewidth=pLineWidth, color = color)
             for l in axes.lines:
                 l_maxX = np.amax(l.get_xdata())
                 l_minX = np.amin(l.get_xdata())
@@ -341,27 +345,27 @@ class MPLContainer(tk.Frame):
 
         axes.relim()
 
-    def addPrimaryLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False):
-        self.__addLinePlots(self.m_subplot, ndarrayData, labels, logXAxis, logYAxis)
+    def addPrimaryLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False, color = None):
+        self.__addLinePlots(self.m_subplot, ndarrayData, labels, logXAxis, logYAxis, color)
         self.canvas.draw_idle()
 
 
-    def addSecondaryLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False):
+    def addSecondaryLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False, color = None):
         if(not self.m_secondaryYAxisRequired):
             raise NameError #should use primary line plots, since secondary axis is not defined for this plot
-        self.__addLinePlots(self.m_secondaryYAxis, ndarrayData, labels, logXAxis, logYAxis)
+        self.__addLinePlots(self.m_secondaryYAxis, ndarrayData, labels, logXAxis, logYAxis, color)
         self.canvas.draw_idle()
 
     def addVerticalLine(self, xValue):
         self.m_verticalLines.append(self.m_subplot.axvline(xValue, linestyle="-.", color="r"))
         self.canvas.draw_idle()
 
-    def removeVerticalLines(self):
-        if(len(self.m_verticalLines) == 0):
-            return
-        for l in self.m_verticalLines:
-            l.remove() #this function removes the actor from the matplotlib plot, not the list
-        self.m_verticalLines.clear()
+    # def removeVerticalLines(self):
+    #     if(len(self.m_verticalLines) == 0):
+    #         return
+    #     for l in self.m_verticalLines:
+    #         l.remove() #this function removes the actor from the matplotlib plot, not the list
+    #     self.m_verticalLines.clear()
 
     # def __autoScaleTopY(self):
     #     self.m_subplot.set_ylim(auto = True)
@@ -385,6 +389,9 @@ class MPLContainer(tk.Frame):
 
     # def setLegendCenterRight(self):
     #     self.m_subplot.get_legend().s
+
+    def shadeBelowCurve(self, x, y, color = "b"):
+        self.m_subplot.fill(x,y,color)
 
 #MPLContainer END
 

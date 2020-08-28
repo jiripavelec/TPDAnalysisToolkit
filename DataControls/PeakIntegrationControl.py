@@ -10,6 +10,7 @@ class PeakIntegrationControl(ProcessingStepControlBase):
         super().__init__("Peak Integration (WIP)", controller, accordion)
         self.m_parsedData = None
         self.m_plots["Processed Data"] = MPLContainer(self.m_chord.m_notebookRef, "Processed Data", "Desorption Rate (arb. U.)", "Temperature (K)", root)
+        self.m_integrated = False
 
     def onFileSelected(self):
         self.m_parsedData = ProcessedDataWrapper(self.m_fileSelectionControl.m_inputFilePath)
@@ -18,20 +19,27 @@ class PeakIntegrationControl(ProcessingStepControlBase):
         # self.m_spectrumCB.current(0)
 
     def plotBounds(self):
-        self.m_plots["Processed Data"].removeVerticalLines()
-        self.m_plots["Processed Data"].addVerticalLine(float(self.m_tCutEndEntry.get()))
-        self.m_plots["Processed Data"].addVerticalLine(float(self.m_tCutStartEntry.get()))
+        # self.m_plots["Processed Data"].removeVerticalLines()
+        if(not self.m_integrated):
+            self.m_plots["Processed Data"].addVerticalLine(float(self.m_tCutEndEntry.get()))
+            self.m_plots["Processed Data"].addVerticalLine(float(self.m_tCutStartEntry.get()))
 
     def plotSelectedSpectrum(self):
         targetData = self.m_parsedData.fileNameToExpDesorptionRateVSTemp(self.m_spectrumCB.get())
         targetLabel = self.m_parsedData.fileNameToCoverageLabel(self.m_spectrumCB.get())
         self.m_plots["Processed Data"].clearPlots()
-        self.m_plots["Processed Data"].addPrimaryLinePlots(targetData,targetLabel)
+        self.m_plots["Processed Data"].addPrimaryLinePlots(targetData,targetLabel, color = 'b')
         self.plotBounds()
+        # if(self.m_integrated): #shade, currently has performance problems when drawing polygon
+        #     t2 = float(self.m_tCutEndEntry.get())
+        #     t1 = float(self.m_tCutStartEntry.get())
+        #     curve = self.m_parsedData.getProcessedDataBetweenForFile(t1,t2,self.m_spectrumCB.get())
+        #     self.m_plots["Processed Data"].shadeBelowCurve(curve[0],curve[1])
         
 
     def onSpectrumSelected(self, *args, **kwargs):
         if(self.m_parsedData != None):
+            self.m_integrated = False
             self.checkIntegrationBounds()
             self.plotSelectedSpectrum()
 
@@ -78,7 +86,9 @@ class PeakIntegrationControl(ProcessingStepControlBase):
         t2 = float(self.m_tCutEndEntry.get())
         t1 = float(self.m_tCutStartEntry.get())
         result = self.m_parsedData.integrateDesorptionRate(t1,t2,self.m_spectrumCB.get())
+        self.m_integrated = True
         self.m_resultValueLabel.configure(text = str(result))
+        self.plotSelectedSpectrum()#should update plot with appropriate shading
 
     def initChordUI(self):
         self.m_chordFrame = self.m_chord.m_scrollable_frame

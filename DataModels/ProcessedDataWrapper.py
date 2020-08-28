@@ -263,15 +263,28 @@ class ProcessedDataWrapper():
     def getMaxTemp(self):
         return self.m_parsedInputData[0,-1]
 
-    def integrateDesorptionRate(self, t1, t2, fileName):
+    def getProcessedDataBetweenForFile(self, t1, t2, fileName):
         try:
             dataIndex = self.m_includedFiles.index(fileName) + 1
             indices = np.where((self.m_parsedInputData[0,:] > t1) & (self.m_parsedInputData[0,:] < t2))[0]
-            # idx1 = np.where(self.m_parsedInputData[0,:] == t1)
-            # idx2 = np.where(self.m_parsedInputData[0,:] == t2)
             idx1 = indices[0]
             idx2 = indices[-1]
-            result = np.trapz(self.m_parsedInputData[dataIndex,idx1:idx2],self.m_parsedInputData[0,idx1:idx2])
+            result = (self.m_parsedInputData[0,idx1:idx2],self.m_parsedInputData[dataIndex,idx1:idx2])
+            return result
+        except:
+            return None
+
+    def integrateDesorptionRate(self, t1, t2, fileName):
+        try:
+            # dataIndex = self.m_includedFiles.index(fileName) + 1
+            # indices = np.where((self.m_parsedInputData[0,:] > t1) & (self.m_parsedInputData[0,:] < t2))[0]
+            # # idx1 = np.where(self.m_parsedInputData[0,:] == t1)
+            # # idx2 = np.where(self.m_parsedInputData[0,:] == t2)
+            # idx1 = indices[0]
+            # idx2 = indices[-1]
+            # result = np.trapz(self.m_parsedInputData[dataIndex,idx1:idx2],self.m_parsedInputData[0,idx1:idx2])
+            data = self.getProcessedDataBetweenForFile(t1,t2,fileName)
+            result = np.trapz(data[1],data[0]) #y, then x
             return result
         except:
             return None

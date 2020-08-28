@@ -22,8 +22,8 @@ class PeakIntegrationControl(ProcessingStepControlBase):
         targetLabel = self.m_parsedData.fileNameToCoverageLabel(self.m_spectrumCB.get())
         self.m_plots["Processed Data"].clearPlots()
         self.m_plots["Processed Data"].addPrimaryLinePlots(targetData,targetLabel)
-        # self.m_plots["Processed Data"].addVerticalLine(self.m_tCutEndEntry.get())
-        # self.m_plots["Processed Data"].addVerticalLine(self.m_tCutStartEntry.get())
+        self.m_plots["Processed Data"].addVerticalLine(float(self.m_tCutEndEntry.get()))
+        self.m_plots["Processed Data"].addVerticalLine(float(self.m_tCutStartEntry.get()))
 
     def onSpectrumSelected(self, *args, **kwargs):
         if(self.m_parsedData != None):

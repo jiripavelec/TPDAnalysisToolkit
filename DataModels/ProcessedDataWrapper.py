@@ -38,7 +38,6 @@ class ProcessedDataWrapper():
         self.m_totalCoverages = [float(c) for c in firstTwoLines[1,:]]
         if not (1.0 in self.m_totalCoverages):
             self.m_normalized = False
-            return False
         else:
             self.m_normalized = True
 
@@ -259,7 +258,7 @@ class ProcessedDataWrapper():
             return None
 
     def getMinTemp(self):
-        return self.m_parsedInputData[0:0]
+        return self.m_parsedInputData[0,0]
 
     def getMaxTemp(self):
-        return self.m_parsedInputData[0:-1]
+        return self.m_parsedInputData[0,-1]

@@ -15,17 +15,17 @@ class PeakIntegrationControl(ProcessingStepControlBase):
         self.m_parsedData = ProcessedDataWrapper(self.m_fileSelectionControl.m_inputFilePath)
         self.m_parsedData.parseProcessedDataFile()
         self.m_spectrumCB["values"] = self.m_parsedData.m_includedFiles
-        self.m_spectrumCB.current(0)
+        # self.m_spectrumCB.current(0)
 
     def plotSelectedSpectrum(self):
         targetData = self.m_parsedData.fileNameToExpDesorptionRateVSTemp(self.m_spectrumCB.get())
         targetLabel = self.m_parsedData.fileNameToCoverageLabel(self.m_spectrumCB.get())
         self.m_plots["Processed Data"].clearPlots()
         self.m_plots["Processed Data"].addPrimaryLinePlots(targetData,targetLabel)
-        self.m_plots["Processed Data"].addVerticalLine(self.m_tCutEndEntry.get())
-        self.m_plots["Processed Data"].addVerticalLine(self.m_tCutStartEntry.get())
+        # self.m_plots["Processed Data"].addVerticalLine(self.m_tCutEndEntry.get())
+        # self.m_plots["Processed Data"].addVerticalLine(self.m_tCutStartEntry.get())
 
-    def onSpectrumSelected(self):
+    def onSpectrumSelected(self, *args, **kwargs):
         if(self.m_parsedData != None):
             self.checkIntegrationBounds()
             self.plotSelectedSpectrum()

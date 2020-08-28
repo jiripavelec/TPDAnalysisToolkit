@@ -76,7 +76,8 @@ class InvertDataControl(ProcessingStepControlBase):
         self.m_invertedData = None
         
         self.m_parsedData = ProcessedDataWrapper(self.m_fileSelectionControl.m_inputFilePath)
-        if(not self.m_parsedData.parseProcessedDataFile()):
+        self.m_parsedData.parseProcessedDataFile()
+        if(not self.m_parsedData.m_normalized()):
             tk.messagebox.showerror("Input File", "Please use an input file with normalized coverages!")
             return
         if(not self.m_parsedData.m_normalized):

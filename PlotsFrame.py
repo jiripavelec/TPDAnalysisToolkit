@@ -391,7 +391,7 @@ class MPLContainer(tk.Frame):
     #     self.m_subplot.get_legend().s
 
     def shadeBelowCurve(self, x, y, color = "b"):
-        self.m_subplot.fill(x,y,color)
+        self.m_subplot.fill(x,y,color, hatch = '/', fill = False)
 
 #MPLContainer END
 

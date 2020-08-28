@@ -88,6 +88,13 @@ class ProcessedDataWrapper():
     def getExpDesorptionRateVSTemp(self):
         return self.m_parsedInputData
 
+    def fileNameToExpDesorptionRateVSTemp(self, fileName):
+        try:
+            index = self.m_includedFiles.index(fileName) + 1
+            return np.vstack((self.m_parsedInputData[0,:],self.m_parsedInputData[index,:]))
+        except:
+            return None
+
     def getDesEnergyVSCoverageList(self, prefactor):
         result = []
         for i in range(len(self.m_totalCoverages)-1):
@@ -242,3 +249,17 @@ class ProcessedDataWrapper():
         for c in self.m_totalCoverages[1:]:
             result.append("M" + str(self.m_mass) + ' {:04.2f} ML'.format(c))
         return result
+
+    def fileNameToCoverageLabel(self, fileName):
+        try:
+            index = self.m_includedFiles.index(fileName) + 1
+            c = self.m_totalCoverages[index]
+            return "M" + str(self.m_mass) + ' {:04.2f} ML'.format(c)
+        except:
+            return None
+
+    def getMinTemp(self):
+        return self.m_parsedInputData[0:0]
+
+    def getMaxTemp(self):
+        return self.m_parsedInputData[0:-1]

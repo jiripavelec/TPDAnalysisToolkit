@@ -72,7 +72,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         if(self.m_subtractCB.instate(['!selected'])):
             self.m_subtractSelection.configure(state = tk.DISABLED)
         else:
-            self.m_subtractSelection.configure(state = tk.NORMAL)
+            self.m_subtractSelection.configure(state = 'readonly')
 
     def toggleNormalizeCB(self):
         if(self.m_normalizeCB.instate(['!selected'])):
@@ -81,7 +81,7 @@ class ProcessRawDataControl(ProcessingStepControlBase):
         else:
             self.m_removeBackgroundCB.set(1) #if we want to normalize, we also have to remove the background, otherwise it does not make sense
             self.m_removeBackgroundCB.configure(state = tk.DISABLED)
-            self.m_normSelection.configure(state = tk.NORMAL)
+            self.m_normSelection.configure(state = 'readonly')
 
     def toggleMarkers(self):
         for c in self.m_plots.values():

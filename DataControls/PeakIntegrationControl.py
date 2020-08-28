@@ -17,11 +17,56 @@ class PeakIntegrationControl(ProcessingStepControlBase):
         self.m_spectrumCB["values"] = self.m_parsedData.m_includedFiles
         self.m_spectrumCB.current(0)
 
+    def plotSelectedSpectrum(self):
+        targetData = self.m_parsedData.fileNameToExpDesorptionRateVSTemp(self.m_spectrumCB.get())
+        targetLabel = self.m_parsedData.fileNameToCoverageLabel(self.m_spectrumCB.get())
+        self.m_plots["Processed Data"].clearPlots()
+        self.m_plots["Processed Data"].addPrimaryLinePlots(targetData,targetLabel)
+        self.m_plots["Processed Data"].addVerticalLine(self.m_tCutEndEntry.get())
+        self.m_plots["Processed Data"].addVerticalLine(self.m_tCutStartEntry.get())
+
     def onSpectrumSelected(self):
-        pass
+        if(self.m_parsedData != None):
+            self.checkIntegrationBounds()
+            self.plotSelectedSpectrum()
+
+
+    def tryReadStartCutEntry(self):
+        if(self.m_tCutStartEntry.get() == ''):
+            return False
+        try:
+            int(self.m_tCutStartEntry.get())
+        except ValueError:
+            tk.messagebox.showerror("Initial Temperature", "Please enter an integer for the temperature at which to start integration.")
+            return False
+        return True
+
+    def tryReadStopCutEntry(self):
+        if(self.m_tCutEndEntry.get() == ''):
+            return False
+        try:
+            int(self.m_tCutEndEntry.get())
+        except ValueError:
+            tk.messagebox.showerror("Final Temperature", "Please enter an integer for the temperature at which to end integration.")
+            return False
+        return True
+
+    def checkIntegrationBounds(self):
+        minStartCut = int(self.m_parsedData.getMinTemp())
+        maxStopCut = int(self.m_parsedData.getMaxTemp())
+        if(self.tryReadStartCutEntry()):
+            if(minStartCut > int(self.m_tCutStartEntry.get())):
+                self.m_tCutStartEntry.set(str(minStartCut))
+        else:
+            self.m_tCutStartEntry.set(str(minStartCut))
+        if(self.tryReadStopCutEntry()):
+            if(maxStopCut < int(self.m_tCutEndEntry.get())):
+                self.m_tCutEndEntry.set(str(maxStopCut))
+        else:
+                self.m_tCutEndEntry.set(str(maxStopCut))
 
     def onBoundsChanged(self):
-        pass
+        self.checkIntegrationBounds()
 
     def initChordUI(self):
         self.m_chordFrame = self.m_chord.m_scrollable_frame
@@ -37,7 +82,8 @@ class PeakIntegrationControl(ProcessingStepControlBase):
         self.m_spectrumSelectionLabel.grid(row = 1, column = 0, columnspan = 2, sticky="nsw")
 
         self.m_spectrumCB = ttk.Combobox(self.m_chordFrame)
-        # self.m_spectrumCB.bind("<<ComboboxSelected>>", self.plotDataForSelectedPrefactor) #binding to event because CB does not have 'command' param
+        self.m_spectrumCB.configure(state = 'readonly')
+        self.m_spectrumCB.bind("<<ComboboxSelected>>", self.onSpectrumSelected) #binding to event because CB does not have 'command' param
         self.m_spectrumCB.grid(row = 2, column = 0, columnspan = 3, sticky = "nsew")
         
         # self.m_spectrumSelectionLabel = ttk.Label(self.m_chordFrame, text='Select Mass Spectrum for Integration:')

@@ -19,10 +19,10 @@ class PeakIntegrationControl(ProcessingStepControlBase):
         # self.m_spectrumCB.current(0)
 
     def plotBounds(self):
-        # self.m_plots["Processed Data"].removeVerticalLines()
-        if(not self.m_integrated):
-            self.m_plots["Processed Data"].addVerticalLine(float(self.m_tCutEndEntry.get()))
-            self.m_plots["Processed Data"].addVerticalLine(float(self.m_tCutStartEntry.get()))
+        self.m_plots["Processed Data"].removeVerticalLines()
+        # if(not self.m_integrated):
+        self.m_plots["Processed Data"].addVerticalLine(float(self.m_tCutEndEntry.get()))
+        self.m_plots["Processed Data"].addVerticalLine(float(self.m_tCutStartEntry.get()))
 
     def plotSelectedSpectrum(self):
         targetData = self.m_parsedData.fileNameToExpDesorptionRateVSTemp(self.m_spectrumCB.get())

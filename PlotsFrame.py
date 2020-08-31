@@ -360,12 +360,17 @@ class MPLContainer(tk.Frame):
         self.m_verticalLines.append(self.m_subplot.axvline(xValue, linestyle="-.", color="r"))
         self.canvas.draw_idle()
 
-    # def removeVerticalLines(self):
-    #     if(len(self.m_verticalLines) == 0):
-    #         return
-    #     for l in self.m_verticalLines:
-    #         l.remove() #this function removes the actor from the matplotlib plot, not the list
-    #     self.m_verticalLines.clear()
+    def removeVerticalLines(self):
+        if(len(self.m_subplot.lines) > 0):
+            for i in range(len(self.m_subplot.lines)-1,-1,-1):
+                if(self.m_subplot.lines[i].get_linestyle() == '-.'):
+                    line = self.m_subplot.lines.pop(i)
+                    del line
+        # if(len(self.m_verticalLines) == 0):
+        #     return
+        # for l in self.m_verticalLines:
+        #     l.remove() #this function removes the actor from the matplotlib plot, not the list
+        # self.m_verticalLines.clear()
 
     # def __autoScaleTopY(self):
     #     self.m_subplot.set_ylim(auto = True)

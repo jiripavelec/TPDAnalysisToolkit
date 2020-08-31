@@ -7,7 +7,7 @@ from tkinter.filedialog import askopenfilename
 
 class PeakIntegrationControl(ProcessingStepControlBase):
     def __init__(self, controller, root, accordion):
-        super().__init__("Peak Integration (WIP)", controller, accordion)
+        super().__init__("Peak Integration", controller, accordion)
         self.m_parsedData = None
         self.m_plots["Processed Data"] = MPLContainer(self.m_chord.m_notebookRef, "Processed Data", "Desorption Rate (arb. U.)", "Temperature (K)", root)
         self.m_integrated = False

@@ -29,7 +29,7 @@ class ProcessedDataWrapper():
         secondHeaderLine =  np.loadtxt(self.m_filePath, dtype=str, skiprows=1, max_rows=1, comments=None) #ignoring comments, same as before
         headerLength = int (secondHeaderLine[-1]) #last part of second header line is header length
 
-        for i in range(3, headerLength-2):
+        for i in range(3, headerLength-1):
             includedFileNameBuffer = np.loadtxt(self.m_filePath, dtype=str, skiprows=i, max_rows = 1, comments= None)
             self.m_includedFiles.append(' '.join(includedFileNameBuffer[2:]))#ignore '# ' before line
 

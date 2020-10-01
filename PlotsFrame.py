@@ -338,10 +338,10 @@ class MPLContainer(tk.Frame):
 
         if (logXAxis):
             axes.set_xscale("log")
-            axes.set_xbound(0, math.log(maxX))#, top = None)
+            axes.set_xbound(minX, maxX)#math.log(maxX))#, top = None)
         if (logYAxis):
             axes.set_yscale("log")
-            axes.set_ybound(0, math.log(maxY))#, top = None)
+            axes.set_ybound(1, maxY)#math.log(maxY))#, top = None)
 
         axes.relim()
 

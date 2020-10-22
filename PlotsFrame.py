@@ -218,6 +218,7 @@ class MPLContainer(tk.Frame):
         self.m_subplot.tick_params(direction="in")
         self.m_subplot.grid(linestyle=':')
         self.m_subplot.margins(x = 0.0)
+        self.m_subplot.set_prop_cycle(color=[['blue', 'green', 'red', 'cyan', 'magenta', 'yellow', 'black', 'purple', 'pink', 'brown', 'orange', 'teal', 'coral', 'lightblue', 'lime', 'lavender', 'turquoise', 'darkgreen', 'tan', 'salmon', 'gold']])
         if(self.m_invertXAxis):
             self.m_subplot.invert_xaxis()
 

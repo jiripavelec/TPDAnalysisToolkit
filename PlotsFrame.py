@@ -219,7 +219,7 @@ class MPLContainer(tk.Frame):
         self.m_subplot.grid(linestyle=':')
         self.m_subplot.margins(x = 0.0)
         #consider removing yellow, tan, salmon, coral
-        self.m_subplot.set_prop_cycle(color=['blue', 'green', 'red', 'cyan', 'magenta', 'black', 'purple', 'pink', 'brown', 'orange', 'teal', 'lightblue', 'lime', 'lavender', 'turquoise', 'darkgreen', 'gold'])
+        self.m_subplot.set_prop_cycle(color=['blue', 'green', 'red', 'cyan', 'magenta', 'black', 'purple', 'pink', 'brown', 'orange', 'teal', 'lightblue', 'lime', 'turquoise', 'darkgreen', 'gold'])
         if(self.m_invertXAxis):
             self.m_subplot.invert_xaxis()
 

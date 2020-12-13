@@ -250,7 +250,7 @@ class DisplayOptionsFrame(ttk.Frame):
         self.m_availableMassesListBox = ScrolledListBox(self)
         self.m_availableMassesListBox.grid(row = 2, column = 0, sticky = "nsew")
 
-        self.m_displayButton = ttk.Button(self,text="Diplay Selected >>", state = tk.DISABLED, command=self.showSelectedMasses)
+        self.m_displayButton = ttk.Button(self,text="Display Selected >>", state = tk.DISABLED, command=self.showSelectedMasses)
         self.m_displayButton.grid(row = 3, column = 0, sticky = "nsew")
 
         self.m_displayedMassesLabel = ttk.Label(self, text='Displayed Masses:')

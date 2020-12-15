@@ -23,31 +23,32 @@ class ProcessedDataWrapper():
 
     def parseProcessedDataFile(self):
         if(self.m_dataParsed):
-            return
-        firstHeaderLine =  np.loadtxt(self.m_filePath, dtype=str, max_rows=1, comments=None) #ignoring comments because we want to load the header
-        self.m_mass = int(firstHeaderLine[-1]) #last part of first header line is mass number
-        secondHeaderLine =  np.loadtxt(self.m_filePath, dtype=str, skiprows=1, max_rows=1, comments=None) #ignoring comments, same as before
-        headerLength = int (secondHeaderLine[-1]) #last part of second header line is header length
+            return True
+        try: #try parsing so we can return false if we catch an exception
+            firstHeaderLine =  np.loadtxt(self.m_filePath, dtype=str, max_rows=1, comments=None) #ignoring comments because we want to load the header
+            self.m_mass = int(firstHeaderLine[-1]) #last part of first header line is mass number
+            secondHeaderLine =  np.loadtxt(self.m_filePath, dtype=str, skiprows=1, max_rows=1, comments=None) #ignoring comments, same as before
+            headerLength = int (secondHeaderLine[-1]) #last part of second header line is header length
 
-        for i in range(3, headerLength-1):
-            includedFileNameBuffer = np.loadtxt(self.m_filePath, dtype=str, skiprows=i, max_rows = 1, comments= None)
-            self.m_includedFiles.append(' '.join(includedFileNameBuffer[2:]))#ignore '# ' before line
+            for i in range(3, headerLength-1):
+                includedFileNameBuffer = np.loadtxt(self.m_filePath, dtype=str, skiprows=i, max_rows = 1, comments= None)
+                self.m_includedFiles.append(' '.join(includedFileNameBuffer[2:]))#ignore '# ' before line
 
-        firstTwoLines = np.loadtxt(self.m_filePath, dtype=str, max_rows=2)
-        self.m_listOfColumns = firstTwoLines[0,:]
-        self.m_totalCoverages = [float(c) for c in firstTwoLines[1,:]]
-        if not (1.0 in self.m_totalCoverages):
-            self.m_normalized = False
-        else:
-            self.m_normalized = True
-
-
-        temp = np.loadtxt(self.m_filePath, dtype = float, comments = None, skiprows= headerLength + 2)
-        
-        #now columns can be traversed contiguously in memory
-        self.m_parsedInputData = temp.transpose().copy()
-        self.m_dataParsed = True
-        return True
+            firstTwoLines = np.loadtxt(self.m_filePath, dtype=str, max_rows=2)
+            self.m_listOfColumns = firstTwoLines[0,:]
+            self.m_totalCoverages = [float(c) for c in firstTwoLines[1,:]]
+            if not (1.0 in self.m_totalCoverages):
+                self.m_normalized = False
+            else:
+                self.m_normalized = True
+            temp = np.loadtxt(self.m_filePath, dtype = float, comments = None, skiprows= headerLength + 2)
+            #now columns can be traversed contiguously in memory
+            self.m_parsedInputData = temp.transpose().copy()
+            self.m_dataParsed = True
+            return True
+        except Exception:
+            return False
+        return False
 
     def getInputData(self):
         return self.m_parsedInputData

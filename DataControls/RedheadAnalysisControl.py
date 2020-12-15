@@ -15,19 +15,23 @@ class RedheadAnalysisControl(ProcessingStepControlBase):
     def onFileSelected(self):
         self.m_parsedData = ProcessedDataWrapper(self.m_fileSelectionControl.m_inputFilePath)
         self.m_parsedData.parseProcessedDataFile()
-        self.m_spectrumCB["values"] = self.m_parsedData.m_includedFiles
+        if(self.m_parsedData.m_normalized):
+            tk.messagebox.showerror("Input Data", "Please use processed data which has not been normalized to a monolayer!")
+            self.m_spectrumCB["values"] = None
+        else:    
+            self.m_spectrumCB["values"] = self.m_parsedData.m_includedFiles
         # self.m_spectrumCB.current(0)
 
     def plotBounds(self):
-        for plot in self.m_plots.values():
-            plot.removeVerticalLines()
-            plot.addVerticalLine(float(self.m_tCutEndEntry.get()))
-            plot.addVerticalLine(float(self.m_tCutStartEntry.get()))
+        # for plot in self.m_plots.values():
+        #     plot.removeVerticalLines()
+        #     plot.addVerticalLine(float(self.m_tCutEndEntry.get()))
+        #     plot.addVerticalLine(float(self.m_tCutStartEntry.get()))
 
-        # self.m_plots["Processed Data"].removeVerticalLines()
-        # # if(not self.m_integrated):
-        # self.m_plots["Processed Data"].addVerticalLine(float(self.m_tCutEndEntry.get()))
-        # self.m_plots["Processed Data"].addVerticalLine(float(self.m_tCutStartEntry.get()))
+        self.m_plots["Processed Data"].removeVerticalLines()
+        # if(not self.m_integrated):
+        self.m_plots["Processed Data"].addVerticalLine(float(self.m_tCutEndEntry.get()))
+        self.m_plots["Processed Data"].addVerticalLine(float(self.m_tCutStartEntry.get()))
 
     def plotSelectedSpectrum(self):
         targetData = self.m_parsedData.fileNameToExpDesorptionRateVSTemp(self.m_spectrumCB.get())

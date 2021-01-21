@@ -5,6 +5,7 @@ import math
 import operator
 import sys
 import DataControls.ControlElements as DCCE
+import os
 
 from datetime import datetime
 import matplotlib as mpl
@@ -139,14 +140,55 @@ class CustomNavigationToolbar(NavigationToolbar2Tk):
 
         # raise NotImplementedError
 
-    def save_figure(self):
+    def save_figure(self,*args): #copied backend save_fig because I needed to add custom solution for .txt file extension
         # previousSize = self.m_figureRef.get_size_inches()
         # previousDPI = self.m_figureRef.get_dpi()
         # self.m_figureRef.set_dpi(300) #print quality temporarily
         # self.m_figureRef.set_size_inches(w=13.0/2.54, h=8.0/2.54)#13cm by 8cm
-        super().save_figure()
+        # super().save_figure()
         # self.m_figureRef.set_size_inches(previousSize)
         # self.m_figureRef.set_dpi(previousDPI) #print quality temporarily
+        filetypes = self.canvas.get_supported_filetypes().copy()
+        default_filetype = self.canvas.get_default_filetype()
+
+        # Tk doesn't provide a way to choose a default filetype,
+        # so we just have to put it first
+        default_filetype_name = filetypes.pop(default_filetype)
+        sorted_filetypes = ([(default_filetype, default_filetype_name)]
+                            + sorted(filetypes.items()))
+        tk_filetypes = [(name, '*.%s' % ext) for ext, name in sorted_filetypes]
+
+        # adding a default extension seems to break the
+        # asksaveasfilename dialog when you choose various save types
+        # from the dropdown.  Passing in the empty string seems to
+        # work - JDH!
+        #defaultextension = self.canvas.get_default_filetype()
+        defaultextension = ''
+        initialdir = os.path.expanduser(mpl.rcParams['savefig.directory'])
+        initialfile = self.canvas.get_default_filename()
+        fname = tk.filedialog.asksaveasfilename(
+            master=self.canvas.get_tk_widget().master,
+            title='Save the figure',
+            filetypes=tk_filetypes,
+            defaultextension=defaultextension,
+            initialdir=initialdir,
+            initialfile=initialfile,
+            )
+
+        if fname in ["", ()]:
+            return
+        # Save dir for next time, unless empty str (i.e., use cwd).
+        if initialdir != "":
+            mpl.rcParams['savefig.directory'] = (
+                os.path.dirname(str(fname)))
+        try:
+            if(".txt" in fname):
+                pass #TODO: actually write out file!
+                #self.m_subplot.get_lines() or use legend handles
+            else:# This method will handle the delegation to the correct type
+                self.canvas.figure.savefig(fname)
+        except Exception as e:
+            tk.messagebox.showerror("Error saving file", str(e))
 
     def home_extended(self):
         super().home()

@@ -236,11 +236,11 @@ class ProcessedDataWrapper():
 
     def getChiSquaredVSPrefactor(self):
         prefactorList = list(self.m_chiSquared) #this returns the keys of the dictionary as an indexable list
-        dataPointsPerPrefactor = len(self.m_chiSquared[prefactorList[0]])
+        dataPointsPerPrefactor = len(self.m_chiSquared[prefactorList[0]]) - 1 #-1 because we don't want the chisquared for the monolayer coverage
         result = np.zeros((len(prefactorList),dataPointsPerPrefactor))
         #result[0,:]
         for i in range(len(prefactorList)):
-            for j in range(len(self.m_chiSquared[prefactorList[i]])):
+            for j in range(dataPointsPerPrefactor):
                 result[i,j] = self.m_chiSquared[prefactorList[i]][j]
         result = np.vstack((np.array([float(p) for p in prefactorList]),result.transpose()))
         return result
@@ -251,6 +251,7 @@ class ProcessedDataWrapper():
         for i in range(len(prefactorList)):
             for j in range(len(self.m_chiSquared[prefactorList[i]]) - 1): #-1 because we don't want the chisquared for the monolayer coverage
                 result[i] += self.m_chiSquared[prefactorList[i]][j] #sum of chi squared values for a prefactor
+        result = np.vstack((np.array([float(p) for p in prefactorList]),result.transpose()))
         return result
 
 

@@ -237,14 +237,13 @@ class CustomNavigationToolbar(NavigationToolbar2Tk):
                 output = np.vstack((rawData[0].get_xdata(),rawData[0].get_ydata()))
                 #append to them
                 for i in range(1,lineCount):
-                    labels += [rawData[i].get_label().replace(' ', '_')] #TODO: replace spaces in labels with underscores
+                    labels += [self.m_containerRef.m_subplot.get_xlabel().replace(' ', '_')]
+                    labels += [rawData[i].get_label().replace(' ', '_')]
+                    output = np.vstack((output, rawData[i].get_xdata()))
                     output = np.vstack((output, rawData[i].get_ydata()))
                 sep = ' '
-                headerString = sep.join(labels) #TODO: check that header doesnt have '#' symbol infront, else write to file differently
+                headerString = sep.join(labels)
                 with open(fname, mode='a') as fileHandle:
-                    #write header and stringData first
-                    # np.savetxt(fileHandle, np.array(labels,dtype=str).transpose(), fmt="%s", delimiter=' ')
-                    #then write float data (after transposing it)
                     np.savetxt(fileHandle, output.transpose(), delimiter=' ', header = headerString, comments='')
             else:# This method will handle the delegation to the correct type
                 self.canvas.figure.savefig(fname)

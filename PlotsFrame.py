@@ -6,6 +6,7 @@ import operator
 import sys
 import DataControls.ControlElements as DCCE
 import os
+import subprocess
 
 from datetime import datetime
 import matplotlib as mpl
@@ -140,6 +141,50 @@ class CustomNavigationToolbar(NavigationToolbar2Tk):
 
         # raise NotImplementedError
 
+    #MACOS ONLY!!! TRY USING THIS TO FIX SAVEAS INTERFACE
+    def user_action(apath, cmd):
+        ascript = '''
+        -- apath - default path for dialogs to open too
+        -- cmd   - "Select", "Save"
+        on run argv
+            set userCanceled to false
+            if (count of argv) = 0 then
+                tell application "System Events" to display dialog "argv is 0" ¬
+                    giving up after 10
+            else
+                set apath to POSIX file (item 1 of argv) as alias
+                set action to (item 2 of argv) as text
+            end if
+            try
+            if action contains "Select" then
+                set fpath to POSIX path of (choose file default location apath ¬
+                        without invisibles, multiple selections allowed and ¬
+                        showing package contents)
+                # return fpath as text
+            else if action contains "Save" then
+                set fpath to POSIX path of (choose file name default location apath)
+            end if
+            return fpath as text
+            on error number -128
+                set userCanceled to true
+            end try
+            if userCanceled then
+                return "Cancel"
+            else
+                return fpath
+            end if
+        end run
+        '''
+        try:
+            proc = subprocess.check_output(['osascript', '-e', ascript,
+                                        apath, cmd])
+            if 'Cancel' in proc.decode('utf-8'):  # User pressed Cancel button
+                sys.exit('User Canceled')
+            return proc.decode('utf-8')
+        except subprocess.CalledProcessError as e:
+                print('Python error: [%d]\n%s\n' % e.returncode, e.output)
+
+
     def save_figure(self,*args): #copied backend save_fig because I needed to add custom solution for .txt file extension
         # previousSize = self.m_figureRef.get_size_inches()
         # previousDPI = self.m_figureRef.get_dpi()
@@ -149,13 +194,14 @@ class CustomNavigationToolbar(NavigationToolbar2Tk):
         # self.m_figureRef.set_size_inches(previousSize)
         # self.m_figureRef.set_dpi(previousDPI) #print quality temporarily
         filetypes = self.canvas.get_supported_filetypes().copy()
-        default_filetype = self.canvas.get_default_filetype()
+        filetypes["txt"] = "Raw Plot Data"
+        # default_filetype = self.canvas.get_default_filetype()
 
         # Tk doesn't provide a way to choose a default filetype,
         # so we just have to put it first
-        default_filetype_name = filetypes.pop(default_filetype)
-        sorted_filetypes = ([(default_filetype, default_filetype_name)]
-                            + sorted(filetypes.items()))
+        #("All Files", "*.*"),
+        # default_filetype_name = filetypes.pop(default_filetype)
+        sorted_filetypes = sorted(filetypes.items())
         tk_filetypes = [(name, '*.%s' % ext) for ext, name in sorted_filetypes]
 
         # adding a default extension seems to break the
@@ -163,16 +209,17 @@ class CustomNavigationToolbar(NavigationToolbar2Tk):
         # from the dropdown.  Passing in the empty string seems to
         # work - JDH!
         #defaultextension = self.canvas.get_default_filetype()
-        defaultextension = ''
+        # defaultextension = 'txt'
         initialdir = os.path.expanduser(mpl.rcParams['savefig.directory'])
-        initialfile = self.canvas.get_default_filename()
+        # initialfile = "RawData.txt"#self.canvas.get_default_filename()
         fname = tk.filedialog.asksaveasfilename(
             master=self.canvas.get_tk_widget().master,
             title='Save the figure',
-            filetypes=tk_filetypes,
-            defaultextension=defaultextension,
-            initialdir=initialdir,
-            initialfile=initialfile,
+            filetypes=[("All Files", "*.*")] + tk_filetypes
+            # filetypes=[('Raw Plot Data','*.txt'),('Image Data','*.jpeg')],
+            # defaultextension=defaultextension,
+            # initialdir=initialdir,
+            # initialfile=initialfile,
             )
 
         if fname in ["", ()]:
@@ -183,8 +230,22 @@ class CustomNavigationToolbar(NavigationToolbar2Tk):
                 os.path.dirname(str(fname)))
         try:
             if(".txt" in fname):
-                pass #TODO: actually write out file!
-                #self.m_subplot.get_lines() or use legend handles
+                rawData = self.m_containerRef.m_subplot.get_lines() #or use legend handles #_xy contains data and _label contains legend name
+                lineCount = len(rawData)
+                #init vars
+                labels = [self.m_containerRef.m_subplot.get_xlabel().replace(' ', '_')]
+                output = np.vstack((rawData[0].get_xdata(),rawData[0].get_ydata()))
+                #append to them
+                for i in range(1,lineCount):
+                    labels += [rawData[i].get_label().replace(' ', '_')] #TODO: replace spaces in labels with underscores
+                    output = np.vstack((output, rawData[i].get_ydata()))
+                sep = ' '
+                headerString = sep.join(labels) #TODO: check that header doesnt have '#' symbol infront, else write to file differently
+                with open(fname, mode='a') as fileHandle:
+                    #write header and stringData first
+                    # np.savetxt(fileHandle, np.array(labels,dtype=str).transpose(), fmt="%s", delimiter=' ')
+                    #then write float data (after transposing it)
+                    np.savetxt(fileHandle, output.transpose(), delimiter=' ', header = headerString, comments='')
             else:# This method will handle the delegation to the correct type
                 self.canvas.figure.savefig(fname)
         except Exception as e:

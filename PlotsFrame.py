@@ -234,6 +234,7 @@ class CustomNavigationToolbar(NavigationToolbar2Tk):
                 lineCount = len(rawData)
                 #init vars
                 labels = [self.m_containerRef.m_subplot.get_xlabel().replace(' ', '_')]
+                labels += [rawData[0].get_label().replace(' ', '_')]
                 output = np.vstack((rawData[0].get_xdata(),rawData[0].get_ydata()))
                 #append to them
                 for i in range(1,lineCount):

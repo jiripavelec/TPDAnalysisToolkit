@@ -365,28 +365,28 @@ class MPLContainer(tk.Frame):
                     del line
         self.canvas.draw_idle()
 
-    def __switchToMarkers(self, axes):
+    def _switchToMarkers(self, axes):
         for child in axes.get_children():
             if(type(child) is mpl.lines.Line2D):
                 child.set_linestyle('None')
                 child.set_marker('+')
 
     def switchToMarkers(self):
-        self.__switchToMarkers(self.m_subplot)
+        self._switchToMarkers(self.m_subplot)
         if(self.m_secondaryYAxisRequired):
-            self.__switchToMarkers(self.m_secondaryYAxis)
+            self._switchToMarkers(self.m_secondaryYAxis)
         self.canvas.draw_idle()
 
-    def __switchToLines(self, axes):
+    def _switchToLines(self, axes):
         for child in axes.get_children():
             if(type(child) is mpl.lines.Line2D):
                 child.set_marker('None')
                 child.set_linestyle('solid')
 
     def switchToLines(self):
-        self.__switchToLines(self.m_subplot)
+        self._switchToLines(self.m_subplot)
         if(self.m_secondaryYAxisRequired):
-            self.__switchToLines(self.m_secondaryYAxis)
+            self._switchToLines(self.m_secondaryYAxis)
         self.canvas.draw_idle()
 
     def toggleMarkers(self):
@@ -398,7 +398,7 @@ class MPLContainer(tk.Frame):
             self.m_usingMarkers = True
         self.canvas.draw_idle()
 
-    def __addLinePlots(self, axes, ndarrayData, labels, logXAxis, logYAxis, color, pLineWidth = 1):
+    def _addLinePlots(self, axes, ndarrayData, labels, logXAxis, logYAxis, color, pLineWidth = 1):
         maxX = 0
         maxY = 0
         minX = 0
@@ -451,14 +451,14 @@ class MPLContainer(tk.Frame):
         axes.relim()
 
     def addPrimaryLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False, color = None):
-        self.__addLinePlots(self.m_subplot, ndarrayData, labels, logXAxis, logYAxis, color)
+        self._addLinePlots(self.m_subplot, ndarrayData, labels, logXAxis, logYAxis, color)
         self.canvas.draw_idle()
 
 
     def addSecondaryLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False, color = None):
         if(not self.m_secondaryYAxisRequired):
             raise NameError #should use primary line plots, since secondary axis is not defined for this plot
-        self.__addLinePlots(self.m_secondaryYAxis, ndarrayData, labels, logXAxis, logYAxis, color)
+        self._addLinePlots(self.m_secondaryYAxis, ndarrayData, labels, logXAxis, logYAxis, color)
         self.canvas.draw_idle()
 
     def addVerticalLine(self, xValue):

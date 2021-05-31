@@ -26,7 +26,7 @@ class RawDataWrapper():
         substrings = self.m_fileName.split(' ')
         self.m_parsedExperimentNumber = substrings[0] #first substring should always be number
         for s in substrings:
-            if (s[-1] == 'L'):
+            if (s[-1] == 'L' or s[-1] == 'l'):
                 try:
                     s = float(s[:-1]) #this will throw a value error if not possible
                     self.m_parsedCoverage = "{:04.2f}L".format(s)

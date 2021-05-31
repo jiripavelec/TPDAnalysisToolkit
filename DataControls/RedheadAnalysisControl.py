@@ -1,11 +1,11 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from PlotsFrame import MPLContainer # pylint: disable=import-error
-from DataControls.ControlElements import Chord, ProcessingStepControlBase, EnhancedEntry, SingleInputFileSelectionControl #ui element # pylint: disable=import-error
+from DataControls.ControlElements import Chord, ProcessingControlBase, EnhancedEntry, SingleInputFileSelectionControl #ui element # pylint: disable=import-error
 from DataModels.ProcessedDataWrapper import ProcessedDataWrapper # pylint: disable=import-error
 import numpy as np
 
-class RedheadAnalysisControl(ProcessingStepControlBase):
+class RedheadAnalysisControl(ProcessingControlBase):
     def __init__(self, controller, root, accordion):
         super().__init__("Redhead Analysis (WIP)", controller, accordion)
         self.m_parsedData = None

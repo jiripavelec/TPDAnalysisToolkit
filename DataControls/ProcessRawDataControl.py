@@ -2,7 +2,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from datetime import datetime
 from PlotsFrame import MPLContainer # pylint: disable=import-error
-from DataControls.ControlElements import Chord, ScrolledListBox, EnhancedCheckButton, ProcessingStepControlBase, DisplayOptionsFrame, EnhancedEntry, InputFileListBoxControl #ui elements # pylint: disable=import-error
+from DataControls.ControlElements import Chord, ScrolledListBox, EnhancedCheckButton, ProcessingControlBase, DisplayOptionsFrame, EnhancedEntry, InputFileListBoxControl #ui elements # pylint: disable=import-error
 from tkinter.filedialog import askdirectory, askopenfilenames, asksaveasfilename 
 from DataModels.RawDataWrapper import RawDataWrapper # pylint: disable=import-error
 import numpy as np
@@ -10,7 +10,7 @@ import os.path
 from os import path, chdir
 # from glob import glob
 
-class ProcessRawDataControl(ProcessingStepControlBase):
+class ProcessRawDataControl(ProcessingControlBase):
     def __init__(self, controller, root, accordion):
         super().__init__("Process TPD Data", controller, accordion)
         self.m_filePaths = []

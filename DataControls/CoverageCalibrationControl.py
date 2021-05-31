@@ -1,9 +1,9 @@
 import tkinter as tk
 import tkinter.ttk as ttk
-from DataControls.ControlElements import Chord, ProcessingStepControlBase, InputFileListBoxControl, EnhancedEntry # pylint: disable=import-error
+from DataControls.ControlElements import Chord, ProcessingControlBase, InputFileListBoxControl, EnhancedEntry # pylint: disable=import-error
 from PlotsFrame import MPLContainer # pylint: disable=import-error
 
-class CoverageCalibrationControl(ProcessingStepControlBase):
+class CoverageCalibrationControl(ProcessingControlBase):
     def __init__(self, controller, root, accordion):
         super().__init__("Coverage Calibration (WIP)", controller, accordion)
         self.m_plots["Coverage"] = MPLContainer(self.m_chord.m_notebookRef, "Coverage", "Desorption Rate", "Temperature (K)", root)

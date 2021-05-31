@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from PlotsFrame import MPLContainer # pylint: disable=import-error
-from DataControls.ControlElements import Chord, ScrolledListBox, EnhancedCheckButton, ProcessingStepControlBase, EnhancedEntry, DisplayOptionsFrame, SingleInputFileSelectionControl #ui element # pylint: disable=import-error
+from DataControls.ControlElements import Chord, ScrolledListBox, EnhancedCheckButton, ProcessingControlBase, EnhancedEntry, DisplayOptionsFrame, SingleInputFileSelectionControl #ui element # pylint: disable=import-error
 from tkinter.filedialog import askopenfilename
 from DataModels.ProcessedDataWrapper import ProcessedDataWrapper # pylint: disable=import-error
 from tkinter.filedialog import asksaveasfilename
@@ -9,7 +9,7 @@ from datetime import datetime
 import math
 import multiprocessing
 
-class InvertDataControl(ProcessingStepControlBase):
+class InvertDataControl(ProcessingControlBase):
     def __init__(self, controller, root, accordion):
         super().__init__("Inversion Analysis", controller, accordion)
         self.m_parsedData = None

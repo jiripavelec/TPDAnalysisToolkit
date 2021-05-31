@@ -1,11 +1,11 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from PlotsFrame import MPLContainer # pylint: disable=import-error
-from DataControls.ControlElements import Chord, ScrolledListBox, EnhancedCheckButton, ProcessingStepControlBase, EnhancedEntry, DisplayOptionsFrame, SingleInputFileSelectionControl #ui element # pylint: disable=import-error
+from DataControls.ControlElements import Chord, ScrolledListBox, EnhancedCheckButton, ProcessingControlBase, EnhancedEntry, DisplayOptionsFrame, SingleInputFileSelectionControl #ui element # pylint: disable=import-error
 from DataModels.ProcessedDataWrapper import ProcessedDataWrapper # pylint: disable=import-error
 from tkinter.filedialog import askopenfilename
 
-class PeakIntegrationControl(ProcessingStepControlBase):
+class PeakIntegrationControl(ProcessingControlBase):
     def __init__(self, controller, root, accordion):
         super().__init__("Peak Integration", controller, accordion)
         self.m_parsedData = None

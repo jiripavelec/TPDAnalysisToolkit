@@ -234,17 +234,17 @@ class CustomNavigationToolbar(NavigationToolbar2Tk):
                 lineCount = len(rawData)
                 #init vars
                 labels = [self.m_containerRef.m_subplot.get_xlabel().replace(' ', '_')]
+                labels += [rawData[0].get_label().replace(' ', '_')]
                 output = np.vstack((rawData[0].get_xdata(),rawData[0].get_ydata()))
                 #append to them
                 for i in range(1,lineCount):
-                    labels += [rawData[i].get_label().replace(' ', '_')] #TODO: replace spaces in labels with underscores
+                    labels += [self.m_containerRef.m_subplot.get_xlabel().replace(' ', '_')]
+                    labels += [rawData[i].get_label().replace(' ', '_')]
+                    output = np.vstack((output, rawData[i].get_xdata()))
                     output = np.vstack((output, rawData[i].get_ydata()))
                 sep = ' '
-                headerString = sep.join(labels) #TODO: check that header doesnt have '#' symbol infront, else write to file differently
+                headerString = sep.join(labels)
                 with open(fname, mode='a') as fileHandle:
-                    #write header and stringData first
-                    # np.savetxt(fileHandle, np.array(labels,dtype=str).transpose(), fmt="%s", delimiter=' ')
-                    #then write float data (after transposing it)
                     np.savetxt(fileHandle, output.transpose(), delimiter=' ', header = headerString, comments='')
             else:# This method will handle the delegation to the correct type
                 self.canvas.figure.savefig(fname)
@@ -365,28 +365,28 @@ class MPLContainer(tk.Frame):
                     del line
         self.canvas.draw_idle()
 
-    def __switchToMarkers(self, axes):
+    def _switchToMarkers(self, axes):
         for child in axes.get_children():
             if(type(child) is mpl.lines.Line2D):
                 child.set_linestyle('None')
                 child.set_marker('+')
 
     def switchToMarkers(self):
-        self.__switchToMarkers(self.m_subplot)
+        self._switchToMarkers(self.m_subplot)
         if(self.m_secondaryYAxisRequired):
-            self.__switchToMarkers(self.m_secondaryYAxis)
+            self._switchToMarkers(self.m_secondaryYAxis)
         self.canvas.draw_idle()
 
-    def __switchToLines(self, axes):
+    def _switchToLines(self, axes):
         for child in axes.get_children():
             if(type(child) is mpl.lines.Line2D):
                 child.set_marker('None')
                 child.set_linestyle('solid')
 
     def switchToLines(self):
-        self.__switchToLines(self.m_subplot)
+        self._switchToLines(self.m_subplot)
         if(self.m_secondaryYAxisRequired):
-            self.__switchToLines(self.m_secondaryYAxis)
+            self._switchToLines(self.m_secondaryYAxis)
         self.canvas.draw_idle()
 
     def toggleMarkers(self):
@@ -398,7 +398,7 @@ class MPLContainer(tk.Frame):
             self.m_usingMarkers = True
         self.canvas.draw_idle()
 
-    def __addLinePlots(self, axes, ndarrayData, labels, logXAxis, logYAxis, color, pLineWidth = 1):
+    def _addLinePlots(self, axes, ndarrayData, labels, logXAxis, logYAxis, color, pLineWidth = 1):
         maxX = 0
         maxY = 0
         minX = 0
@@ -451,14 +451,14 @@ class MPLContainer(tk.Frame):
         axes.relim()
 
     def addPrimaryLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False, color = None):
-        self.__addLinePlots(self.m_subplot, ndarrayData, labels, logXAxis, logYAxis, color)
+        self._addLinePlots(self.m_subplot, ndarrayData, labels, logXAxis, logYAxis, color)
         self.canvas.draw_idle()
 
 
     def addSecondaryLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False, color = None):
         if(not self.m_secondaryYAxisRequired):
             raise NameError #should use primary line plots, since secondary axis is not defined for this plot
-        self.__addLinePlots(self.m_secondaryYAxis, ndarrayData, labels, logXAxis, logYAxis, color)
+        self._addLinePlots(self.m_secondaryYAxis, ndarrayData, labels, logXAxis, logYAxis, color)
         self.canvas.draw_idle()
 
     def addVerticalLine(self, xValue):

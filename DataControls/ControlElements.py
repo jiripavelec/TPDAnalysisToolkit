@@ -332,14 +332,14 @@ class EnhancedComboBox(ttk.Combobox):
 #EnhancedComboBox END
 
 #ProcessingStepControlBase BEGIN
-class ProcessingStepControlBase:
+class ProcessingControlBase:
     def __init__(self, title, controller, accordion):
         self.m_title = title
         self.m_controller = controller
         self.m_chord = Chord(accordion, controller, title)
         self.m_chordInitDone = False
         self.m_notebookInitDone = False
-        self.m_plots = {}
+        self.m_plots = {} #Add MPL containers to m_plots
 
     #This is for the controls on the left side of the UI
     def initChordUI(self):

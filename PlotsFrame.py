@@ -194,7 +194,6 @@ class CustomNavigationToolbar(NavigationToolbar2Tk):
         # self.m_figureRef.set_size_inches(previousSize)
         # self.m_figureRef.set_dpi(previousDPI) #print quality temporarily
         filetypes = self.canvas.get_supported_filetypes().copy()
-        filetypes["txt"] = "Raw Plot Data"
         # default_filetype = self.canvas.get_default_filetype()
 
         # Tk doesn't provide a way to choose a default filetype,
@@ -215,7 +214,7 @@ class CustomNavigationToolbar(NavigationToolbar2Tk):
         fname = tk.filedialog.asksaveasfilename(
             master=self.canvas.get_tk_widget().master,
             title='Save the figure',
-            filetypes=[("All Files", "*.*")] + tk_filetypes
+            filetypes=[("All Files", "*.*"),("Raw Plot Data", "*.txt")] + tk_filetypes
             # filetypes=[('Raw Plot Data','*.txt'),('Image Data','*.jpeg')],
             # defaultextension=defaultextension,
             # initialdir=initialdir,

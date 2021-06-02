@@ -98,15 +98,15 @@ class LeadingEdgeAnalysisControl(ProcessingControlBase):
         return True
 
     def checkFitBounds(self):
-        minStartCut = float(1.0 / self.m_parsedData.getMinTemp())
-        maxStopCut = float(1.0 / self.m_parsedData.getMaxTemp())
+        minStartCut = float(1.0 / self.m_parsedData.getMaxTemp())
+        maxStopCut = float(1.0 / self.m_parsedData.getMinTemp())
         if(self.tryReadStartCutEntry()):
-            if(minStartCut < float(self.m_tCutStartEntry.get())):
+            if(minStartCut > float(self.m_tCutStartEntry.get())):
                 self.m_tCutStartEntry.set(str(minStartCut))
         else:
             self.m_tCutStartEntry.set(str(minStartCut))
         if(self.tryReadStopCutEntry()):
-            if(maxStopCut > float(self.m_tCutEndEntry.get())):
+            if(maxStopCut < float(self.m_tCutEndEntry.get())):
                 self.m_tCutEndEntry.set(str(maxStopCut))
         else:
                 self.m_tCutEndEntry.set(str(maxStopCut))
@@ -122,15 +122,19 @@ class LeadingEdgeAnalysisControl(ProcessingControlBase):
         targetData = self.m_parsedData.fileNameToExpDesorptionRateVSTemp(self.m_spectrumCB.get())
         # targetLabel = self.m_parsedData.fileNameToCoverageLabel(self.m_spectrumCB.get())
         # arrheniusData = np.vstack((np.reciprocal(targetData[0,:]),np.log(targetData[1,:])))
+
         reciprocalTemp = np.reciprocal(targetData[0,:])
         logCountRate = np.log(targetData[1,:])
+        maxIdx = (np.abs(reciprocalTemp - t1)).argmin()
+        minIdx = (np.abs(reciprocalTemp - t2)).argmin()
+
         # result = self.m_parsedData.integrateDesorptionRate(t1,t2,self.m_spectrumCB.get())
         # coef = np.polyfit(reciprocalTemp,logCountRate,1)
-        self.m_1DFitCoefficients = npp.polynomial.polyfit(reciprocalTemp,logCountRate,1)
+        self.m_1DFitCoefficients = npp.polynomial.polyfit(reciprocalTemp[minIdx:maxIdx],logCountRate[minIdx:maxIdx],1)
         # linearFitPoly = np.poly1d(coef)
         # self.plotFit(self.m_1DFitCoefficients)
 
-        leadingEdgeTempXIntercept = self.m_1DFitCoefficients[1] / self.m_1DFitCoefficients[0]
+        leadingEdgeTempXIntercept = - self.m_1DFitCoefficients[1] / self.m_1DFitCoefficients[0]
         self.m_fitted = True
         self.m_resultValueLabel.configure(text = str(leadingEdgeTempXIntercept))
         self.plotSelectedSpectrum()#should update plot with appropriate shading

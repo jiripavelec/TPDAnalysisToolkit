@@ -397,7 +397,7 @@ class MPLContainer(tk.Frame):
             self.m_usingMarkers = True
         self.canvas.draw_idle()
 
-    def _addLinePlots(self, axes, ndarrayData, labels, logXAxis, logYAxis, color, pLineWidth = 1):
+    def _addLinePlots(self, axes, ndarrayData, labels, logXAxis, logYAxis, color,  shouldRelim, pLineWidth = 1):
         maxX = 0
         maxY = 0
         minX = 0
@@ -410,16 +410,17 @@ class MPLContainer(tk.Frame):
                     axes.plot(ndarrayData[0,:],ndarrayData[i,:], label = labels[i-1], linewidth=pLineWidth, color = color)
                 else:
                     axes.plot(ndarrayData[0,:],ndarrayData[i,:], linewidth=pLineWidth, color = color)
-            for l in axes.lines:
-                l_maxX = np.amax(l.get_xdata())
-                l_minX = np.amin(l.get_xdata())
-                l_maxY = 1.1*np.amax(l.get_ydata())
-                maxX = np.amax((maxX,l_maxX))
-                maxY = np.amax((maxY,l_maxY))
-                minX = np.amax((minX,l_minX))
-            axes.set_xbound(minX, maxX)#, top = None)
-            axes.set_ybound(0, maxY)#, top = None)
-            self.m_subplot.grid(linestyle=':')
+            if(shouldRelim):
+                for l in axes.lines:
+                    l_maxX = np.amax(l.get_xdata())
+                    l_minX = np.amin(l.get_xdata())
+                    l_maxY = 1.1*np.amax(l.get_ydata())
+                    maxX = np.amax((maxX,l_maxX))
+                    maxY = np.amax((maxY,l_maxY))
+                    minX = np.amax((minX,l_minX))
+                axes.set_xbound(minX, maxX)#, top = None)
+                axes.set_ybound(0, maxY)#, top = None)
+                self.m_subplot.grid(linestyle=':')
 
 
         if(self.m_usingMarkers):
@@ -447,17 +448,18 @@ class MPLContainer(tk.Frame):
             axes.set_yscale("log")
             axes.set_ybound(1, maxY)#math.log(maxY))#, top = None)
 
-        axes.relim()
+        if(shouldRelim):
+            axes.relim()
 
-    def addPrimaryLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False, color = None):
-        self._addLinePlots(self.m_subplot, ndarrayData, labels, logXAxis, logYAxis, color)
+    def addPrimaryLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False, color = None, shouldRelim = True):
+        self._addLinePlots(self.m_subplot, ndarrayData, labels, logXAxis, logYAxis, color, shouldRelim)
         self.canvas.draw_idle()
 
 
-    def addSecondaryLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False, color = None):
+    def addSecondaryLinePlots(self, ndarrayData, labels = None, logXAxis = False, logYAxis = False, color = None, shouldRelim = True):
         if(not self.m_secondaryYAxisRequired):
             raise NameError #should use primary line plots, since secondary axis is not defined for this plot
-        self._addLinePlots(self.m_secondaryYAxis, ndarrayData, labels, logXAxis, logYAxis, color)
+        self._addLinePlots(self.m_secondaryYAxis, ndarrayData, labels, logXAxis, logYAxis, color, shouldRelim)
         self.canvas.draw_idle()
 
     def addVerticalLine(self, xValue):

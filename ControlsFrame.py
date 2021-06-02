@@ -1,3 +1,4 @@
+from DataControls.LeadingEdgeAnalysisControl import LeadingEdgeAnalysisControl
 import tkinter as tk
 import tkinter.ttk as ttk
 from DataControls.ControlElements import Accordion
@@ -6,6 +7,7 @@ from DataControls.ProcessRawDataControl import ProcessRawDataControl
 from DataControls.InvertDataControl import InvertDataControl
 from DataControls.RedheadAnalysisControl import RedheadAnalysisControl
 from DataControls.PeakIntegrationControl import PeakIntegrationControl
+from DataControls.LeadingEdgeAnalysisControl import LeadingEdgeAnalysisControl
 #import new control elements here
 
 #ControlsFrame BEGIN
@@ -38,6 +40,10 @@ class ControlsFrame(tk.Frame):
         #For redhead analysis
         self.m_redheadAnalysisControl = RedheadAnalysisControl(plotsFrame, root, self.m_accordion)
         self.Controls.append(self.m_redheadAnalysisControl)
+
+        #For leading edge analysis
+        self.m_leadingEdgeAnalysisControl = LeadingEdgeAnalysisControl(plotsFrame, root, self.m_accordion)
+        self.Controls.append(self.m_leadingEdgeAnalysisControl)
 
         #add new controls above the separator
         #separator for easier displaying

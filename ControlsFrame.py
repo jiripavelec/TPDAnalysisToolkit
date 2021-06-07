@@ -25,13 +25,17 @@ class ControlsFrame(tk.Frame):
         self.m_rawDataControl = ProcessRawDataControl(plotsFrame, root, self.m_accordion)
         self.Controls.append(self.m_rawDataControl)
         
-        #For peak integration
-        self.m_peakIntegrationControl = PeakIntegrationControl(plotsFrame, root, self.m_accordion)
-        self.Controls.append(self.m_peakIntegrationControl)
+        #For leading edge analysis
+        self.m_leadingEdgeAnalysisControl = LeadingEdgeAnalysisControl(plotsFrame, root, self.m_accordion)
+        self.Controls.append(self.m_leadingEdgeAnalysisControl)
 
         #For inversion of processed data
         self.m_invertDataControl = InvertDataControl(plotsFrame, root, self.m_accordion)
         self.Controls.append(self.m_invertDataControl)
+
+        #For peak integration
+        self.m_peakIntegrationControl = PeakIntegrationControl(plotsFrame, root, self.m_accordion)
+        self.Controls.append(self.m_peakIntegrationControl)
 
         #For coverage calibration
         self.m_coverageCalibrationControl = CoverageCalibrationControl(plotsFrame, root, self.m_accordion)
@@ -40,10 +44,6 @@ class ControlsFrame(tk.Frame):
         #For redhead analysis
         self.m_redheadAnalysisControl = RedheadAnalysisControl(plotsFrame, root, self.m_accordion)
         self.Controls.append(self.m_redheadAnalysisControl)
-
-        #For leading edge analysis
-        self.m_leadingEdgeAnalysisControl = LeadingEdgeAnalysisControl(plotsFrame, root, self.m_accordion)
-        self.Controls.append(self.m_leadingEdgeAnalysisControl)
 
         #add new controls above the separator
         #separator for easier displaying

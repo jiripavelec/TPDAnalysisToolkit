@@ -8,7 +8,7 @@ import numpy.polynomial as npp
 
 class LeadingEdgeAnalysisControl(ProcessingControlBase):
     def __init__(self, controller, root, accordion):
-        super().__init__("Leading Edge Analysis (WIP)", controller, accordion)
+        super().__init__("Leading Edge Analysis", controller, accordion)
         self.m_parsedData = None
         self.m_1DFitCoefficients = None
         # self.m_plots["Processed Data"] = MPLContainer(self.m_chord.m_notebookRef, "Processed Data", "Desorption Rate (arb. U.)", "Temperature (K)", root)
@@ -181,11 +181,11 @@ class LeadingEdgeAnalysisControl(ProcessingControlBase):
         self.m_tCutEndEntry = EnhancedEntry(self.m_chordFrame)
         self.m_tCutEndEntry.grid(row=7, column = 2, sticky = "nsw")
 
-        self.m_resultsLabel = ttk.Label(self.m_chordFrame, text="Results:")#, compound = tk.CENTER)
+        self.m_resultsLabel = ttk.Label(self.m_chordFrame, text="Result:")#, compound = tk.CENTER)
         self.m_resultsLabel.grid(row=8, column = 0, sticky = "nsw")
 
         self.m_resultTitleLabel = ttk.Label(self.m_chordFrame, text="Temperature from x-intercept (K):")
-        self.m_resultTitleLabel.grid(row=8, column = 1, sticky = "nse")
+        self.m_resultTitleLabel.grid(row=9, column = 1, sticky = "nse")
 
         self.m_resultValueLabel = ttk.Label(self.m_chordFrame, text="N/A")
         self.m_resultValueLabel.grid(row=9, column = 2, sticky = "nsw")

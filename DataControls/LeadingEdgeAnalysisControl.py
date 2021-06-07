@@ -181,15 +181,18 @@ class LeadingEdgeAnalysisControl(ProcessingControlBase):
         self.m_tCutEndEntry = EnhancedEntry(self.m_chordFrame)
         self.m_tCutEndEntry.grid(row=7, column = 2, sticky = "nsw")
 
-        self.m_resultTitleLabel = ttk.Label(self.m_chordFrame, text="Fitting Results:")
+        self.m_resultsLabel = ttk.Label(self.m_chordFrame, text="Results:")#, compound = tk.CENTER)
+        self.m_resultsLabel.grid(row=8, column = 0, sticky = "nsw")
+
+        self.m_resultTitleLabel = ttk.Label(self.m_chordFrame, text="Temperature from x-intercept (K):")
         self.m_resultTitleLabel.grid(row=8, column = 1, sticky = "nse")
 
         self.m_resultValueLabel = ttk.Label(self.m_chordFrame, text="N/A")
-        self.m_resultValueLabel.grid(row=8, column = 2, sticky = "nsw")
+        self.m_resultValueLabel.grid(row=9, column = 2, sticky = "nsw")
 
         self.m_Label = ttk.Label(self.m_chordFrame, text='Work in Progress')
-        self.m_Label.grid(row = 9, column = 0, columnspan = 4, sticky="nsew")
+        self.m_Label.grid(row = 10, column = 0, columnspan = 4, sticky="nsew")
 
         #Process Button
-        self.m_processButton = ttk.Button(self.m_chordFrame, text = "Generate Best (linear) Fit", command = self.processInput)
-        self.m_processButton.grid(row=10, column = 0, columnspan=4, sticky = "nsew")
+        self.m_processButton = ttk.Button(self.m_chordFrame, text = "Generate Edge Fit", command = self.processInput)
+        self.m_processButton.grid(row=11, column = 0, columnspan=4, sticky = "nsew")

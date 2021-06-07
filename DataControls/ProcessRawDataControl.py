@@ -123,7 +123,7 @@ class ProcessRawDataControl(ProcessingControlBase):
         try:
             int(self.m_tCutStartEntry.get())
         except ValueError:
-            tk.messagebox.showerror("Cut Data Start Temp", "Please enter an integer for the temperature at which to start cutting data.")
+            tk.messagebox.showerror("Lower Boundary (Temp.)", "Please enter an integer for the lower temperature boundary")
             return False
         return True
 
@@ -133,7 +133,7 @@ class ProcessRawDataControl(ProcessingControlBase):
         try:
             int(self.m_tCutEndEntry.get())
         except ValueError:
-            tk.messagebox.showerror("Cut Data End Temp", "Please enter an integer for the temperature at which to stop cutting data.")
+            tk.messagebox.showerror("Upper Boundary (Temp.)", "Please enter an integer for the upper temperature boundary.")
             return False
         return True
 
@@ -274,13 +274,13 @@ class ProcessRawDataControl(ProcessingControlBase):
         self.m_optionsLabel = ttk.Label(self.m_chordFrame, text="Processing Options:")#, compound = tk.CENTER)
         self.m_optionsLabel.grid(row=3, column = 0, columnspan = 2, sticky = "nsw")
         
-        self.m_tCutStartLabel = ttk.Label(self.m_chordFrame, text="Cut Data Start Temp.:")
+        self.m_tCutStartLabel = ttk.Label(self.m_chordFrame, text="Lower Boundary (Temp.):")
         self.m_tCutStartLabel.grid(row=4, column = 1, sticky = "nse")
 
         self.m_tCutStartEntry = EnhancedEntry(self.m_chordFrame)
         self.m_tCutStartEntry.grid(row=4, column = 2, sticky = "nsw")
 
-        self.m_tCutEndLabel = ttk.Label(self.m_chordFrame, text="Cut Data End Temp.:")
+        self.m_tCutEndLabel = ttk.Label(self.m_chordFrame, text="Upper Boundary (Temp.):")
         self.m_tCutEndLabel.grid(row=5, column = 1, sticky = "nse")
 
         self.m_tCutEndEntry = EnhancedEntry(self.m_chordFrame)

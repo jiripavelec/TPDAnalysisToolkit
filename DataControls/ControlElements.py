@@ -198,6 +198,9 @@ class ScrolledListBox(ttk.Frame):
 
     def curselection(self):
         return self.m_listBox.curselection()
+
+    def getAll(self):
+        return self.get(0,self.size()-1)
 #ScrolledListBox END
 
 #EnhancedCheckButton BEGIN
@@ -281,6 +284,8 @@ class DisplayOptionsFrame(ttk.Frame):
     def resetMasses(self, rawDataWrappers):
         self.m_availableMassesListBox.clear()
         self.m_availableMassList = []
+
+        previousDisplayedMasses =  self.m_displayedMassesListBox.getAll() #remember previously displayed masses
         self.m_displayedMassesListBox.clear()
         for w in rawDataWrappers:
             if (len(self.m_availableMassList) == 0 and rawDataWrappers.index(w) == 0): #set masses 
@@ -291,10 +296,17 @@ class DisplayOptionsFrame(ttk.Frame):
                 else: #get union of masses
                     self.m_availableMassList = list(set(w.getMassList()) & set(self.m_availableMassList))
 
+        #keep displaying previously displayed masses, but only if they exist in the new set of available masses
+        for m in self.m_availableMassList:
+            if m in previousDisplayedMasses:
+                self.m_displayedMassesListBox.insert(0,m)
+            else:
+                self.m_availableMassesListBox.insert(0,m)
+
         # self.m_displayedMassesListBox.insert(0,self.m_availableMassList[0])
         # for m in self.m_availableMassList[1:]:
-        for m in self.m_availableMassList:
-            self.m_availableMassesListBox.insert(0,m)
+        # for m in self.m_availableMassList:
+        #     self.m_availableMassesListBox.insert(0,m)
         self.updateButtonStates()
 
     def hideSelectedMasses(self):

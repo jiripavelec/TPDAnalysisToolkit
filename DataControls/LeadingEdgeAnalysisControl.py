@@ -149,7 +149,7 @@ class LeadingEdgeAnalysisControl(ProcessingControlBase):
 
         # Spectrum selection
 
-        self.m_spectrumSelectionLabel = ttk.Label(self.m_chordFrame, text='Select TPD Spectrum for Leading Edge Analysis:')
+        self.m_spectrumSelectionLabel = ttk.Label(self.m_chordFrame, text='Select TPD Spectrum for analysis:')
         self.m_spectrumSelectionLabel.grid(row = 1, column = 0, columnspan = 2, sticky="nsw")
 
         self.m_spectrumCB = ttk.Combobox(self.m_chordFrame)
@@ -184,7 +184,7 @@ class LeadingEdgeAnalysisControl(ProcessingControlBase):
         self.m_resultsLabel = ttk.Label(self.m_chordFrame, text="Result:")#, compound = tk.CENTER)
         self.m_resultsLabel.grid(row=8, column = 0, sticky = "nsw")
 
-        self.m_resultTitleLabel = ttk.Label(self.m_chordFrame, text="Temperature from x-intercept (K):")
+        self.m_resultTitleLabel = ttk.Label(self.m_chordFrame, text="Inv. x-intercept (K):")
         self.m_resultTitleLabel.grid(row=9, column = 1, sticky = "nse")
 
         self.m_resultValueLabel = ttk.Label(self.m_chordFrame, text="N/A")

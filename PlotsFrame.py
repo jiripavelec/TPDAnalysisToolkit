@@ -398,9 +398,9 @@ class MPLContainer(tk.Frame):
         self.canvas.draw_idle()
 
     def _addLinePlots(self, axes, ndarrayData, labels, logXAxis, logYAxis, color,  shouldRelim, pLineWidth = 1):
-        maxX = 0
-        maxY = 0
-        minX = 0
+        maxX = None
+        maxY = None
+        minX = None
 
         if ndarrayData.ndim >= 2:
             for i in range(1,ndarrayData.shape[0]):
@@ -415,9 +415,21 @@ class MPLContainer(tk.Frame):
                     l_maxX = np.amax(l.get_xdata())
                     l_minX = np.amin(l.get_xdata())
                     l_maxY = 1.1*np.amax(l.get_ydata())
-                    maxX = np.amax((maxX,l_maxX))
-                    maxY = np.amax((maxY,l_maxY))
-                    minX = np.amax((minX,l_minX))
+                    #max x
+                    if maxX != None:
+                        maxX = np.amax((maxX,l_maxX))
+                    else:
+                        maxX = l_maxX
+                    #max y
+                    if maxY != None:
+                        maxY = np.amax((maxY,l_maxY))
+                    else:
+                        maxY = l_maxY
+                    #min X
+                    if minX != None:
+                        minX = np.amin((minX,l_minX))
+                    else:
+                        minX = l_minX
                 axes.set_xbound(minX, maxX)#, top = None)
                 axes.set_ybound(0, maxY)#, top = None)
                 self.m_subplot.grid(linestyle=':')

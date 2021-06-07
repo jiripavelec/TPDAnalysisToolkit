@@ -35,7 +35,7 @@ class LeadingEdgeAnalysisControl(ProcessingControlBase):
         x2 = float(self.m_tCutEndEntry.get())
         xdat = [x2,x1]
         linearFitData = np.vstack((xdat,self.calc1DPoly(coef,xdat)))
-        self.m_plots["Arrhenius Plot (Processed)"].addPrimaryLinePlots(linearFitData,"Leading Edge Fit", color = 'g', shouldRelim = False)
+        self.m_plots["Arrhenius Plot (Processed)"].addPrimaryLinePlots(linearFitData,"Leading Edge Fit", color = 'g')#, shouldRelim = False)
 
     def plotBounds(self):
         # for plot in self.m_plots.values():
@@ -60,9 +60,9 @@ class LeadingEdgeAnalysisControl(ProcessingControlBase):
         self.m_plots["Arrhenius Plot (Processed)"].clearPlots()
         self.m_plots["Arrhenius Plot (Processed)"].addPrimaryLinePlots(arrheniusData,targetLabel, color = 'b')
 
-        self.plotBounds()
         if(self.m_1DFitCoefficients.any()):
             self.plotFit(self.m_1DFitCoefficients)
+        self.plotBounds()
 
         # if(self.m_integrated): #shade, currently has performance problems when drawing polygon
         #     t2 = float(self.m_tCutEndEntry.get())

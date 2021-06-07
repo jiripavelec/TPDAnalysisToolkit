@@ -190,9 +190,9 @@ class LeadingEdgeAnalysisControl(ProcessingControlBase):
         self.m_resultValueLabel = ttk.Label(self.m_chordFrame, text="N/A")
         self.m_resultValueLabel.grid(row=9, column = 2, sticky = "nsw")
 
-        self.m_Label = ttk.Label(self.m_chordFrame, text='Work in Progress')
-        self.m_Label.grid(row = 10, column = 0, columnspan = 4, sticky="nsew")
+        # self.m_Label = ttk.Label(self.m_chordFrame, text='Work in Progress')
+        # self.m_Label.grid(row = 10, column = 0, columnspan = 4, sticky="nsew")
 
         #Process Button
         self.m_processButton = ttk.Button(self.m_chordFrame, text = "Generate Edge Fit", command = self.processInput)
-        self.m_processButton.grid(row=11, column = 0, columnspan=4, sticky = "nsew")
+        self.m_processButton.grid(row=10, column = 0, columnspan=4, sticky = "nsew")

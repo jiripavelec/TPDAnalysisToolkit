@@ -77,12 +77,6 @@ class ProcessRawDataControl(ProcessingControlBase):
             return False
         return True
 
-    def tryReadStartCutEntry(self):
-        return self.m_tCutStartEntry.InputIsValid()
-
-    def tryReadStopCutEntry(self):
-        return self.m_tCutEndEntry.InputIsValid()
-
     def prepareStartStopCutValues(self):
         t_Minima = [d.getRawTempMin() for d in self.m_parsedData]
         minStartCut = int(np.amin(t_Minima))
@@ -90,16 +84,16 @@ class ProcessRawDataControl(ProcessingControlBase):
             minStartCut = 1 #otherwise arrhenius plot will have 1/T -> 1/0 -> Inf value which causes bounds error
         t_Maxima = [d.getRawTempMax() for d in self.m_parsedData]
         maxStopCut = int(np.amax(t_Maxima))
-        if(self.tryReadStartCutEntry()):
-            if(minStartCut > int(self.m_tCutStartEntry.get())):
-                self.m_tCutStartEntry.set(str(minStartCut))
+        if(self.m_lowerBoundEntry.InputIsValid()):
+            if(minStartCut > int(self.m_lowerBoundEntry.get())):
+                self.m_lowerBoundEntry.set(str(minStartCut))
         else:
-            self.m_tCutStartEntry.set(str(minStartCut))
-        if(self.tryReadStopCutEntry()):
-            if(maxStopCut < int(self.m_tCutEndEntry.get())):
-                self.m_tCutEndEntry.set(str(maxStopCut))
+            self.m_lowerBoundEntry.set(str(minStartCut))
+        if(self.m_upperBoundEntry.InputIsValid()):
+            if(maxStopCut < int(self.m_upperBoundEntry.get())):
+                self.m_upperBoundEntry.set(str(maxStopCut))
         else:
-                self.m_tCutEndEntry.set(str(maxStopCut))
+                self.m_upperBoundEntry.set(str(maxStopCut))
 
     def processInput(self):
         if(not self.checkInput()): return False
@@ -111,8 +105,8 @@ class ProcessRawDataControl(ProcessingControlBase):
             self.m_parsedData.append(wrapper)
             self.prepareStartStopCutValues()
             wrapper.processParsedData(0,0,
-                                        int(self.m_tCutStartEntry.get()),
-                                        int(self.m_tCutEndEntry.get()),
+                                        int(self.m_lowerBoundEntry.get()),
+                                        int(self.m_upperBoundEntry.get()),
                                         self.m_removeBackgroundCB.instate(['selected']),
                                         self.m_smoothCountsCB.instate(['selected']))
 
@@ -223,14 +217,14 @@ class ProcessRawDataControl(ProcessingControlBase):
         self.m_tCutStartLabel = ttk.Label(self.m_chordFrame, text="Lower Boundary (Temp.):")
         self.m_tCutStartLabel.grid(row=4, column = 1, sticky = "nse")
 
-        self.m_tCutStartEntry = EnhancedEntry(self.m_chordFrame, inputValueType = int, errorTitle = "Lower Boundary (Temp.)", errorMessage = "Please enter an integer for the lower temperature boundary")
-        self.m_tCutStartEntry.grid(row=4, column = 2, sticky = "nsw")
+        self.m_lowerBoundEntry = EnhancedEntry(self.m_chordFrame, inputValueType = int, errorTitle = "Lower Boundary (Temp.)", errorMessage = "Please enter an integer for the lower temperature boundary")
+        self.m_lowerBoundEntry.grid(row=4, column = 2, sticky = "nsw")
 
         self.m_tCutEndLabel = ttk.Label(self.m_chordFrame, text="Upper Boundary (Temp.):")
         self.m_tCutEndLabel.grid(row=5, column = 1, sticky = "nse")
 
-        self.m_tCutEndEntry = EnhancedEntry(self.m_chordFrame, inputValueType = int, errorTitle = "Upper Boundary (Temp.)", errorMessage = "Please enter an integer for the upper temperature boundary.")
-        self.m_tCutEndEntry.grid(row=5, column = 2, sticky = "nsw")
+        self.m_upperBoundEntry = EnhancedEntry(self.m_chordFrame, inputValueType = int, errorTitle = "Upper Boundary (Temp.)", errorMessage = "Please enter an integer for the upper temperature boundary.")
+        self.m_upperBoundEntry.grid(row=5, column = 2, sticky = "nsw")
 
         #Temperature (thermocouple) calibration options:
 

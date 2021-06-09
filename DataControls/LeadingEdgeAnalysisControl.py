@@ -31,8 +31,8 @@ class LeadingEdgeAnalysisControl(ProcessingControlBase):
         return result
 
     def plotFit(self, coef):
-        x1 = float(self.m_tCutStartEntry.get())
-        x2 = float(self.m_tCutEndEntry.get())
+        x1 = float(self.m_lowerBoundEntry.get())
+        x2 = float(self.m_upperBoundEntry.get())
         xdat = [x2,x1]
         linearFitData = np.vstack((xdat,self.calc1DPoly(coef,xdat)))
         self.m_plots["Arrhenius Plot (Processed)"].addPrimaryLinePlots(linearFitData,"Leading Edge Fit", color = 'g')#, shouldRelim = False)
@@ -45,8 +45,8 @@ class LeadingEdgeAnalysisControl(ProcessingControlBase):
 
         self.m_plots["Arrhenius Plot (Processed)"].removeVerticalLines()
         # if(not self.m_integrated):
-        self.m_plots["Arrhenius Plot (Processed)"].addVerticalLine(float(self.m_tCutEndEntry.get()))
-        self.m_plots["Arrhenius Plot (Processed)"].addVerticalLine(float(self.m_tCutStartEntry.get()))
+        self.m_plots["Arrhenius Plot (Processed)"].addVerticalLine(float(self.m_upperBoundEntry.get()))
+        self.m_plots["Arrhenius Plot (Processed)"].addVerticalLine(float(self.m_lowerBoundEntry.get()))
 
     def plotSelectedSpectrum(self):
         targetData = self.m_parsedData.fileNameToExpDesorptionRateVSTemp(self.m_spectrumCB.get())
@@ -77,33 +77,27 @@ class LeadingEdgeAnalysisControl(ProcessingControlBase):
             self.checkFitBounds()
             self.plotSelectedSpectrum()
 
-    def tryReadStartCutEntry(self):
-        return self.m_tCutStartEntry.InputIsValid()
-
-    def tryReadStopCutEntry(self):
-        return self.m_tCutEndEntry.InputIsValid()
-
     def checkFitBounds(self):
         minStartCut = float(1.0 / self.m_parsedData.getMaxTemp())
         maxStopCut = float(1.0 / self.m_parsedData.getMinTemp())
-        if(self.tryReadStartCutEntry()):
-            if(minStartCut > float(self.m_tCutStartEntry.get())):
-                self.m_tCutStartEntry.set(str(minStartCut))
+        if(self.m_lowerBoundEntry.InputIsValid()):
+            if(minStartCut > float(self.m_lowerBoundEntry.get())):
+                self.m_lowerBoundEntry.set(str(minStartCut))
         else:
-            self.m_tCutStartEntry.set(str(minStartCut))
-        if(self.tryReadStopCutEntry()):
-            if(maxStopCut < float(self.m_tCutEndEntry.get())):
-                self.m_tCutEndEntry.set(str(maxStopCut))
+            self.m_lowerBoundEntry.set(str(minStartCut))
+        if(self.m_upperBoundEntry.InputIsValid()):
+            if(maxStopCut < float(self.m_upperBoundEntry.get())):
+                self.m_upperBoundEntry.set(str(maxStopCut))
         else:
-                self.m_tCutEndEntry.set(str(maxStopCut))
+            self.m_upperBoundEntry.set(str(maxStopCut))
 
     def onBoundsChanged(self):
         self.checkFitBounds()
 
     def processInput(self):
         self.checkFitBounds()
-        t2 = float(self.m_tCutEndEntry.get())
-        t1 = float(self.m_tCutStartEntry.get())
+        t2 = float(self.m_upperBoundEntry.get())
+        t1 = float(self.m_lowerBoundEntry.get())
 
         targetData = self.m_parsedData.fileNameToExpDesorptionRateVSTemp(self.m_spectrumCB.get())
         # targetLabel = self.m_parsedData.fileNameToCoverageLabel(self.m_spectrumCB.get())
@@ -158,14 +152,14 @@ class LeadingEdgeAnalysisControl(ProcessingControlBase):
         self.m_tCutStartLabel = ttk.Label(self.m_chordFrame, text="Lower Boundary (1/T)")
         self.m_tCutStartLabel.grid(row=6, column = 1, sticky = "nse")
 
-        self.m_tCutStartEntry = EnhancedEntry(self.m_chordFrame, inputValueType=float, errorTitle="Lower Boundary", errorMessage="Please enter a decimal for the lower boundary of the leading edge.")
-        self.m_tCutStartEntry.grid(row=6, column = 2, sticky = "nsw")
+        self.m_lowerBoundEntry = EnhancedEntry(self.m_chordFrame, inputValueType=float, errorTitle="Lower Boundary", errorMessage="Please enter a decimal for the lower boundary of the leading edge.")
+        self.m_lowerBoundEntry.grid(row=6, column = 2, sticky = "nsw")
 
         self.m_tCutEndLabel = ttk.Label(self.m_chordFrame, text="Upper Boundary (1/T)")
         self.m_tCutEndLabel.grid(row=7, column = 1, sticky = "nse")
 
-        self.m_tCutEndEntry = EnhancedEntry(self.m_chordFrame, inputValueType=float, errorTitle="Upper Boundary", errorMessage="Please enter a decimal for the upper boundary of the leading edge.")
-        self.m_tCutEndEntry.grid(row=7, column = 2, sticky = "nsw")
+        self.m_upperBoundEntry = EnhancedEntry(self.m_chordFrame, inputValueType=float, errorTitle="Upper Boundary", errorMessage="Please enter a decimal for the upper boundary of the leading edge.")
+        self.m_upperBoundEntry.grid(row=7, column = 2, sticky = "nsw")
 
         self.m_resultsLabel = ttk.Label(self.m_chordFrame, text="Result:")#, compound = tk.CENTER)
         self.m_resultsLabel.grid(row=8, column = 0, sticky = "nsw")

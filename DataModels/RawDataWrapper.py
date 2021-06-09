@@ -95,7 +95,7 @@ class RawDataWrapper():
         return smoothResult
 
     def processParsedData(self, tRampStart, tRampEnd, tCutStart, tCutEnd, removeBackground, smooth,
-     tempScaleCorrection = 0.985, tempOffsetCorrection = 0.836, smoothpoints = 5, tStep = 0.1):
+     tempScaleCorrection, tempOffsetCorrection, smoothpoints = 5, tStep = 0.1):
         if (self.m_dataProcessed == True):
             return
         # self.m_tStep = tStep

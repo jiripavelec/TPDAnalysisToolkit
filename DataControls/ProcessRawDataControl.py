@@ -75,6 +75,8 @@ class ProcessRawDataControl(ProcessingControlBase):
         if(len(self.m_fileSelectionControl.m_filePaths) == 0): #check for file selection
             tk.messagebox.showerror("Input Files", "Please select at least one file to process.")
             return False
+        if not self.m_calibOffsetEntry.InputIsValid(): return False
+        if not self.m_calibScaleEntry.InputIsValid(): return False
         return True
 
     def prepareStartStopCutValues(self):
@@ -105,10 +107,12 @@ class ProcessRawDataControl(ProcessingControlBase):
             self.m_parsedData.append(wrapper)
             self.prepareStartStopCutValues()
             wrapper.processParsedData(0,0,
-                                        int(self.m_lowerBoundEntry.get()),
-                                        int(self.m_upperBoundEntry.get()),
+                                        int(self.m_lowerBoundEntry.get()), #lower temperature boundary
+                                        int(self.m_upperBoundEntry.get()), #upper temperature boundary
                                         self.m_removeBackgroundCB.instate(['selected']),
-                                        self.m_smoothCountsCB.instate(['selected']))
+                                        self.m_smoothCountsCB.instate(['selected']),
+                                        float(self.m_calibScaleEntry.get()), #calibration slope 'm' in y=mx+b
+                                        float(self.m_calibOffsetEntry.get())) #calibration offset 'b' in y=mx+b
 
         if (self.m_normalizeCB.instate(['selected'])): #if we want to normalize data to a specific coverage
             monolayerData = None
@@ -217,13 +221,15 @@ class ProcessRawDataControl(ProcessingControlBase):
         self.m_tCutStartLabel = ttk.Label(self.m_chordFrame, text="Lower Boundary (Temp.):")
         self.m_tCutStartLabel.grid(row=4, column = 1, sticky = "nse")
 
-        self.m_lowerBoundEntry = EnhancedEntry(self.m_chordFrame, inputValueType = int, errorTitle = "Lower Boundary (Temp.)", errorMessage = "Please enter an integer for the lower temperature boundary")
+        self.m_lowerBoundEntry = EnhancedEntry(self.m_chordFrame, inputValueType = int,
+            errorTitle = "Lower Boundary (Temp.)", errorMessage = "Please enter an integer for the lower temperature boundary")
         self.m_lowerBoundEntry.grid(row=4, column = 2, sticky = "nsw")
 
         self.m_tCutEndLabel = ttk.Label(self.m_chordFrame, text="Upper Boundary (Temp.):")
         self.m_tCutEndLabel.grid(row=5, column = 1, sticky = "nse")
 
-        self.m_upperBoundEntry = EnhancedEntry(self.m_chordFrame, inputValueType = int, errorTitle = "Upper Boundary (Temp.)", errorMessage = "Please enter an integer for the upper temperature boundary.")
+        self.m_upperBoundEntry = EnhancedEntry(self.m_chordFrame, inputValueType = int,
+            errorTitle = "Upper Boundary (Temp.)", errorMessage = "Please enter an integer for the upper temperature boundary.")
         self.m_upperBoundEntry.grid(row=5, column = 2, sticky = "nsw")
 
         #Temperature (thermocouple) calibration options:
@@ -237,14 +243,18 @@ class ProcessRawDataControl(ProcessingControlBase):
         self.m_calibOffsetLabel = ttk.Label(self.m_chordFrame, text="Offset:")
         self.m_calibOffsetLabel.grid(row=8 , column = 1, sticky = "nse")
 
-        self.m_calibOffsetEntry = EnhancedEntry(self.m_chordFrame, inputValueType = float, errorTitle = "Calibration Offset", errorMessage= "Please enter a decimal for the temperature calibration offset.")
+        self.m_calibOffsetEntry = EnhancedEntry(self.m_chordFrame, inputValueType = float,
+            errorTitle = "Calibration Offset", errorMessage= "Please enter a decimal for the temperature calibration offset.")
         self.m_calibOffsetEntry.grid(row=8 , column = 2, sticky = "nsw")
+        self.m_calibOffsetEntry.setBackingVar("0.836")#default
 
         self.m_calibScaleLabel = ttk.Label(self.m_chordFrame, text="Scale:")
         self.m_calibScaleLabel.grid(row=9, column = 1, sticky = "nse")
 
-        self.m_calibScaleEntry = EnhancedEntry(self.m_chordFrame, inputValueType = float, errorTitle = "Calibration Scale", errorMessage = "Please enter a decimal for the temperature calibration scale.")
+        self.m_calibScaleEntry = EnhancedEntry(self.m_chordFrame, inputValueType = float,
+            errorTitle = "Calibration Scale", errorMessage = "Please enter a decimal for the temperature calibration scale.")
         self.m_calibScaleEntry.grid(row=9, column = 2, sticky = "nsw")
+        self.m_calibScaleEntry.setBackingVar("0.985")#default
 
 
         # Checkbuttons + Comboboxes for options:

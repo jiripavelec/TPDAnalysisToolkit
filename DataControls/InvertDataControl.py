@@ -192,7 +192,8 @@ class InvertDataControl(ProcessingControlBase):
         self.m_tPrefactorLabel = ttk.Label(self.m_chordFrame, text="Prefactor Value:")
         self.m_tPrefactorLabel.grid(row=5, column = 1, sticky = "nse")
 
-        self.m_tPrefactorEntry = EnhancedEntry(self.m_chordFrame, inputValueType=float, errorTitle="Prefactor Value", errorMessage= "Please enter a float for the prefactor. For example 1e17.")
+        self.m_tPrefactorEntry = EnhancedEntry(self.m_chordFrame, inputValueType=float,
+            errorTitle="Prefactor Value", errorMessage= "Please enter a float for the prefactor. For example 1e17.")
         self.m_tPrefactorEntry.grid(row=5, column = 2, sticky = "nsw")
 
         #Or Prefactor Range
@@ -204,7 +205,8 @@ class InvertDataControl(ProcessingControlBase):
         self.m_tPrefactorIncrementLabel = ttk.Label(self.m_chordFrame, text="Increment:")
         self.m_tPrefactorIncrementLabel.grid(row=7, column = 1, sticky = "nse")
 
-        self.m_tPrefactorIncrementEntry = EnhancedEntry(self.m_chordFrame, inputValueType=float, errorTitle="Increment", errorMessage="Please enter a float for the prefactor increment.")
+        self.m_tPrefactorIncrementEntry = EnhancedEntry(self.m_chordFrame, inputValueType=float,
+            errorTitle="Increment", errorMessage="Please enter a float for the prefactor increment.")
         self.m_tPrefactorIncrementEntry.grid(row=7, column = 2, sticky = "nsw")
 
         self.m_multiplicativeRB = ttk.Radiobutton(self.m_chordFrame, text ="Prefactor Range - Multiplicative (10x)", variable = self.m_RBVariable,
@@ -214,13 +216,15 @@ class InvertDataControl(ProcessingControlBase):
         self.m_tPrefactorStartLabel = ttk.Label(self.m_chordFrame, text="Lowest Prefactor:")
         self.m_tPrefactorStartLabel.grid(row=9, column = 1, sticky = "nse")
 
-        self.m_tPrefactorStartEntry = EnhancedEntry(self.m_chordFrame, inputValueType=float, errorTitle="Lowest Prefactor", errorMessage="Please enter a float for the lowest prefactor. For example 1e13.")
+        self.m_tPrefactorStartEntry = EnhancedEntry(self.m_chordFrame, inputValueType=float,
+            errorTitle="Lowest Prefactor", errorMessage="Please enter a float for the lowest prefactor. For example 1e13.")
         self.m_tPrefactorStartEntry.grid(row=9, column = 2, sticky = "nsw")
 
         self.m_tPrefactorEndLabel = ttk.Label(self.m_chordFrame, text="Highest Prefactor:")
         self.m_tPrefactorEndLabel.grid(row=10, column = 1, sticky = "nse")
 
-        self.m_tPrefactorEndEntry = EnhancedEntry(self.m_chordFrame, inputValueType=float, errorTitle="Highest Prefactor", errorMessage="Please enter a float for the highest prefactor. For example 1e21.")
+        self.m_tPrefactorEndEntry = EnhancedEntry(self.m_chordFrame, inputValueType=float,
+            errorTitle="Highest Prefactor", errorMessage="Please enter a float for the highest prefactor. For example 1e21.")
         self.m_tPrefactorEndEntry.grid(row=10, column = 2, sticky = "nsw")
 
         #default values

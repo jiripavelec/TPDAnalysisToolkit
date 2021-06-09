@@ -102,13 +102,15 @@ class PeakIntegrationControl(ProcessingControlBase):
         self.m_tCutStartLabel = ttk.Label(self.m_chordFrame, text="Initial Temperature:")
         self.m_tCutStartLabel.grid(row=6, column = 1, sticky = "nse")
 
-        self.m_lowerBoundEntry = EnhancedEntry(self.m_chordFrame, inputValueType = int, errorTitle= "Initial Temperature", errorMessage="Please enter an integer for the temperature at which to start integration.")
+        self.m_lowerBoundEntry = EnhancedEntry(self.m_chordFrame, inputValueType = int,
+            errorTitle= "Initial Temperature", errorMessage="Please enter an integer for the temperature at which to start integration.")
         self.m_lowerBoundEntry.grid(row=6, column = 2, sticky = "nsw")
 
         self.m_tCutEndLabel = ttk.Label(self.m_chordFrame, text="Final Temperature:")
         self.m_tCutEndLabel.grid(row=7, column = 1, sticky = "nse")
 
-        self.m_upperBoundEntry = EnhancedEntry(self.m_chordFrame, inputValueType= int, errorTitle="Final Temperature", errorMessage="Please enter an integer for the temperature at which to end integration.")
+        self.m_upperBoundEntry = EnhancedEntry(self.m_chordFrame, inputValueType= int,
+            errorTitle="Final Temperature", errorMessage="Please enter an integer for the temperature at which to end integration.")
         self.m_upperBoundEntry.grid(row=7, column = 2, sticky = "nsw")
 
         self.m_resultTitleLabel = ttk.Label(self.m_chordFrame, text="Integration Result:")

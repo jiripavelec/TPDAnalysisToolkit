@@ -78,24 +78,10 @@ class LeadingEdgeAnalysisControl(ProcessingControlBase):
             self.plotSelectedSpectrum()
 
     def tryReadStartCutEntry(self):
-        if(self.m_tCutStartEntry.get() == ''):
-            return False
-        try:
-            float(self.m_tCutStartEntry.get())
-        except ValueError:
-            tk.messagebox.showerror("Lower Boundary", "Please enter a decimal for the lower boundary of the leading edge.")
-            return False
-        return True
+        return self.m_tCutStartEntry.InputIsValid()
 
     def tryReadStopCutEntry(self):
-        if(self.m_tCutEndEntry.get() == ''):
-            return False
-        try:
-            float(self.m_tCutEndEntry.get())
-        except ValueError:
-            tk.messagebox.showerror("Upper Boundary", "Please enter a decimal for the upper boundary of the leading edge.")
-            return False
-        return True
+        return self.m_tCutEndEntry.InputIsValid()
 
     def checkFitBounds(self):
         minStartCut = float(1.0 / self.m_parsedData.getMaxTemp())
@@ -172,13 +158,13 @@ class LeadingEdgeAnalysisControl(ProcessingControlBase):
         self.m_tCutStartLabel = ttk.Label(self.m_chordFrame, text="Lower Boundary (1/T)")
         self.m_tCutStartLabel.grid(row=6, column = 1, sticky = "nse")
 
-        self.m_tCutStartEntry = EnhancedEntry(self.m_chordFrame)
+        self.m_tCutStartEntry = EnhancedEntry(self.m_chordFrame, inputValueType=float, errorTitle="Lower Boundary", errorMessage="Please enter a decimal for the lower boundary of the leading edge.")
         self.m_tCutStartEntry.grid(row=6, column = 2, sticky = "nsw")
 
         self.m_tCutEndLabel = ttk.Label(self.m_chordFrame, text="Upper Boundary (1/T)")
         self.m_tCutEndLabel.grid(row=7, column = 1, sticky = "nse")
 
-        self.m_tCutEndEntry = EnhancedEntry(self.m_chordFrame)
+        self.m_tCutEndEntry = EnhancedEntry(self.m_chordFrame, inputValueType=float, errorTitle="Upper Boundary", errorMessage="Please enter a decimal for the upper boundary of the leading edge.")
         self.m_tCutEndEntry.grid(row=7, column = 2, sticky = "nsw")
 
         self.m_resultsLabel = ttk.Label(self.m_chordFrame, text="Result:")#, compound = tk.CENTER)

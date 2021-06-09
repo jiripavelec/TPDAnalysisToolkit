@@ -45,24 +45,10 @@ class PeakIntegrationControl(ProcessingControlBase):
 
 
     def tryReadStartCutEntry(self):
-        if(self.m_tCutStartEntry.get() == ''):
-            return False
-        try:
-            int(self.m_tCutStartEntry.get())
-        except ValueError:
-            tk.messagebox.showerror("Initial Temperature", "Please enter an integer for the temperature at which to start integration.")
-            return False
-        return True
+        return self.m_tCutStartEntry.InputIsValid()
 
     def tryReadStopCutEntry(self):
-        if(self.m_tCutEndEntry.get() == ''):
-            return False
-        try:
-            int(self.m_tCutEndEntry.get())
-        except ValueError:
-            tk.messagebox.showerror("Final Temperature", "Please enter an integer for the temperature at which to end integration.")
-            return False
-        return True
+        return self.m_tCutEndEntry.InputIsValid()
 
     def checkIntegrationBounds(self):
         minStartCut = int(self.m_parsedData.getMinTemp())
@@ -123,13 +109,13 @@ class PeakIntegrationControl(ProcessingControlBase):
         self.m_tCutStartLabel = ttk.Label(self.m_chordFrame, text="Initial Temperature:")
         self.m_tCutStartLabel.grid(row=6, column = 1, sticky = "nse")
 
-        self.m_tCutStartEntry = EnhancedEntry(self.m_chordFrame)
+        self.m_tCutStartEntry = EnhancedEntry(self.m_chordFrame, inputValueType = int, errorTitle= "Initial Temperature", errorMessage="Please enter an integer for the temperature at which to start integration.")
         self.m_tCutStartEntry.grid(row=6, column = 2, sticky = "nsw")
 
         self.m_tCutEndLabel = ttk.Label(self.m_chordFrame, text="Final Temperature:")
         self.m_tCutEndLabel.grid(row=7, column = 1, sticky = "nse")
 
-        self.m_tCutEndEntry = EnhancedEntry(self.m_chordFrame)
+        self.m_tCutEndEntry = EnhancedEntry(self.m_chordFrame, inputValueType= int, errorTitle="Final Temperature", errorMessage="Please enter an integer for the temperature at which to end integration.")
         self.m_tCutEndEntry.grid(row=7, column = 2, sticky = "nsw")
 
         self.m_resultTitleLabel = ttk.Label(self.m_chordFrame, text="Integration Result:")

@@ -28,46 +28,6 @@ class ProcessRawDataControl(ProcessingControlBase):
         self.m_subtractSelection["values"] = fileList
         self.m_normSelection["values"] = fileList
 
-    # def prepareFileSelections(self):
-    #     self.m_fileList = list()
-    #     self.m_filesListBox.clear()
-    #     for p in self.m_filePaths:
-    #         substrings = p.split('/')
-    #         fName = substrings[len(substrings) - 1]
-    #         self.m_fileList.insert(0,fName)
-
-    #     [self.m_filesListBox.insert(0, f) for f in self.m_fileList]
-    #     self.m_fileList.reverse()
-    #     self.m_subtractSelection["values"] = self.m_fileList
-    #     self.m_normSelection["values"] = self.m_fileList
-
-    # def selectFiles(self):
-    #     buffer = list(askopenfilenames(defaultextension=".csv", filetypes=[('Comma-separated Values','*.csv'), ('All files','*.*')]))
-    #     if not (len(buffer) == 0):
-    #         self.m_filePaths = buffer.copy() #we don't want to use the same instance => .copy()
-    #         self.prepareFileSelections()
-
-    # def selectDir(self):
-    #     dirPath = askdirectory(mustexist = True)
-    #     if not (len(dirPath) == 0):
-    #         self.m_filePaths.clear()
-    #         candidates = os.listdir(dirPath)
-    #         for candidate in candidates: #look at all paths in directory
-    #             if(os.path.isfile(dirPath + '/' + candidate) and candidate.endswith(".csv")): #filter out directories
-    #                 if(candidate.find("TPD") != -1): #look for "TPD" ini filename to differentiate data from prep files
-    #                     self.m_filePaths.append(dirPath + '/' + candidate)
-    #         self.prepareFileSelections()                        
-
-    # def deselectFiles(self):
-    #     indices = list(self.m_filesListBox.curselection())
-    #     indices.reverse()
-    #     for i in indices:
-    #         self.m_filesListBox.delete(i)
-    #         self.m_filePaths.pop(i)
-    #         self.m_fileList.pop(i)
-    #     self.m_subtractSelection["values"] = self.m_fileList
-    #     self.m_normSelection["values"] = self.m_fileList
-
     def toggleSubtractCB(self):
         if(self.m_subtractCB.instate(['!selected'])):
             self.m_subtractSelection.configure(state = tk.DISABLED)
@@ -118,24 +78,10 @@ class ProcessRawDataControl(ProcessingControlBase):
         return True
 
     def tryReadStartCutEntry(self):
-        if(self.m_tCutStartEntry.get() == ''):
-            return False
-        try:
-            int(self.m_tCutStartEntry.get())
-        except ValueError:
-            tk.messagebox.showerror("Lower Boundary (Temp.)", "Please enter an integer for the lower temperature boundary")
-            return False
-        return True
+        return self.m_tCutStartEntry.InputIsValid()
 
     def tryReadStopCutEntry(self):
-        if(self.m_tCutEndEntry.get() == ''):
-            return False
-        try:
-            int(self.m_tCutEndEntry.get())
-        except ValueError:
-            tk.messagebox.showerror("Upper Boundary (Temp.)", "Please enter an integer for the upper temperature boundary.")
-            return False
-        return True
+        return self.m_tCutEndEntry.InputIsValid()
 
     def prepareStartStopCutValues(self):
         t_Minima = [d.getRawTempMin() for d in self.m_parsedData]
@@ -269,7 +215,7 @@ class ProcessRawDataControl(ProcessingControlBase):
         self.m_fileSelectionControl.grid(row=0, column=0, columnspan=4, sticky = "nsew")
 
 
-        # Options
+        # Processing options:
 
         self.m_optionsLabel = ttk.Label(self.m_chordFrame, text="Processing Options:")#, compound = tk.CENTER)
         self.m_optionsLabel.grid(row=3, column = 0, columnspan = 2, sticky = "nsw")
@@ -277,73 +223,81 @@ class ProcessRawDataControl(ProcessingControlBase):
         self.m_tCutStartLabel = ttk.Label(self.m_chordFrame, text="Lower Boundary (Temp.):")
         self.m_tCutStartLabel.grid(row=4, column = 1, sticky = "nse")
 
-        self.m_tCutStartEntry = EnhancedEntry(self.m_chordFrame)
+        self.m_tCutStartEntry = EnhancedEntry(self.m_chordFrame, inputValueType = int, errorTitle = "Lower Boundary (Temp.)", errorMessage = "Please enter an integer for the lower temperature boundary")
         self.m_tCutStartEntry.grid(row=4, column = 2, sticky = "nsw")
 
         self.m_tCutEndLabel = ttk.Label(self.m_chordFrame, text="Upper Boundary (Temp.):")
         self.m_tCutEndLabel.grid(row=5, column = 1, sticky = "nse")
 
-        self.m_tCutEndEntry = EnhancedEntry(self.m_chordFrame)
+        self.m_tCutEndEntry = EnhancedEntry(self.m_chordFrame, inputValueType = int, errorTitle = "Upper Boundary (Temp.)", errorMessage = "Please enter an integer for the upper temperature boundary.")
         self.m_tCutEndEntry.grid(row=5, column = 2, sticky = "nsw")
 
+        #Temperature (thermocouple) calibration options:
 
-        # self.m_tRampStartLabel = ttk.Label(self.m_chordFrame, text="Ramp Start Temp.:")
-        # self.m_tRampStartLabel.grid(row=6, column = 1, sticky = "nse")
+        self.m_calibLabel = ttk.Label(self.m_chordFrame, text="Temperature Calibration:")#, compound = tk.CENTER)
+        self.m_calibLabel.grid(row=6, column = 0, columnspan = 2, sticky = "nsw")
 
-        # self.m_tRampStartEntry = EnhancedEntry(self.m_chordFrame)
-        # self.m_tRampStartEntry.grid(row=6, column = 2, sticky = "nsw")
+        self.m_calibFormulaLabel = ttk.Label(self.m_chordFrame, text="( T_Calibrated = Scale * T_RawData + Offset )")
+        self.m_calibFormulaLabel.grid(row=7, column = 0, columnspan = 3)#, sticky = "nse")
 
-        # self.m_tRampEndLabel = ttk.Label(self.m_chordFrame, text="Ramp End Temp.:")
-        # self.m_tRampEndLabel.grid(row=7, column = 1, sticky = "nse")
+        self.m_calibOffsetLabel = ttk.Label(self.m_chordFrame, text="Offset:")
+        self.m_calibOffsetLabel.grid(row=8 , column = 1, sticky = "nse")
 
-        # self.m_tRampEndEntry = EnhancedEntry(self.m_chordFrame)
-        # self.m_tRampEndEntry.grid(row=7, column = 2, sticky = "nsw")
+        self.m_calibOffsetEntry = EnhancedEntry(self.m_chordFrame, inputValueType = float, errorTitle = "Calibration Offset", errorMessage= "Please enter a decimal for the temperature calibration offset.")
+        self.m_calibOffsetEntry.grid(row=8 , column = 2, sticky = "nsw")
+
+        self.m_calibScaleLabel = ttk.Label(self.m_chordFrame, text="Scale:")
+        self.m_calibScaleLabel.grid(row=9, column = 1, sticky = "nse")
+
+        self.m_calibScaleEntry = EnhancedEntry(self.m_chordFrame, inputValueType = float, errorTitle = "Calibration Scale", errorMessage = "Please enter a decimal for the temperature calibration scale.")
+        self.m_calibScaleEntry.grid(row=9, column = 2, sticky = "nsw")
+
 
         # Checkbuttons + Comboboxes for options:
 
         self.m_smoothTempCB = EnhancedCheckButton(self.m_chordFrame, text="Smooth Temperature")
-        self.m_smoothTempCB.grid(row = 8, column = 1, sticky = "nsw")
+        self.m_smoothTempCB.grid(row = 10, column = 1, sticky = "nsw")
         self.m_smoothTempCB.set(1)
         self.m_smoothTempCB.configure(state = tk.DISABLED)
 
         self.m_smoothCountsCB = EnhancedCheckButton(self.m_chordFrame, text="Smooth Counts/s")
-        self.m_smoothCountsCB.grid(row = 8, column = 2, sticky = "nsw")
+        self.m_smoothCountsCB.grid(row = 10, column = 2, sticky = "nsw")
 
         self.m_normalizeCB = EnhancedCheckButton(self.m_chordFrame, text = "Normalize to coverage of (select file):", command=self.toggleNormalizeCB)
-        self.m_normalizeCB.grid(row = 9, column = 1, sticky = "nsw")
+        self.m_normalizeCB.grid(row = 11, column = 1, sticky = "nsw")
 
         self.m_removeBackgroundCB = EnhancedCheckButton(self.m_chordFrame, text="Remove Background")
-        self.m_removeBackgroundCB.grid(row = 9, column = 2, sticky = "nsw")
+        self.m_removeBackgroundCB.grid(row = 11, column = 2, sticky = "nsw")
 
         self.m_normSelection = ttk.Combobox(self.m_chordFrame, state = tk.DISABLED)
-        self.m_normSelection.grid(row=10, column=1, columnspan=2, sticky= "nsew")
+        self.m_normSelection.grid(row=12, column=1, columnspan=2, sticky= "nsew")
 
         self.m_subtractCB = EnhancedCheckButton(self.m_chordFrame, text = "Subtract Spectrum (select file):", command=self.toggleSubtractCB, state = tk.DISABLED)
-        self.m_subtractCB.grid(row = 11, column = 1, sticky = "nsw")
+        self.m_subtractCB.grid(row = 13, column = 1, sticky = "nsw")
 
         self.m_subtractSelection = ttk.Combobox(self.m_chordFrame, state = tk.DISABLED)
-        self.m_subtractSelection.grid(row=12, column=1, columnspan=2, sticky= "nsew")
+        self.m_subtractSelection.grid(row=14, column=1, columnspan=2, sticky= "nsew")
 
         #Process Button
 
         self.m_processButton = ttk.Button(self.m_chordFrame, text = "Process Input", command = self.processInput)
-        self.m_processButton.grid(row=13, column = 1, columnspan=2, sticky = "nsew")
+        self.m_processButton.grid(row=15, column = 1, columnspan=2, sticky = "nsew")
 
         #Display options
 
         self.m_displayOptionsLabel = ttk.Label(self.m_chordFrame, text='Display Options:')
-        self.m_displayOptionsLabel.grid(row = 14, column = 0, columnspan = 2, sticky="nsw")
+        self.m_displayOptionsLabel.grid(row = 16, column = 0, columnspan = 2, sticky="nsw")
 
         self.m_toggleMarkersButton = ttk.Button(self.m_chordFrame, text = "Toggle Markers", command = self.toggleMarkers)
-        self.m_toggleMarkersButton.grid(row=15, column = 1, columnspan=2, sticky = "nsew")
+        self.m_toggleMarkersButton.grid(row=17, column = 1, columnspan=2, sticky = "nsew")
 
         self.m_massDisplayOptions = DisplayOptionsFrame(self.m_chordFrame, self.plotSelectedMasses)
-        self.m_massDisplayOptions.grid(row = 16, column = 0, columnspan = 4, sticky = "nsew")
+        self.m_massDisplayOptions.grid(row = 18, column = 0, columnspan = 4, sticky = "nsew")
 
         # self.m_massDisplayOptions.m_availableMassesListBox
 
         self.m_saveDataButton = ttk.Button(self.m_chordFrame, text = "Save Processed Data", command = self.saveData)
-        self.m_saveDataButton.grid(row=17, column = 1, columnspan=3, sticky = "nsew")
+        self.m_saveDataButton.grid(row=19, column = 1, columnspan=3, sticky = "nsew")
 
         # for child in self.m_chordFrame.winfo_children():
         #     child.grid_configure(padx=3, pady=3)

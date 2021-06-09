@@ -94,15 +94,16 @@ class RawDataWrapper():
         smoothResult = np.append(smoothResult,x[N:-1:-1])
         return smoothResult
 
-    def processParsedData(self, tRampStart, tRampEnd, tCutStart, tCutEnd, removeBackground, smooth, smoothpoints = 5, tStep = 0.1):
+    def processParsedData(self, tRampStart, tRampEnd, tCutStart, tCutEnd, removeBackground, smooth,
+     tempScaleCorrection = 0.985, tempOffsetCorrection = 0.836, smoothpoints = 5, tStep = 0.1):
         if (self.m_dataProcessed == True):
             return
         # self.m_tStep = tStep
         # self.m_correctedTemp = np.zeros(self.m_parsedRawData.shape[1])
         # correct temperature (taken from Honza's scripts)
         self.m_correctedTemp = np.array(self.m_parsedRawData[(self.m_listOfColumns.index('temperature')),:])
-        self.m_correctedTemp *= 0.985
-        self.m_correctedTemp += 0.836
+        self.m_correctedTemp *= tempScaleCorrection
+        self.m_correctedTemp += tempOffsetCorrection
 
         #get running average from temperature data
         self.m_correctedTemp = self.smooth_running_average(self.m_correctedTemp, 20)

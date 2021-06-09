@@ -220,8 +220,11 @@ class EnhancedCheckButton(ttk.Checkbutton):
 
 #EnhancedEntry BEGIN
 class EnhancedEntry(ttk.Entry):
-    def __init__(self, parent, *args, **kwargs):
+    def __init__(self, parent, inputValueType = None, errorTitle = None, errorMessage = None, *args, **kwargs):
         self.m_backingVariable = tk.StringVar()
+        self.m_inputValueType = inputValueType
+        self.m_errorTitle = errorTitle
+        self.m_errorMessage = errorMessage
         super().__init__(parent, textvariable = self.m_backingVariable, *args, **kwargs)
 
     def get(self):
@@ -232,6 +235,18 @@ class EnhancedEntry(ttk.Entry):
 
     def setBackingVar(self, value):
         self.m_backingVariable.set(value)
+
+    def InputIsValid(self):
+        if(self.m_inputValueType == None or self.m_errorTitle == None or self.m_errorMessage == None):
+            return True
+        if(self.get() == ''):
+            return False
+        try:
+            self.m_inputValueType(self.get())
+        except ValueError:
+            tk.messagebox.showerror(self.m_errorTitle, self.m_errorMessage)
+            return False
+        return True
 
 #EnhancedEntry END
 

@@ -175,7 +175,7 @@ class ProcessRawDataControl(ProcessingControlBase):
     def SaveProcessedDataToFile(self, outputFilePath,massList,rawDataWrappers):
         if(massList == None or rawDataWrappers == None):
             raise ValueError
-        for m in massList:
+        for m in massList: #generate one .pdat file per mass (cleanest way to seperate data for masses, and keep things in an easily readable format)
             headerString = "Processed TPD data for mass " + m + \
                 "\nHeader length is " + str(len(rawDataWrappers) + 4) + \
                 "\nThe following files are included in this data set:\n"
@@ -183,7 +183,7 @@ class ProcessRawDataControl(ProcessingControlBase):
             outputData = rawDataWrappers[0].m_interpolatedTemp.copy() # start with temperature column
             labels = ["Temperature"]
             coverages = [str(0.0)]
-            for w in rawDataWrappers:
+            for w in rawDataWrappers: #for each raw data file, do....
                 headerString = headerString + w.m_fileName + "\n" #write filename to header for quick overview
                 outputData = np.vstack((outputData, w.m_interpolatedData[m])) #append data column for mass m in outputdata
                 if(w.m_parsedCoverageAvailable):
@@ -192,13 +192,16 @@ class ProcessRawDataControl(ProcessingControlBase):
                     labels.append(w.m_fileName.split(" ")[0]) # this should append file number
                 coverages.append(str(w.m_coverages[m]))
 
-            #make one file per mass
+            if(outputFilePath[-5:] == ".pdat"):
+                outputFilePath = outputFilePath[:-5]#removing .pdat extension from user-written output file path, if it is there
+
+            #making one file per mass, so making name based on mass number
             namedOutputFilePath = outputFilePath + ".M" + str(m) + ".pdat" #pdat for processed data
             if(path.exists(namedOutputFilePath)):
                 tk.messagebox.showerror("File exists!","Please choose another name, or explicitly delete the " + outputFilePath + "to overwrite in the file explorer.")
             stringData = np.vstack((np.array(labels,dtype=str),np.array(coverages,dtype=str)))
 
-            with open(namedOutputFilePath, mode='a') as fileHandle:
+            with open(namedOutputFilePath, mode='a') as fileHandle: #actually write file
                 #write header and stringData first
                 np.savetxt(fileHandle, stringData, fmt="%s", delimiter=' ', header=headerString)
                 #then write float data (after transposing it)

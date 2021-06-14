@@ -192,6 +192,8 @@ class ProcessRawDataControl(ProcessingControlBase):
                     labels.append(w.m_fileName.split(" ")[0]) # this should append file number
                 coverages.append(str(w.m_coverages[m]))
 
+            headerString = headerString + "Calibration params: Temperature offset = " + str(self.m_calibOffsetEntry.get()) + " Temperature scale = " + str(self.m_calibScaleEntry.get())
+
             if(outputFilePath[-5:] == ".pdat"):
                 outputFilePath = outputFilePath[:-5]#removing .pdat extension from user-written output file path, if it is there
 

@@ -9,6 +9,10 @@ import sys
 
 
 #Chord BEGIN
+#The chord class is a custom wrapper of a ttk.frame meant for use inside the Accordion class.
+#A chord instance represents the UI of one of the data controls (for example LeadingEdgeAnalysisControl, to name a simple one).
+#All data controls need to derive from ProcessDataControl, and as such have an initChordUI() function.
+#The UI the chord contains is modified inside the data controls initChordUI() function.
 class Chord(ttk.Frame):
     def __init__(self, parent, controller, title='', *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
@@ -62,6 +66,7 @@ class Chord(ttk.Frame):
 #Chord END
 
 #WrappedLabel BEGIN
+#Don't think this is used anywhere anymore. Used to be a simple wrapper for immediate calling of pack() upon instantiation in code.
 class WrappedLabel(ttk.Frame):
     def __init__(self, parent, text, compound, width, bg, fg, bd, relief, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
@@ -72,6 +77,7 @@ class WrappedLabel(ttk.Frame):
 
 #Accordion BEGIN
 #adapted from http://code.activestate.com/recipes/578911-accordion-widget-tkinter/
+#This is the heart of the controls frame. It provides this opening/closing functionality for each data control UI group.
 class Accordion(tk.Frame):
     def __init__(self, parent, accordion_style=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
@@ -156,6 +162,7 @@ class Accordion(tk.Frame):
 #Accordion END
 
 #ScrolledListBox BEGIN
+#As the name says, this is a scrollable listbox. Very useful when you have a small listbox but lots of contained elements.
 class ScrolledListBox(ttk.Frame):
     def __init__(self, parent, horizontallyScrollable = False, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
@@ -204,6 +211,7 @@ class ScrolledListBox(ttk.Frame):
 #ScrolledListBox END
 
 #EnhancedCheckButton BEGIN
+#CheckButton wrapper which add a backing IntVar() and provides accesors.
 class EnhancedCheckButton(ttk.Checkbutton):
     def __init__(self, parent, *args, **kwargs):
         self.m_var = tk.IntVar()
@@ -219,6 +227,7 @@ class EnhancedCheckButton(ttk.Checkbutton):
 #EnhancedCheckButton END
 
 #EnhancedEntry BEGIN
+#Wrapper for an Entry. Provides backing variable, accessors, and InputChecking functionality
 class EnhancedEntry(ttk.Entry):
     def __init__(self, parent, inputValueType = None, errorTitle = None, errorMessage = None, *args, **kwargs):
         self.m_backingVariable = tk.StringVar()
@@ -251,6 +260,9 @@ class EnhancedEntry(ttk.Entry):
 #EnhancedEntry END
 
 #DisplayOptionsFrame BEGIN
+#This class is used in the ProcessRawDataControl to select which masses are displayed in the plot.
+#Provides the functionality for modifieng the lists of visible, hidden, and available masses.
+#Also remembers which masses were selected previously, and will only remove unavailable masses upon reset.
 class DisplayOptionsFrame(ttk.Frame):
     def __init__(self, parent, onUpdateEventCommand, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
@@ -359,6 +371,11 @@ class EnhancedComboBox(ttk.Combobox):
 #EnhancedComboBox END
 
 #ProcessingStepControlBase BEGIN
+#This is the base class for all data controls. There are two very important functions:
+#1) initChordUI() -> this function needs to be overridden and is intended to instantiate the UI belonging to the control
+#2) initNotebook() -> this function does not need to be overridden, but it will take all the plots in self.m_plots
+#                       and register a notebook in the plotsFrame for them. Could be decoupled even further over events.
+#                       Probably overkill for university software. ;)
 class ProcessingControlBase:
     def __init__(self, title, controller, accordion):
         self.m_title = title
@@ -406,6 +423,7 @@ class ProcessingControlBase:
 #ProcessingStepControlBase END
 
 #InputFileListBoxControl BEGIN
+#This is the listbox used in the RawDataControl
 class InputFileListBoxControl(ttk.Frame):
     def __init__(self, parent, onUpdateSelection, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
@@ -489,6 +507,7 @@ class InputFileListBoxControl(ttk.Frame):
 #InputFileListBoxControl END
 
 #SingleInputFileSelectionControl BEGIN
+#Used for selection of processed data
 class SingleInputFileSelectionControl(ttk.Frame):
     def __init__(self, parent, onSelect = None, defaultextension= ".pdat", filetypes = [('Processed Data','*.pdat'), ('All files','*.*')],*args, **kwargs):
         super().__init__(parent, *args, **kwargs)

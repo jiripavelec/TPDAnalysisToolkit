@@ -5,6 +5,8 @@ from DataControls.ControlElements import Chord, ProcessingControlBase, EnhancedE
 from DataModels.ProcessedDataWrapper import ProcessedDataWrapper # pylint: disable=import-error
 import numpy as np
 
+#This is WORK-IN-PROGRESS meaning its an unfinished class.
+#It is intended to allow for redhead analysis of processed data.
 class RedheadAnalysisControl(ProcessingControlBase):
     def __init__(self, controller, root, accordion):
         super().__init__("Redhead Analysis (WIP)", controller, accordion)

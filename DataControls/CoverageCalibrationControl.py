@@ -3,6 +3,10 @@ import tkinter.ttk as ttk
 from DataControls.ControlElements import Chord, ProcessingControlBase, InputFileListBoxControl, EnhancedEntry # pylint: disable=import-error
 from PlotsFrame import MPLContainer # pylint: disable=import-error
 
+#This is WORK-IN-PROGRESS meaning its an unfinished class.
+#It is intended to provide more accurate coverage calibration on basis
+#of nominal dose (set in LabVIEW software, assumed to be true)
+#versus integrated number of counts
 class CoverageCalibrationControl(ProcessingControlBase):
     def __init__(self, controller, root, accordion):
         super().__init__("Coverage Calibration (WIP)", controller, accordion)

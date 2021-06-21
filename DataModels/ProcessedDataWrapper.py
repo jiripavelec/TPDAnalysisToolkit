@@ -2,6 +2,9 @@ import numpy as np
 import threading
 import multiprocessing
 
+#As defined in the name this class wraps the processed data file.
+#It provides methods for further processing of this data, for example inversion analysis.
+#Potentially look at the RawDataWrapper first if this class is too confusing.
 class ProcessedDataWrapper():
     def __init__(self, filePath):
         self.m_filePath = filePath
@@ -133,11 +136,14 @@ class ProcessedDataWrapper():
                 #then write float data (after transposing it)
                 np.savetxt(fileHandle, outputData.transpose(), delimiter=' ')
 
+    #Represents the polanyi wigner equation. Used for the Runga-Kutta integration.
     def polanyiWigner(self,prefactor,coverageRow,monolayerCoverage,monolayerDesEnergy,temperature,eCharge = 1.6022e-19,kBoltz=1.3806e-23):
         interpolatedEnergyInEV = np.interp(coverageRow,monolayerCoverage,monolayerDesEnergy)
         result = -prefactor*coverageRow*np.exp(-interpolatedEnergyInEV*(eCharge/kBoltz)/temperature)
         return result
 
+    #Effectively this is the heart of inversion analysis. It is an RK4 integrator.
+    #This function is called in the following function, depending on whether we have multiple prefactors and multiple available threads.
     def simulateCoverageFromInvertedDataForSinglePrefactor(self, strPrefactor, tStep = 0.1):
         monolayerIndex = self.m_totalCoverages.index(1.0) - 1 #index of the data column associated with 1ML coverage            
         # self.m_monolayerIndex = self.m_totalCoverages.index(1.0) - 1 #index of the data column associated with 1ML coverage
@@ -189,6 +195,7 @@ class ProcessedDataWrapper():
 
         return strPrefactor, simCoverageBuffer.transpose().copy() , simDesorptionRateBuffer.transpose().copy() #column major now
 
+    #This is somewhat like a dispatching function for the inversion analysis. One thread per pre-factor on basis of the if-branch-conditions.
     def simulateCoveragesFromInvertedData(self):
         if (not self.m_dataInverted):
             raise ValueError #we need to perform inversion before simulation and evaluation
@@ -218,6 +225,7 @@ class ProcessedDataWrapper():
     def getSimDesRateVSTemp(self, prefactor):
         return np.vstack((self.m_parsedInputData[0,:],self.m_simDesorptionRate[str(prefactor)]))
 
+    #Here we calulcate the chi-squared as the last step of the inversion analysis.
     def evaluateData(self):
         if not self.m_dataSimulated:
             raise ValueError #cant evaluate before simulation

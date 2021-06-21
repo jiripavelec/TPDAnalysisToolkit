@@ -5,6 +5,9 @@ from DataControls.ControlElements import Chord, ScrolledListBox, EnhancedCheckBu
 from DataModels.ProcessedDataWrapper import ProcessedDataWrapper # pylint: disable=import-error
 from tkinter.filedialog import askopenfilename
 
+#This class allows for integration of a peak (processed data) in between
+#two selected boundaries.
+#Uses the processed data wrapper as an interface.
 class PeakIntegrationControl(ProcessingControlBase):
     def __init__(self, controller, root, accordion):
         super().__init__("Peak Integration", controller, accordion)

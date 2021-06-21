@@ -6,6 +6,10 @@ from DataModels.ProcessedDataWrapper import ProcessedDataWrapper # pylint: disab
 import numpy as np
 import numpy.polynomial as npp
 
+#This class allows for analysis of the leading edge of peaks.
+#Currently one can define the region which is to be linearly fitted.
+#TODO: explicitly show the fit data in the chord UI
+#Uses the processed data wrapper as an interface.
 class LeadingEdgeAnalysisControl(ProcessingControlBase):
     def __init__(self, controller, root, accordion):
         super().__init__("Leading Edge Analysis", controller, accordion)

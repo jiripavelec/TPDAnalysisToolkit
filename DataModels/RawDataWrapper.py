@@ -1,5 +1,9 @@
 import numpy as np
 
+#As the name says, this class is intended to wrap the raw TPD data.
+#This means it acts as an interface between the data file (.csv) and the UI.
+#It also contains the relevant methods for processing the raw data
+# This could be decoupled by adding a class responsible for the processing.
 class RawDataWrapper():
     def __init__(self, filePath):
         self.m_filePath = filePath
@@ -19,7 +23,7 @@ class RawDataWrapper():
         self.m_coverages = {}
         self.m_parsedExperimentNumber = "No experiment number!"
 
-    def parseRawDataFile(self):
+    def parseRawDataFile(self): #This function parses the .csv
         if(self.m_dataParsed):
             return
 
@@ -52,33 +56,33 @@ class RawDataWrapper():
         self.m_dataParsed = True
         # del temp #free memory, or at least suggest it to the garbage collector
 
-    def getRawTempMin(self):
+    def getRawTempMin(self): #Get lowest available temperature from raw temperature data.
         return np.amin(self.m_parsedRawData[(self.m_listOfColumns.index('temperature')),:])
 
-    def getRawTempMax(self):
+    def getRawTempMax(self): #Get highest available temperature from raw temperature data.
         return np.amax(self.m_parsedRawData[(self.m_listOfColumns.index('temperature')),:])
 
-    def getRawDataVSRawTemp(self, desiredMasses):
+    def getRawDataVSRawTemp(self, desiredMasses): #Get raw data vs temperature as np.array
         result = np.array(self.m_parsedRawData[(self.m_listOfColumns.index('temperature')),:])
         for i in self.massListToIndices(desiredMasses):
             result = np.vstack((result, self.m_parsedRawData[i,:]))
         return result
 
-    def getRawDataVSRawTime(self, desiredMasses):
+    def getRawDataVSRawTime(self, desiredMasses): #Get raw data vs time as np.array
         result = np.array(self.m_parsedRawData[(self.m_listOfColumns.index('ms')),:])
         for i in self.massListToIndices(desiredMasses):
             result = np.vstack((result, self.m_parsedRawData[i,:]))
         return result
 
-    def getRawTempVSRawTime(self):
+    def getRawTempVSRawTime(self): #Get raw temperature vs time as np.array
         # result = np.vstack((self.m_interpolatedTime, self.m_interpolatedTemp))
         result = np.vstack((self.m_parsedRawData[0,:], self.m_parsedRawData[(self.m_listOfColumns.index('temperature')),:]))
         return result
 
-    def getMassList(self):
+    def getMassList(self): #return all available massses in the file
         return self.m_listOfColumns[2:] #first two columns are "ms" and "temperature"
 
-    def massListToIndices(self, massList):
+    def massListToIndices(self, massList): #convert mass list argument to indices in self.m_parsedRawData
         result = list()
         for m in massList:
             try:
@@ -87,13 +91,16 @@ class RawDataWrapper():
                 continue
         return result#[self.m_listOfColumns.index(m) for m in massList]
 
-    def smooth_running_average(self, x, N): #running average
+    def smooth_running_average(self, x, N): #running average over N points
         cumsum = np.cumsum(np.insert(x, 0, 0))
         smoothResult = (cumsum[N:] - cumsum[:-N]) / float(N)
         smoothResult = np.insert(smoothResult,0,x[:N-1])
         smoothResult = np.append(smoothResult,x[N:-1:-1])
         return smoothResult
 
+    #The process parsed data function takes care of smoothing and interpolating the raw (noisy) temperature data on a uniform grid.
+    #The counts can then also be interpolated and provided on a uniform grid. This makes inversion analysis (the integration part)
+    #easier down the line.
     def processParsedData(self, tRampStart, tRampEnd, tCutStart, tCutEnd, removeBackground, smooth,
      tempScaleCorrection, tempOffsetCorrection, smoothpoints = 5, tStep = 0.1):
         if (self.m_dataProcessed == True):
@@ -149,6 +156,8 @@ class RawDataWrapper():
             self.m_logInterpolatedData[m] = np.log(interpDataBuffer)
         self.m_dataProcessed = True
 
+    #This function allows normalizing the available spectra to a specific spectrum which is defined to be the "monolayer coverage".
+    #Doesn't actually need to be the monolayer, but the area under that spectrum will be defined as 1, and all others will be normalized to it.
     def normalizeDataTo(self, referenceRawDataWrapper):
         if (not self.m_dataProcessed or not referenceRawDataWrapper.m_dataProcessed):
             return
@@ -161,7 +170,7 @@ class RawDataWrapper():
             self.m_interpolatedData[m] /= referenceCoverage
         self.m_coveragesNormalized = True
 
-    def getProcessedData(self, desiredMasses):
+    def getProcessedData(self, desiredMasses): #get processed data versus temperature as np.array
         result = self.m_interpolatedTemp
         for m in desiredMasses:
             if m in self.m_listOfColumns:
@@ -186,18 +195,18 @@ class RawDataWrapper():
     def getParsedCoverageAsFloat(self):
         return float(self.m_parsedCoverage[0:-1]) #TODO: in the future, one can use the calibration mol/uc/L to get ML normalized coverages
 
-    def getCoverageLabels(self, desiredMasses):
+    def getCoverageLabels(self, desiredMasses):#get the labels for the plot legend for each of the desired masses.
         result = []
         for m in desiredMasses:
             if m in self.m_listOfColumns:
-                if self.m_coveragesNormalized:
+                if self.m_coveragesNormalized: #Either returning normalized coverages
                     result.append("M" + m + ' {:04.2f} ML'.format(self.m_coverages[m]) + " #" + self.m_parsedExperimentNumber)
-                else:
+                else:#Or returning absolute counts
                     result.append("M" + m + " " + self.m_parsedCoverage + " #" + self.m_parsedExperimentNumber)
                     # result.append("M" + m + ' {:f} Counts'.format(self.m_coverages[m]))
         return result
 
-    def getLangmuirLabels(self, desiredMasses):
+    def getLangmuirLabels(self, desiredMasses):#get labels for the plot legend in langmuir
         result = []
         for m in desiredMasses:
             if m in self.m_listOfColumns:

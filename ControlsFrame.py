@@ -3,7 +3,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from DataControls.ControlElements import Accordion
 from DataControls.CoverageCalibrationControl import CoverageCalibrationControl
-from DataControls.ProcessRawDataControl import ProcessRawDataControl
+from DataControls.RawDataControl import RawDataControl
 from DataControls.InvertDataControl import InvertDataControl
 from DataControls.RedheadAnalysisControl import RedheadAnalysisControl
 from DataControls.PeakIntegrationControl import PeakIntegrationControl
@@ -22,7 +22,7 @@ class ControlsFrame(tk.Frame):
         #The order in which we append controls here is also the order in which they show up in the accordion in the UI.
 
         #For raw data processing
-        self.m_rawDataControl = ProcessRawDataControl(plotsFrame, root, self.m_accordion)
+        self.m_rawDataControl = RawDataControl(plotsFrame, root, self.m_accordion)
         self.Controls.append(self.m_rawDataControl)
         
         #For leading edge analysis

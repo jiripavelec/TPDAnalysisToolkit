@@ -10,6 +10,8 @@ from datetime import datetime
 import math
 import multiprocessing
 
+#This control permits for inversion analysis of processed data.
+#Uses the processed data wrapper as an interface.
 class InvertDataControl(ProcessingControlBase):
     def __init__(self, controller, root, accordion):
         super().__init__("Inversion Analysis", controller, accordion)

@@ -10,7 +10,9 @@ import os.path
 from os import path, chdir
 # from glob import glob
 
-class ProcessRawDataControl(ProcessingControlBase):
+#This class is the control meant for manipulating raw data.
+#It uses the RawDataWrapper as an interface to do so.
+class RawDataControl(ProcessingControlBase):
     def __init__(self, controller, root, accordion):
         super().__init__("Process TPD Data", controller, accordion)
         self.m_filePaths = []

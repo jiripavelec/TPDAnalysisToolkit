@@ -4,18 +4,16 @@ Python-based program for analysing TPD data. Currently in the alpha stage!
 # Prerequisites
 A python 3.x.x distribution. See https://www.python.org/downloads/ (Tested with 3.8.5)
 
-A few packages (installable via pip) are necessary to run the toolkit. The latest version with which the toolkit is known to run correctly is listed in parenthesis, but newer version will likely work as well. It should be sufficient to install matplotlib and numpy to get all further packages as dependencies, but for completeness all are listed:
+A few packages (installable via pip) are necessary to run the toolkit. The latest version with which the toolkit is known to run correctly is listed in parenthesis, but newer version will likely work as well. It should be sufficient to install matplotlib to get all further packages as dependencies, but for completeness all are listed:
 
-pip (20.2)
-matplotlib (3.3.0)
-numpy (1.19.1)
-kiwisolver (1.2.0)
-Pillow (7.2.0)
-cycler (0.10.0)
-pyparsing (2.4.7)
-python-dateutil (2.8.1)
-setuptools (47.1.0)
-six (1.15.0)
+1. matplotlib (3.3.0)
+2. numpy (1.19.1)
+3. kiwisolver (1.2.0)
+4. Pillow (7.2.0)
+5. cycler (0.10.0)
+6. pyparsing (2.4.7)
+7. python-dateutil (2.8.1)
+8. six (1.15.0)
 
 
 # Installation
